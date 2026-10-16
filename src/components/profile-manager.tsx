@@ -1,0 +1,35 @@
+'use client';
+import { useState } from 'react';
+import type { Catalog, CommanderMetadata } from '@/lib/types';
+import { api } from './client-api';
+const colors = ['white', 'blue', 'black', 'red', 'green', 'colorless'];
+const cost = () => Object.fromEntries(colors.map(c => [c, 0]));
+const blank = (): CommanderMetadata => ({ primary_name: '', image_path: '', attack_power: 0, defense_power: 0, colors: [], color_cost: cost(), second_commander: { enabled: false, name: '', image_path: '', attack_power: 0, defense_power: 0, colors: [], color_cost: cost() } });
+export function ProfileManager({ catalog, onSaved, onError }: {
+    catalog: Catalog;
+    onSaved: (c: Catalog) => void;
+    onError: (e: string) => void;
+}) {
+    const [name, setName] = useState(''), [linked, setLinked] = useState<string[]>([]), [commander, setCommander] = useState(''), [meta, setMeta] = useState(blank), [rules, setRules] = useState(''), [busy, setBusy] = useState(false), [message, setMessage] = useState('');
+    async function save(data: unknown) { setBusy(true); setMessage(''); onError(''); try {
+        onSaved(await api<Catalog>('/api/catalog', data));
+        setMessage('Saved to your library.');
+    }
+    catch (e) {
+        onError((e as Error).message);
+    }
+    finally {
+        setBusy(false);
+    } }
+    return <div className="lobby-grid"><section className="panel"><p className="eyebrow">YOUR PLAYGROUP</p><h2>Player profiles</h2><label>Load a profile<select value={catalog.profiles.some(p => p.name === name) ? name : ''} onChange={e => { const p = catalog.profiles.find(p => p.name === e.target.value); setName(p?.name ?? ''); setLinked(p?.commanders ?? []); }}><option value="">New player profile</option>{catalog.profiles.map(p => <option key={p.name}>{p.name}</option>)}</select></label><label>Player name<input value={name} maxLength={120} onChange={e => setName(e.target.value)}/></label><p>Choose this player’s commanders:</p><div className="commander-checks">{catalog.commanders.map(c => <label className="check" key={c.name}><input type="checkbox" checked={linked.includes(c.name)} onChange={e => setLinked(old => e.target.checked ? [...old, c.name] : old.filter(n => n !== c.name))}/>{c.name}</label>)}</div><div className="actions"><button className="primary" disabled={busy || !name.trim()} onClick={() => void save({ type: 'profile', name, commanders: linked })}>Save player</button><button disabled={busy || !catalog.profiles.some(p => p.name === name)} onClick={() => { if (window.confirm(`Delete ${name}?`))
+        void save({ type: 'deleteProfile', name }); }}>Delete player</button></div></section>
+    <section className="panel"><p className="eyebrow">YOUR COMMAND ZONE</p><h2>Commander profiles</h2><label>Load a commander<select value={catalog.commanders.some(c => c.name === commander) ? commander : ''} onChange={e => { const c = catalog.commanders.find(c => c.name === e.target.value); setCommander(c?.name ?? ''); setMeta(c ? structuredClone(c.metadata) : blank()); setRules(c?.rules ?? ''); }}><option value="">New commander profile</option>{catalog.commanders.map(c => <option key={c.name}>{c.name}</option>)}</select></label>
+    <label>Profile name<input value={commander} maxLength={120} onChange={e => setCommander(e.target.value)}/></label><label>Primary commander name<input maxLength={120} value={meta.primary_name} onChange={e => setMeta({ ...meta, primary_name: e.target.value })}/></label>
+    <label>Bundled image path<input placeholder="res/commanders/YourCommander.png" value={meta.image_path} onChange={e => setMeta({ ...meta, image_path: e.target.value })}/></label>
+    <div className="fields"><label>Power<input type="number" min={0} max={999} value={meta.attack_power} onChange={e => setMeta({ ...meta, attack_power: Number(e.target.value) })}/></label><label>Toughness<input type="number" min={0} max={999} value={meta.defense_power} onChange={e => setMeta({ ...meta, defense_power: Number(e.target.value) })}/></label></div>
+    <p>Colors and mana cost</p><div className="mana-fields">{colors.map(c => <div key={c}><label className="check"><input type="checkbox" checked={meta.colors.includes(c)} onChange={e => setMeta({ ...meta, colors: e.target.checked ? [...meta.colors, c] : meta.colors.filter(v => v !== c) })}/>{c}</label><input aria-label={`${c} mana cost`} type="number" min={0} max={999} value={meta.color_cost[c] ?? 0} onChange={e => setMeta({ ...meta, color_cost: { ...meta.color_cost, [c]: Number(e.target.value) } })}/></div>)}</div>
+    <label className="check"><input type="checkbox" checked={meta.second_commander.enabled} onChange={e => setMeta({ ...meta, second_commander: { ...meta.second_commander, enabled: e.target.checked } })}/> Partner / second commander</label>
+    {meta.second_commander.enabled && <div className="partner-fields"><label>Partner name<input maxLength={120} value={meta.second_commander.name} onChange={e => setMeta({ ...meta, second_commander: { ...meta.second_commander, name: e.target.value } })}/></label><label>Partner image path<input value={meta.second_commander.image_path} onChange={e => setMeta({ ...meta, second_commander: { ...meta.second_commander, image_path: e.target.value } })}/></label><div className="fields">{(['attack_power', 'defense_power'] as const).map(k => <label key={k}>{k === 'attack_power' ? 'Partner power' : 'Partner toughness'}<input type="number" min={0} max={999} value={meta.second_commander[k]} onChange={e => setMeta({ ...meta, second_commander: { ...meta.second_commander, [k]: Number(e.target.value) } })}/></label>)}</div><div className="mana-fields">{colors.map(c => <div key={c}><label className="check"><input type="checkbox" checked={meta.second_commander.colors.includes(c)} onChange={e => setMeta({ ...meta, second_commander: { ...meta.second_commander, colors: e.target.checked ? [...meta.second_commander.colors, c] : meta.second_commander.colors.filter(v => v !== c) } })}/>{c}</label><input aria-label={`Partner ${c} mana cost`} type="number" min={0} max={999} value={meta.second_commander.color_cost[c] ?? 0} onChange={e => setMeta({ ...meta, second_commander: { ...meta.second_commander, color_cost: { ...meta.second_commander.color_cost, [c]: Number(e.target.value) } } })}/></div>)}</div></div>}
+    <label>Rules text (include partner rules here)<textarea rows={8} value={rules} maxLength={30000} onChange={e => setRules(e.target.value)}/></label><div className="actions"><button className="primary" disabled={busy || !commander.trim() || !meta.primary_name.trim()} onClick={() => void save({ type: 'commander', name: commander, metadata: meta, rules })}>Save commander</button><button disabled={busy || !catalog.commanders.some(c => c.name === commander)} onClick={() => { if (window.confirm(`Delete ${commander}?`))
+        void save({ type: 'deleteCommander', name: commander }); }}>Delete commander</button></div><p className="muted">Image uploads are deferred. Existing images and partner metadata are preserved from MagicApp.</p></section>{message && <p role="status">{message}</p>}</div>;
+}

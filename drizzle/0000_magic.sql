@@ -1,0 +1,7 @@
+CREATE TABLE settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+CREATE TABLE profiles (name TEXT PRIMARY KEY NOT NULL, wins INTEGER NOT NULL DEFAULT 0 CHECK(wins >= 0));
+CREATE TABLE commanders (name TEXT PRIMARY KEY NOT NULL, wins INTEGER NOT NULL DEFAULT 0 CHECK(wins >= 0), metadata TEXT NOT NULL, rules TEXT NOT NULL DEFAULT '');
+CREATE TABLE profile_commanders (profile TEXT NOT NULL REFERENCES profiles(name), commander TEXT NOT NULL REFERENCES commanders(name), PRIMARY KEY(profile, commander));
+CREATE TABLE planes (name TEXT PRIMARY KEY NOT NULL, image TEXT NOT NULL, rules TEXT NOT NULL);
+CREATE TABLE games (code TEXT PRIMARY KEY NOT NULL, state TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0 CHECK(revision >= 0), created_at TEXT NOT NULL);
+CREATE TABLE actions (game TEXT NOT NULL REFERENCES games(code), id TEXT NOT NULL, payload TEXT NOT NULL, revision INTEGER NOT NULL, PRIMARY KEY(game,id));

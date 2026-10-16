@@ -1,0 +1,720 @@
+@import "tailwindcss";
+:root{
+  --bg:#0b1019;
+  --panel:#131b27;
+  --line:#2b3645;
+  --text:#edf0f5;
+  --muted:#a5b0c0;
+  --gold:#e9c783;
+  --gold-dark:#b59862;
+  color-scheme:dark}
+  *{
+    box-sizing:border-box}
+    body{
+      margin:0;
+      background:radial-gradient(ellipse at 65% 0,#24324477,transparent 55%),var(--bg);
+      color:var(--text);
+      font-family:Arial,Helvetica,sans-serif;
+      font-size:15px;
+      line-height:1.55}
+      button,input,select,textarea{
+        font:inherit}
+        button,a,input,select,textarea{
+          touch-action:manipulation}
+          button{
+            border:1px solid #425167;
+            background:#202c3c;
+            color:var(--text);
+            border-radius:8px;
+            min-height:44px;
+            padding:10px 17px;
+            cursor:pointer;
+            font-weight:600;
+            transition:background .15s,border-color .15s}
+            button:hover:not(:disabled){
+              background:#334359;
+              border-color:var(--gold)}
+              button:disabled{
+                opacity:.45;
+                cursor:not-allowed}
+                button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+                  outline:3px solid var(--gold);
+                  outline-offset:3px}
+                  a{
+                    color:var(--gold);
+                    text-decoration:none}
+                    a:hover{
+                      text-decoration:underline}
+                      h1,h2,h3,p{
+                        margin-top:0}
+                        h1,h2{
+                          font-family:Georgia,'Times New Roman',serif;
+                          line-height:1.15;
+                          font-weight:400}
+                          h1{
+                            font-size:clamp(36px,4.3vw,64px);
+                            letter-spacing:-1.5px}
+                            h2{
+                              font-size:30px;
+                              margin-bottom:22px}
+                              h3{
+                                font-size:18px}
+                                p{
+                                  color:var(--muted)}
+                                  label{
+                                    display:block;
+                                    color:#c7d0dd;
+                                    font-size:13px;
+                                    font-weight:600;
+                                    margin-bottom:16px}
+                                    input,select,textarea{
+                                      width:100%;
+                                      border:1px solid #3a475c;
+                                      border-radius:7px;
+                                      background:#0e1622;
+                                      padding:11px 12px;
+                                      color:var(--text);
+                                      display:block;
+                                      margin-top:7px;
+                                      min-height:45px}
+                                      select{
+                                        max-width:100%}
+                                        input[type=checkbox]{
+                                          width:18px;
+                                          height:18px;
+                                          min-height:18px;
+                                          accent-color:var(--gold);
+                                          margin:0;
+                                          flex-shrink:0}
+                                          .check{
+                                            display:flex;
+                                            align-items:center;
+                                            gap:10px;
+                                            margin-top:12px}
+                                            .lobby{
+                                              max-width:1280px;
+                                              padding:0 42px;
+                                              margin:auto}
+                                              .masthead,.table-header{
+                                                display:flex;
+                                                justify-content:space-between;
+                                                align-items:center;
+                                                padding:26px 0;
+                                                border-bottom:1px solid var(--line);
+                                                gap:20px}
+                                                .brand{
+                                                  font-size:18px;
+                                                  font-weight:700;
+                                                  letter-spacing:2px;
+                                                  color:var(--gold);
+                                                  white-space:nowrap}
+                                                  .brand span{
+                                                    display:block;
+                                                    font-size:9px;
+                                                    letter-spacing:2.1px;
+                                                    color:var(--muted);
+                                                    margin:3px 0 0 24px}
+                                                    .badge{
+                                                      font-size:10px;
+                                                      letter-spacing:1.4px;
+                                                      color:var(--muted);
+                                                      border:1px solid var(--line);
+                                                      padding:7px 11px;
+                                                      border-radius:5px}
+                                                      .intro{
+                                                        padding:60px 0 34px}
+                                                        .intro h1{
+                                                          margin:0 0 20px}
+                                                          .intro em{
+                                                            font-weight:400;
+                                                            color:var(--gold)}
+                                                            .intro>p:last-child{
+                                                              max-width:500px;
+                                                              font-size:16px}
+                                                              .eyebrow{
+                                                                font-size:10px;
+                                                                letter-spacing:2.2px;
+                                                                font-weight:700;
+                                                                color:var(--gold);
+                                                                margin-bottom:14px}
+                                                                .tabs{
+                                                                  display:flex;
+                                                                  gap:8px;
+                                                                  flex-wrap:wrap;
+                                                                  margin-bottom:26px}
+                                                                  .tabs button{
+                                                                    background:transparent;
+                                                                    border-color:transparent;
+                                                                    color:var(--muted);
+                                                                    font-size:13px}
+                                                                    .tabs button[aria-pressed=true]{
+                                                                      background:#273240;
+                                                                      color:var(--gold);
+                                                                      border-color:#49505a}
+                                                                      .lobby-grid{
+                                                                        display:grid;
+                                                                        grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);
+                                                                        gap:26px;
+                                                                        align-items:start}
+                                                                        .panel{
+                                                                          background:linear-gradient(135deg,#182232,#121a25);
+                                                                          border:1px solid var(--line);
+                                                                          border-radius:13px;
+                                                                          padding:30px}
+                                                                          .section-title{
+                                                                            display:flex;
+                                                                            align-items:center;
+                                                                            justify-content:space-between;
+                                                                            gap:12px}
+                                                                            .section-title h2{
+                                                                              margin-bottom:24px}
+                                                                              .section-title h3{
+                                                                                margin:20px 0}
+                                                                                .rune{
+                                                                                  color:var(--gold);
+                                                                                  font-size:46px;
+                                                                                  line-height:1}
+                                                                                  .fields{
+                                                                                    display:grid;
+                                                                                    grid-template-columns:repeat(3,minmax(0,1fr));
+                                                                                    gap:14px}
+                                                                                    .fields>.check{
+                                                                                      grid-column:1/-1;
+                                                                                      margin-top:0}
+                                                                                      .stepper{
+                                                                                        display:flex;
+                                                                                        align-items:center;
+                                                                                        justify-content:space-between;
+                                                                                        margin-top:7px;
+                                                                                        gap:6px}
+                                                                                        .stepper button{
+                                                                                          padding:8px 13px}
+                                                                                          .stepper output{
+                                                                                            font-size:20px}
+                                                                                            .setup-players{
+                                                                                              display:grid;
+                                                                                              gap:12px;
+                                                                                              margin-bottom:25px}
+                                                                                              .setup-player{
+                                                                                                display:grid;
+                                                                                                grid-template-columns:32px minmax(0,.8fr) minmax(0,1.2fr);
+                                                                                                gap:12px;
+                                                                                                align-items:center;
+                                                                                                padding:15px 0;
+                                                                                                border-top:1px solid var(--line)}
+                                                                                                .setup-player label{
+                                                                                                  margin:0}
+                                                                                                  .player-number{
+                                                                                                    display:inline-flex;
+                                                                                                    justify-content:center;
+                                                                                                    align-items:center;
+                                                                                                    border:1px solid #bca17377;
+                                                                                                    color:var(--gold);
+                                                                                                    background:#302d2566;
+                                                                                                    width:30px;
+                                                                                                    height:30px;
+                                                                                                    border-radius:50%;
+                                                                                                    font-size:13px;
+                                                                                                    flex-shrink:0}
+                                                                                                    .primary{
+                                                                                                      background:var(--gold);
+                                                                                                      border-color:var(--gold);
+                                                                                                      color:#141b25}
+                                                                                                      .primary:hover:not(:disabled){
+                                                                                                        background:#f4dba8;
+                                                                                                        color:#101722}
+                                                                                                        .wide{
+                                                                                                          width:100%;
+                                                                                                          margin-top:8px}
+                                                                                                          .quiet{
+                                                                                                            background:transparent;
+                                                                                                            border-color:transparent;
+                                                                                                            font-size:12px;
+                                                                                                            color:var(--gold);
+                                                                                                            padding:7px}
+                                                                                                            .join-panel{
+                                                                                                              padding:32px}
+                                                                                                              .join-panel p{
+                                                                                                                font-size:14px}
+                                                                                                                .code-input{
+                                                                                                                  font-size:25px;
+                                                                                                                  letter-spacing:7px;
+                                                                                                                  text-align:center;
+                                                                                                                  padding-left:19px}
+                                                                                                                  .how-it-works{
+                                                                                                                    display:grid;
+                                                                                                                    grid-template-columns:28px 1fr;
+                                                                                                                    gap:22px 16px;
+                                                                                                                    padding:30px 12px}
+                                                                                                                    .how-it-works>span{
+                                                                                                                      color:var(--gold-dark);
+                                                                                                                      font-family:Georgia,serif;
+                                                                                                                      font-size:18px}
+                                                                                                                      .how-it-works p{
+                                                                                                                        font-size:13px;
+                                                                                                                        margin:0}
+                                                                                                                        .how-it-works strong{
+                                                                                                                          display:block;
+                                                                                                                          color:var(--text);
+                                                                                                                          font-size:14px;
+                                                                                                                          margin-bottom:4px}
+                                                                                                                          .error{
+                                                                                                                            background:#42252c;
+                                                                                                                            border:1px solid #94535c;
+                                                                                                                            padding:15px 20px;
+                                                                                                                            margin:15px 0 24px;
+                                                                                                                            border-radius:8px;
+                                                                                                                            color:#ffe1e1}
+                                                                                                                            .error button{
+                                                                                                                              margin-left:15px}
+                                                                                                                              .muted{
+                                                                                                                                font-size:12px;
+                                                                                                                                color:var(--muted)}
+                                                                                                                                footer{
+                                                                                                                                  display:flex;
+                                                                                                                                  justify-content:space-between;
+                                                                                                                                  gap:15px;
+                                                                                                                                  flex-wrap:wrap;
+                                                                                                                                  font-size:11px;
+                                                                                                                                  color:#8090a6;
+                                                                                                                                  padding:30px 0;
+                                                                                                                                  margin-top:24px;
+                                                                                                                                  border-top:1px solid var(--line)}
+                                                                                                                                  .leader{
+                                                                                                                                    display:flex;
+                                                                                                                                    align-items:center;
+                                                                                                                                    gap:14px;
+                                                                                                                                    padding:13px 0;
+                                                                                                                                    border-bottom:1px solid var(--line);
+                                                                                                                                    font-size:13px}
+                                                                                                                                    .leader>span:first-child{
+                                                                                                                                      color:var(--gold);
+                                                                                                                                      width:22px}
+                                                                                                                                      .leader>span:last-child{
+                                                                                                                                        margin-left:auto;
+                                                                                                                                        white-space:nowrap;
+                                                                                                                                        color:var(--muted)}
+                                                                                                                                        .commander-checks{
+                                                                                                                                          max-height:460px;
+                                                                                                                                          overflow:auto;
+                                                                                                                                          padding:0 10px 10px 0;
+                                                                                                                                          margin-bottom:22px}
+                                                                                                                                          .commander-checks label{
+                                                                                                                                            font-size:12px}
+                                                                                                                                            .actions{
+                                                                                                                                              display:flex;
+                                                                                                                                              gap:10px;
+                                                                                                                                              flex-wrap:wrap;
+                                                                                                                                              align-items:center}
+                                                                                                                                              .mana-fields{
+                                                                                                                                                display:grid;
+                                                                                                                                                grid-template-columns:repeat(3,1fr);
+                                                                                                                                                gap:8px;
+                                                                                                                                                margin-bottom:20px}
+                                                                                                                                                .mana-fields .check{
+                                                                                                                                                  font-size:11px}
+                                                                                                                                                  .mana-fields input[type=number]{
+                                                                                                                                                    margin-top:0}
+                                                                                                                                                    .partner-fields{
+                                                                                                                                                      padding:16px;
+                                                                                                                                                      border:1px solid var(--line);
+                                                                                                                                                      border-radius:8px;
+                                                                                                                                                      margin:16px 0}
+                                                                                                                                                      .table-page{
+                                                                                                                                                        max-width:1600px;
+                                                                                                                                                        padding:0 32px;
+                                                                                                                                                        margin:auto}
+                                                                                                                                                        .table-header{
+                                                                                                                                                          padding:20px 0}
+                                                                                                                                                          .game-code{
+                                                                                                                                                            display:flex;
+                                                                                                                                                            align-items:center;
+                                                                                                                                                            gap:14px}
+                                                                                                                                                            .game-code small{
+                                                                                                                                                              font-size:9px;
+                                                                                                                                                              letter-spacing:2px;
+                                                                                                                                                              max-width:40px}
+                                                                                                                                                              .game-code strong{
+                                                                                                                                                                font-family:monospace;
+                                                                                                                                                                font-size:27px;
+                                                                                                                                                                color:var(--gold);
+                                                                                                                                                                letter-spacing:4px}
+                                                                                                                                                                .game-code button{
+                                                                                                                                                                  font-size:11px;
+                                                                                                                                                                  min-height:35px;
+                                                                                                                                                                  padding:5px 12px}
+                                                                                                                                                                  .connection{
+                                                                                                                                                                    font-size:12px;
+                                                                                                                                                                    color:#efb588}
+                                                                                                                                                                    .connection.online{
+                                                                                                                                                                      color:#a2d9b4}
+                                                                                                                                                                      .connection small{
+                                                                                                                                                                        display:block;
+                                                                                                                                                                        color:var(--muted);
+                                                                                                                                                                        font-size:9px;
+                                                                                                                                                                        text-align:right}
+                                                                                                                                                                        .table-toolbar{
+                                                                                                                                                                          display:flex;
+                                                                                                                                                                          justify-content:space-between;
+                                                                                                                                                                          align-items:center;
+                                                                                                                                                                          margin:22px 0;
+                                                                                                                                                                          gap:12px}
+                                                                                                                                                                          .table-toolbar .tabs{
+                                                                                                                                                                            margin:0}
+                                                                                                                                                                            .score-grid{
+                                                                                                                                                                              display:grid;
+                                                                                                                                                                              grid-template-columns:repeat(2,minmax(0,1fr));
+                                                                                                                                                                              gap:20px}
+                                                                                                                                                                              .score-card{
+                                                                                                                                                                                position:relative;
+                                                                                                                                                                                isolation:isolate;
+                                                                                                                                                                                overflow:hidden;
+                                                                                                                                                                                background:#182334;
+                                                                                                                                                                                border:1px solid #3b4657;
+                                                                                                                                                                                border-radius:12px;
+                                                                                                                                                                                min-height:330px}
+                                                                                                                                                                                .card-art{
+                                                                                                                                                                                  position:absolute;
+                                                                                                                                                                                  inset:0;
+                                                                                                                                                                                  width:100%;
+                                                                                                                                                                                  height:100%;
+                                                                                                                                                                                  object-fit:cover;
+                                                                                                                                                                                  object-position:center 32%;
+                                                                                                                                                                                  opacity:.3;
+                                                                                                                                                                                  z-index:-2}
+                                                                                                                                                                                  .score-card:after{
+                                                                                                                                                                                    content:'';
+                                                                                                                                                                                    position:absolute;
+                                                                                                                                                                                    inset:0;
+                                                                                                                                                                                    background:linear-gradient(#0c132b70,#0b121c44 40%,#0b121cee);
+                                                                                                                                                                                    z-index:-1}
+                                                                                                                                                                                    .card-content{
+                                                                                                                                                                                      padding:22px 25px;
+                                                                                                                                                                                      text-align:center}
+                                                                                                                                                                                      .card-heading{
+                                                                                                                                                                                        display:flex;
+                                                                                                                                                                                        align-items:center;
+                                                                                                                                                                                        gap:12px;
+                                                                                                                                                                                        text-align:left;
+                                                                                                                                                                                        font-size:15px}
+                                                                                                                                                                                        .card-heading small{
+                                                                                                                                                                                          margin-left:auto;
+                                                                                                                                                                                          font-size:10px;
+                                                                                                                                                                                          letter-spacing:1.3px;
+                                                                                                                                                                                          color:var(--gold)}
+                                                                                                                                                                                          .score-card h2{
+                                                                                                                                                                                            font-size:20px;
+                                                                                                                                                                                            margin:18px 0 0;
+                                                                                                                                                                                            color:#e0e5ec}
+                                                                                                                                                                                            .life-score{
+                                                                                                                                                                                              font-size:100px;
+                                                                                                                                                                                              line-height:1.25;
+                                                                                                                                                                                              font-weight:700;
+                                                                                                                                                                                              letter-spacing:-5px;
+                                                                                                                                                                                              font-variant-numeric:tabular-nums}
+                                                                                                                                                                                              .card-counters{
+                                                                                                                                                                                                display:flex;
+                                                                                                                                                                                                justify-content:center;
+                                                                                                                                                                                                gap:35px;
+                                                                                                                                                                                                font-size:12px;
+                                                                                                                                                                                                color:#c1ccda}
+                                                                                                                                                                                                .card-counters strong{
+                                                                                                                                                                                                  font-size:19px;
+                                                                                                                                                                                                  margin-left:8px;
+                                                                                                                                                                                                  color:var(--text)}
+                                                                                                                                                                                                  .damage-summary{
+                                                                                                                                                                                                    display:flex;
+                                                                                                                                                                                                    justify-content:center;
+                                                                                                                                                                                                    gap:16px;
+                                                                                                                                                                                                    font-size:10px;
+                                                                                                                                                                                                    color:#a9b6c7;
+                                                                                                                                                                                                    margin:9px 0}
+                                                                                                                                                                                                    .score-card.winner{
+                                                                                                                                                                                                      border-color:var(--gold);
+                                                                                                                                                                                                      box-shadow:0 0 0 1px var(--gold)}
+                                                                                                                                                                                                      .score-card.eliminated{
+                                                                                                                                                                                                        border-color:#80515d}
+                                                                                                                                                                                                        .eliminated .life-score{
+                                                                                                                                                                                                          color:#de8798}
+                                                                                                                                                                                                          .score-card details{
+                                                                                                                                                                                                            text-align:left;
+                                                                                                                                                                                                            font-size:12px;
+                                                                                                                                                                                                            margin-top:12px}
+                                                                                                                                                                                                            .score-card details summary{
+                                                                                                                                                                                                              cursor:pointer;
+                                                                                                                                                                                                              color:var(--muted);
+                                                                                                                                                                                                              padding:8px}
+                                                                                                                                                                                                              .rules{
+                                                                                                                                                                                                                white-space:pre-wrap}
+                                                                                                                                                                                                                .compact{
+                                                                                                                                                                                                                  grid-template-columns:repeat(3,minmax(0,1fr))}
+                                                                                                                                                                                                                  .compact .score-card{
+                                                                                                                                                                                                                    min-height:230px}
+                                                                                                                                                                                                                    .compact .life-score{
+                                                                                                                                                                                                                      font-size:75px}
+                                                                                                                                                                                                                      .compact .card-heading{
+                                                                                                                                                                                                                        flex-wrap:wrap}
+                                                                                                                                                                                                                        .compact details{
+                                                                                                                                                                                                                          display:none}
+                                                                                                                                                                                                                          .seat-picker{
+                                                                                                                                                                                                                            max-width:900px;
+                                                                                                                                                                                                                            margin:35px auto}
+                                                                                                                                                                                                                            .seat-picker h1{
+                                                                                                                                                                                                                              font-size:38px}
+                                                                                                                                                                                                                              .seat-grid{
+                                                                                                                                                                                                                                display:grid;
+                                                                                                                                                                                                                                grid-template-columns:repeat(2,1fr);
+                                                                                                                                                                                                                                gap:14px;
+                                                                                                                                                                                                                                margin:30px 0}
+                                                                                                                                                                                                                                .seat-grid button{
+                                                                                                                                                                                                                                  text-align:left;
+                                                                                                                                                                                                                                  display:grid;
+                                                                                                                                                                                                                                  grid-template-columns:35px 1fr;
+                                                                                                                                                                                                                                  gap:5px 10px;
+                                                                                                                                                                                                                                  padding:20px}
+                                                                                                                                                                                                                                  .seat-grid small{
+                                                                                                                                                                                                                                    grid-column:2;
+                                                                                                                                                                                                                                    color:var(--muted);
+                                                                                                                                                                                                                                    font-size:11px;
+                                                                                                                                                                                                                                    overflow-wrap:anywhere}
+                                                                                                                                                                                                                                    .seat-grid .player-number{
+                                                                                                                                                                                                                                      grid-row:span 2}
+                                                                                                                                                                                                                                      .controller{
+                                                                                                                                                                                                                                        max-width:650px;
+                                                                                                                                                                                                                                        text-align:center;
+                                                                                                                                                                                                                                        margin:30px auto}
+                                                                                                                                                                                                                                        .controller .tabs{
+                                                                                                                                                                                                                                          justify-content:center}
+                                                                                                                                                                                                                                          .controller h2{
+                                                                                                                                                                                                                                            font-size:26px}
+                                                                                                                                                                                                                                            .controller label{
+                                                                                                                                                                                                                                              text-align:left;
+                                                                                                                                                                                                                                              max-width:400px;
+                                                                                                                                                                                                                                              margin:0 auto}
+                                                                                                                                                                                                                                              .counter-value{
+                                                                                                                                                                                                                                                font-size:125px;
+                                                                                                                                                                                                                                                line-height:1.4;
+                                                                                                                                                                                                                                                font-weight:700;
+                                                                                                                                                                                                                                                font-variant-numeric:tabular-nums}
+                                                                                                                                                                                                                                                .counter-value.poison{
+                                                                                                                                                                                                                                                  color:#9cdda9}
+                                                                                                                                                                                                                                                  .counter-value.commander{
+                                                                                                                                                                                                                                                    color:#f29f91}
+                                                                                                                                                                                                                                                    .counter-buttons{
+                                                                                                                                                                                                                                                      display:grid;
+                                                                                                                                                                                                                                                      grid-template-columns:repeat(4,1fr);
+                                                                                                                                                                                                                                                      gap:12px}
+                                                                                                                                                                                                                                                      .counter-buttons button{
+                                                                                                                                                                                                                                                        min-height:90px;
+                                                                                                                                                                                                                                                        font-size:29px}
+                                                                                                                                                                                                                                                        .status-line{
+                                                                                                                                                                                                                                                          margin-top:25px}
+                                                                                                                                                                                                                                                          .mini-scores{
+                                                                                                                                                                                                                                                            display:flex;
+                                                                                                                                                                                                                                                            justify-content:space-around;
+                                                                                                                                                                                                                                                            gap:10px;
+                                                                                                                                                                                                                                                            border-top:1px solid var(--line);
+                                                                                                                                                                                                                                                            margin-top:26px;
+                                                                                                                                                                                                                                                            padding-top:20px}
+                                                                                                                                                                                                                                                            .mini-scores small{
+                                                                                                                                                                                                                                                              font-size:10px;
+                                                                                                                                                                                                                                                              color:var(--muted);
+                                                                                                                                                                                                                                                              display:block}
+                                                                                                                                                                                                                                                              .mini-scores strong{
+                                                                                                                                                                                                                                                                font-size:22px}
+                                                                                                                                                                                                                                                                .game-controls{
+                                                                                                                                                                                                                                                                  display:flex;
+                                                                                                                                                                                                                                                                  justify-content:space-between;
+                                                                                                                                                                                                                                                                  align-items:center;
+                                                                                                                                                                                                                                                                  gap:22px;
+                                                                                                                                                                                                                                                                  margin-top:25px}
+                                                                                                                                                                                                                                                                  .game-controls h3{
+                                                                                                                                                                                                                                                                    margin-bottom:4px}
+                                                                                                                                                                                                                                                                    .game-controls p{
+                                                                                                                                                                                                                                                                      font-size:12px;
+                                                                                                                                                                                                                                                                      margin-bottom:0}
+                                                                                                                                                                                                                                                                      .plane-panel{
+                                                                                                                                                                                                                                                                        display:grid;
+                                                                                                                                                                                                                                                                        grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+                                                                                                                                                                                                                                                                        gap:30px;
+                                                                                                                                                                                                                                                                        margin-top:25px}
+                                                                                                                                                                                                                                                                        .plane-panel img{
+                                                                                                                                                                                                                                                                          width:100%;
+                                                                                                                                                                                                                                                                          max-height:350px;
+                                                                                                                                                                                                                                                                          object-fit:contain}
+                                                                                                                                                                                                                                                                          .plane-panel .rules{
+                                                                                                                                                                                                                                                                            font-size:13px}
+                                                                                                                                                                                                                                                                            .modal-backdrop{
+                                                                                                                                                                                                                                                                              position:fixed;
+                                                                                                                                                                                                                                                                              inset:0;
+                                                                                                                                                                                                                                                                              background:#000b;
+                                                                                                                                                                                                                                                                              display:flex;
+                                                                                                                                                                                                                                                                              align-items:center;
+                                                                                                                                                                                                                                                                              justify-content:center;
+                                                                                                                                                                                                                                                                              padding:20px;
+                                                                                                                                                                                                                                                                              z-index:10}
+                                                                                                                                                                                                                                                                              .modal{
+                                                                                                                                                                                                                                                                                width:min(100%,500px);
+                                                                                                                                                                                                                                                                                box-shadow:0 20px 80px #000}
+                                                                                                                                                                                                                                                                                .modal h2{
+                                                                                                                                                                                                                                                                                  font-size:27px}
+                                                                                                                                                                                                                                                                                  @media(min-width:1200px){
+                                                                                                                                                                                                                                                                                    .score-grid:has(>.score-card:nth-child(5)){
+                                                                                                                                                                                                                                                                                      grid-template-columns:repeat(3,minmax(0,1fr))}
+                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                    @media(max-width:800px){
+                                                                                                                                                                                                                                                                                      .lobby{
+                                                                                                                                                                                                                                                                                        padding:0 20px}
+                                                                                                                                                                                                                                                                                        .intro{
+                                                                                                                                                                                                                                                                                          padding-top:38px}
+                                                                                                                                                                                                                                                                                          .lobby-grid{
+                                                                                                                                                                                                                                                                                            grid-template-columns:1fr}
+                                                                                                                                                                                                                                                                                            .panel{
+                                                                                                                                                                                                                                                                                              padding:22px}
+                                                                                                                                                                                                                                                                                              .table-page{
+                                                                                                                                                                                                                                                                                                padding:0 16px}
+                                                                                                                                                                                                                                                                                                .table-header{
+                                                                                                                                                                                                                                                                                                  flex-wrap:wrap}
+                                                                                                                                                                                                                                                                                                  .table-header .brand{
+                                                                                                                                                                                                                                                                                                    font-size:14px}
+                                                                                                                                                                                                                                                                                                    .game-code{
+                                                                                                                                                                                                                                                                                                      gap:9px}
+                                                                                                                                                                                                                                                                                                      .game-code strong{
+                                                                                                                                                                                                                                                                                                        font-size:22px}
+                                                                                                                                                                                                                                                                                                        .game-code small{
+                                                                                                                                                                                                                                                                                                          display:none}
+                                                                                                                                                                                                                                                                                                          .connection{
+                                                                                                                                                                                                                                                                                                            margin-left:auto}
+                                                                                                                                                                                                                                                                                                            .table-toolbar{
+                                                                                                                                                                                                                                                                                                              align-items:flex-start;
+                                                                                                                                                                                                                                                                                                              flex-direction:column}
+                                                                                                                                                                                                                                                                                                              .score-grid,.compact{
+                                                                                                                                                                                                                                                                                                                gap:12px}
+                                                                                                                                                                                                                                                                                                                .card-content{
+                                                                                                                                                                                                                                                                                                                  padding:15px}
+                                                                                                                                                                                                                                                                                                                  .card-heading{
+                                                                                                                                                                                                                                                                                                                    gap:7px;
+                                                                                                                                                                                                                                                                                                                    flex-wrap:wrap;
+                                                                                                                                                                                                                                                                                                                    font-size:13px}
+                                                                                                                                                                                                                                                                                                                    .card-heading small{
+                                                                                                                                                                                                                                                                                                                      font-size:8px}
+                                                                                                                                                                                                                                                                                                                      .score-card h2{
+                                                                                                                                                                                                                                                                                                                        font-size:17px}
+                                                                                                                                                                                                                                                                                                                        .life-score{
+                                                                                                                                                                                                                                                                                                                          font-size:85px}
+                                                                                                                                                                                                                                                                                                                          .game-controls{
+                                                                                                                                                                                                                                                                                                                            align-items:flex-start;
+                                                                                                                                                                                                                                                                                                                            flex-direction:column}
+                                                                                                                                                                                                                                                                                                                            .plane-panel{
+                                                                                                                                                                                                                                                                                                                              grid-template-columns:1fr}
+                                                                                                                                                                                                                                                                                                                              .plane-panel img{
+                                                                                                                                                                                                                                                                                                                                max-height:260px}
+                                                                                                                                                                                                                                                                                                                              }
+                                                                                                                                                                                                                                                                                                                              @media(max-width:480px){
+                                                                                                                                                                                                                                                                                                                                .masthead .badge{
+                                                                                                                                                                                                                                                                                                                                  display:none}
+                                                                                                                                                                                                                                                                                                                                  .brand{
+                                                                                                                                                                                                                                                                                                                                    font-size:16px}
+                                                                                                                                                                                                                                                                                                                                    .setup-player{
+                                                                                                                                                                                                                                                                                                                                      grid-template-columns:25px 1fr;
+                                                                                                                                                                                                                                                                                                                                      gap:7px 12px}
+                                                                                                                                                                                                                                                                                                                                      .setup-player label:last-child{
+                                                                                                                                                                                                                                                                                                                                        grid-column:2}
+                                                                                                                                                                                                                                                                                                                                        .fields{
+                                                                                                                                                                                                                                                                                                                                          grid-template-columns:1fr 1fr}
+                                                                                                                                                                                                                                                                                                                                          .fields>label:first-child{
+                                                                                                                                                                                                                                                                                                                                            grid-column:1/-1}
+                                                                                                                                                                                                                                                                                                                                            .score-grid{
+                                                                                                                                                                                                                                                                                                                                              grid-template-columns:1fr}
+                                                                                                                                                                                                                                                                                                                                              .compact{
+                                                                                                                                                                                                                                                                                                                                                grid-template-columns:repeat(2,minmax(0,1fr))}
+                                                                                                                                                                                                                                                                                                                                                .compact .score-card h2{
+                                                                                                                                                                                                                                                                                                                                                  font-size:13px}
+                                                                                                                                                                                                                                                                                                                                                  .compact .card-content{
+                                                                                                                                                                                                                                                                                                                                                    padding:10px}
+                                                                                                                                                                                                                                                                                                                                                    .compact .life-score{
+                                                                                                                                                                                                                                                                                                                                                      font-size:65px}
+                                                                                                                                                                                                                                                                                                                                                      .compact .card-counters{
+                                                                                                                                                                                                                                                                                                                                                        gap:9px;
+                                                                                                                                                                                                                                                                                                                                                        font-size:10px}
+                                                                                                                                                                                                                                                                                                                                                        .compact .card-counters strong{
+                                                                                                                                                                                                                                                                                                                                                          font-size:14px;
+                                                                                                                                                                                                                                                                                                                                                          margin-left:4px}
+                                                                                                                                                                                                                                                                                                                                                          .compact .card-heading small,.compact .damage-summary{
+                                                                                                                                                                                                                                                                                                                                                            display:none}
+                                                                                                                                                                                                                                                                                                                                                            .game-code button{
+                                                                                                                                                                                                                                                                                                                                                              display:none}
+                                                                                                                                                                                                                                                                                                                                                              .counter-buttons{
+                                                                                                                                                                                                                                                                                                                                                                gap:8px}
+                                                                                                                                                                                                                                                                                                                                                                .counter-buttons button{
+                                                                                                                                                                                                                                                                                                                                                                  font-size:23px;
+                                                                                                                                                                                                                                                                                                                                                                  min-height:78px;
+                                                                                                                                                                                                                                                                                                                                                                  padding:8px}
+                                                                                                                                                                                                                                                                                                                                                                  .controller{
+                                                                                                                                                                                                                                                                                                                                                                    padding:20px 14px}
+                                                                                                                                                                                                                                                                                                                                                                    .controller .tabs{
+                                                                                                                                                                                                                                                                                                                                                                      gap:0}
+                                                                                                                                                                                                                                                                                                                                                                      .controller .tabs button{
+                                                                                                                                                                                                                                                                                                                                                                        font-size:11px;
+                                                                                                                                                                                                                                                                                                                                                                        padding:8px}
+                                                                                                                                                                                                                                                                                                                                                                        .seat-grid{
+                                                                                                                                                                                                                                                                                                                                                                          grid-template-columns:1fr}
+                                                                                                                                                                                                                                                                                                                                                                          .tabs button{
+                                                                                                                                                                                                                                                                                                                                                                            padding:8px 10px}
+                                                                                                                                                                                                                                                                                                                                                                            .error button{
+                                                                                                                                                                                                                                                                                                                                                                              margin:10px 0 0}
+                                                                                                                                                                                                                                                                                                                                                                              .mini-scores{
+                                                                                                                                                                                                                                                                                                                                                                                flex-wrap:wrap}
+                                                                                                                                                                                                                                                                                                                                                                                .game-code strong{
+                                                                                                                                                                                                                                                                                                                                                                                  font-size:20px}
+                                                                                                                                                                                                                                                                                                                                                                                }
+
+.seat-preview { margin: 16px 0 24px; }
+.seat-preview p { font-size: 13px; }
+.controller form label { margin-bottom: 20px; }
+
+.table-commanders {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+.table-commanders > h3 { margin-bottom: 16px; }
+.opponent-commander {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.opponent-heading { display: flex; align-items: flex-start; gap: 12px; }
+.opponent-heading > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.opponent-heading p { margin: 4px 0 10px; font-size: 13px; }
+.opponent-life { font-size: 22px; font-weight: 700; text-align: center; }
+.opponent-life small { display: block; font-size: 10px; font-weight: 400; color: var(--muted); }
+.commander-info { text-align: left; }
+.commander-info > summary {
+  color: var(--gold);
+  cursor: pointer;
+  padding: 12px 0;
+  min-height: 44px;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.commander-info > summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.commander-info-content { padding-top: 12px; overflow-wrap: anywhere; }
+.commander-info-content h4 { margin: 0 0 8px; font-size: 14px; }
+.commander-info-content p { margin-bottom: 10px; font-size: 13px; }
+.commander-info-cards { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+.commander-info-cards figure { flex: 1 1 200px; min-width: 0; margin: 0; }
+.commander-info-cards img { display: block; width: 100%; max-width: 280px; height: auto; border-radius: 8px; margin: 0 auto 16px; }
+
+.win-totals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 22px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.win-totals strong { margin-left: 5px; color: var(--gold); font-variant-numeric: tabular-nums; }
+.compact .win-totals { gap: 4px 12px; font-size: 11px; }

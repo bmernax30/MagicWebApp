@@ -1,0 +1,557 @@
+[
+  {
+    "name": "Academy at Tolaria West",
+    "image_path": "res/planes/AcademyAtTolariaWest.png",
+    "planes_text": "At the beginning of your end step, if you have no cards in hand, draw seven cards. \n\nWhenever chaos ensues, discard your hand."
+  },
+  {
+    "name": "Agyrem",
+    "image_path": "res/planes/Agyrem.png",
+    "planes_text": "Whenever a white creature dies, return it to the battlefield under its owner's control at the beginning of the next end step. Whenever a nonwhite creature dies, return it to its owner's hand at the beginning of the next end step. \n\nWhenever chaos ensues, creatures can't attack you until a player planeswalks."
+  },
+  {
+    "name": "Akoum",
+    "image_path": "res/planes/Akoum.png",
+    "planes_text": "Players may cast enchantment spells as though they had flash. \n\nWhenever chaos ensues, destroy target creature that isn't enchanted."
+  },
+  {
+    "name": "Aretopolis",
+    "image_path": "res/planes/Aretopolis.png",
+    "planes_text": "When you planeswalk to Aretopolis and at the beginning of your upkeep, put a scroll counter on Aretopolis, then you gain life equal to the number of scroll counters on it. When Aretopolis has ten or more scroll counters on it, planeswalk. \n\nWhenever chaos ensues, put a scroll counter on Aretopolis, then draw cards equal to the number of scroll counters on it."
+  },
+  {
+    "name": "Astral Arena",
+    "image_path": "res/planes/AstralArena.png",
+    "planes_text": "No more than one creature can attack each combat. No more than one creature can block each combat. \n\nWhenever chaos ensues, Astral Arena deals 2 damage to each creature."
+  },
+  {
+    "name": "Bant",
+    "image_path": "res/planes/Bant.png",
+    "planes_text": "All creatures have exalted. (Whenever a creature attacks alone, it gets +1/+1 until end of turn for each instance of exalted among permanents its controller controls.) \n\nWhenever chaos ensues, put a divinity counter on target green, white, or blue creature. That creature has indestructible for as long as it has a divinity counter on it."
+  },
+  {
+    "name": "Bloodhill Bastion",
+    "image_path": "res/planes/BloodhilBastion.png",
+    "planes_text": "Whenever a creature enters, it gains double strike and haste until end of turn. \n\nWhenever chaos ensues, exile target nontoken creature you control, then return it to the battlefield under your control."
+  },
+  {
+    "name": "Celestine Reef",
+    "image_path": "res/planes/CelestineReef.png",
+    "planes_text": "Creatures without flying or islandwalk can't attack. \n\nWhenever chaos ensues, until a player planeswalks, you can't lose the game and your opponents can't win the game."
+  },
+  {
+    "name": "Chaotic Aether",
+    "image_path": "res/planes/ChaoticAether.png",
+    "planes_text": "When you encounter Chaotic Aether, each blank roll of the planar die is a {CHAOS} roll until a player planeswalks away from a plane. (Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Cliffside Market",
+    "image_path": "res/planes/CliffsideMarket.png",
+    "planes_text": "When you planeswalk to Cliffside Market and at the beginning of your upkeep, you may exchange life totals with target player. \n\nWhenever chaos ensues, exchange control of two target permanents that share a card type."
+  },
+  {
+    "name": "Edge of Malacol",
+    "image_path": "res/planes/EdgeOfMalacol.png",
+    "planes_text": "If a creature you control would untap during your untap step, put two +1/+1 counters on it instead. \n\nWhenever chaos ensues, untap each creature you control."
+  },
+  {
+    "name": "Eloren Wilds",
+    "image_path": "res/planes/ElorenWilds.png",
+    "planes_text": "Whenever a player taps a permanent for mana, that player adds one mana of any type that permanent produced. \n\nWhenever chaos ensues, target player can't cast spells until a player planeswalks."
+  },
+  {
+    "name": "Enigma Ridges",
+    "image_path": "res/planes/EnigmaRidges.png",
+    "planes_text": "When you planeswalk to Enigma Ridges, each player who controls fewer lands than the player who controls the most lands searches their library for a number of basic land cards less than or equal to the difference, reveals them, puts them into their hand, then shuffles. \n\nWhenever chaos ensues, draw a card, then you may put a land card from your hand onto the battlefield."
+  },
+  {
+    "name": "Esper",
+    "image_path": "res/planes/Esper.png",
+    "planes_text": "Artifact spells cost  less to cast. \n\nWhenever chaos ensues, creatures you control that are white, blue, and/or black become artifacts in addition to their other types until end of turn. Then each artifact creature you control gains vigilance, menace, and lifelink until end of turn."
+  },
+  {
+    "name": "Feeding Grounds",
+    "image_path": "res/planes/FeedingGrounds.png",
+    "planes_text": "Red spells cost  less to cast. Green spells cost  less to cast. \n\nWhenever chaos ensues, put X +1/+1 counters on target creature, where X is that creature's mana value."
+  },
+  {
+    "name": "Fields of Summer",
+    "image_path": "res/planes/FieldsOfSummer.png",
+    "planes_text": "Whenever a player casts a spell, that player may gain 2 life. \n\nWhenever chaos ensues, you may gain 10 life."
+  },
+  {
+    "name": "Furnace Layer",
+    "image_path": "res/planes/FurnaceLayer.png",
+    "planes_text": "When you planeswalk to Furnace Layer and at the beginning of your upkeep, select target player at random. That player discards a card. If that player discards a land card this way, they lose 3 life. \n\nWhenever chaos ensues, you may destroy target nonland permanent."
+  },
+  {
+    "name": "Gavony",
+    "image_path": "res/planes/Gavony.png",
+    "planes_text": "All creatures have vigilance. \n\nWhenever chaos ensues, creatures you control gain indestructible until end of turn."
+  },
+  {
+    "name": "Ghirapur",
+    "image_path": "res/planes/Ghirapaur.png",
+    "planes_text": "At the beginning of combat on your turn, until end of turn, each noncreature, non-Vehicle artifact you control becomes a 5/3 Vehicle in addition to its other types and gains trample, haste, and crew 2. \n\nWhenever chaos ensues, return target noncreature artifact card from your graveyard to your hand."
+  },
+  {
+    "name": "Glen Elendra",
+    "image_path": "res/planes/GlenElendra.png",
+    "planes_text": "At end of combat, you may exchange control of target creature you control that dealt combat damage to a player this combat and target creature that player controls.\n\nWhenever chaos ensues, gain control of target creature you own."
+  },
+  {
+    "name": "Glimmervoid Basin",
+    "image_path": "res/planes/GlimmervoidBasin.png",
+    "planes_text": "Whenever a player casts an instant or sorcery spell with a single target, that player copies that spell for each other spell, permanent, card not on the battlefield, and/or player the spell could target. Each copy targets a different one of them. \n\nWhenever chaos ensues, choose target creature. Each player except that creature's controller creates a token that's a copy of that creature."
+  },
+  {
+    "name": "Goldmeadow",
+    "image_path": "res/planes/GoldMeadow.png",
+    "planes_text": "Whenever a land enters, that land's controller creates three 0/1 white Goat creature tokens. \n\nWhenever chaos ensues, create a 0/1 white Goat creature token."
+  },
+  {
+    "name": "Grand Ossuary",
+    "image_path": "res/planes/GrandOssuary.png",
+    "planes_text": "Whenever a creature dies, its controller distributes a number of +1/+1 counters equal to its power among any number of target creatures they control. \n\nWhenever chaos ensues, each player exiles all creatures they control and creates X 1/1 green Saproling creature tokens, where X is the total power of the creatures they exiled this way. Then planeswalk."
+  },
+  {
+    "name": "Grixis",
+    "image_path": "res/planes/Grixis.png",
+    "planes_text": "Blue, black, and/or red creature cards in your graveyard have unearth. The unearth cost is equal to the card's mana cost. (Pay the card's mana cost: Return it to the battlefield. The creature gains haste. Exile it at the beginning of the next end step or if it would leave the battlefield. Unearth only as a sorcery.) \n\nWhenever chaos ensues, put target creature card from a graveyard onto the battlefield under your control."
+  },
+  {
+    "name": "Grove of the Dreampods",
+    "image_path": "res/planes/GroveOfDreampods.png",
+    "planes_text": "When you planeswalk to Grove of the Dreampods and at the beginning of your upkeep, reveal cards from the top of your library until you reveal a creature card. Put that card onto the battlefield and the rest on the bottom of your library in a random order. \n\nWhenever chaos ensues, return target creature card from your graveyard to the battlefield."
+  },
+  {
+    "name": "Hedron Fields of Agadeem",
+    "image_path": "res/planes/HedronFieldsOfAgadeem.png",
+    "planes_text": "Creatures with power 7 or greater can't attack or block. \n\nWhenever chaos ensues, create a 7/7 colorless Eldrazi creature token with annihilator 1. (Whenever it attacks, defending player sacrifices a permanent of their choice.)"
+  },
+  {
+    "name": "Horizon Boughs",
+    "image_path": "res/planes/HorizonBoughs.png",
+    "planes_text": "All permanents untap during each player's untap step. \n\nWhenever chaos ensues, you may search your library for up to three basic land cards, put them onto the battlefield tapped, then shuffle."
+  },
+  {
+    "name": "Immersturm",
+    "image_path": "res/planes/Immersturm.png",
+    "planes_text": "Whenever a creature enters, that creature's controller may have it deal damage equal to its power to any target of their choice. \n\nWhenever chaos ensues, exile target creature, then return it to the battlefield under its owner's control."
+  },
+  {
+    "name": "Interplanar Tunnel",
+    "image_path": "res/planes/InterplanarTunnel.png",
+    "planes_text": "When you encounter Interplanar Tunnel, reveal cards from the top of your planar deck until you reveal five plane cards. Put a plane card from among them on top of your planar deck, then put the rest of the revealed cards on the bottom in a random order. (Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Inys Haen",
+    "image_path": "res/planes/InysHaen.png",
+    "planes_text": "When you planeswalk to Inys Haen and at the beginning of your upkeep, mill three cards. When you planeswalk away from Inys Haen, each player returns all land cards from their graveyard to the battlefield tapped. \n\nWhenever chaos ensues, return target nonland card from your graveyard to your hand."
+  },
+  {
+    "name": "Isle of Vesuva",
+    "image_path": "res/planes/IsleOfVesuva.png",
+    "planes_text": "Whenever a nontoken creature enters, its controller creates a token that's a copy of that creature. \n\nWhenever chaos ensues, destroy target creature and all other creatures with the same name as that creature."
+  },
+  {
+    "name": "Izzet Steam Maze",
+    "image_path": "res/planes/IzzetSteamMaze.png",
+    "planes_text": "Whenever a player casts an instant or sorcery spell, that player copies it. The player may choose new targets for the copy. \n\nWhenever chaos ensues, instant and sorcery spells you cast this turn cost  less to cast."
+  },
+  {
+    "name": "Jund",
+    "image_path": "res/planes/Jund.png",
+    "planes_text": "Whenever a player casts a creature spell that's black, red, or green, it gains devour 5. (As that creature enters, you may sacrifice any number of creatures. It enters with five times that many +1/+1 counters on it.) \n\nWhenever chaos ensues, create two 1/1 red Goblin creature tokens."
+  },
+  {
+    "name": "Kessig",
+    "image_path": "res/planes/Kessig.png",
+    "planes_text": "Prevent all combat damage that would be dealt by non-Werewolf creatures. \n\nWhenever chaos ensues, each creature you control gets +2/+2, gains trample, and becomes a Werewolf in addition to its other types until end of turn."
+  },
+  {
+    "name": "Ketria",
+    "image_path": "res/planes/Ketria.png",
+    "planes_text": "When you planeswalk to Ketria and at the beginning of your upkeep, put your choice of a vigilance, menace, or trample counter on target creature you control. \n\nWhenever chaos ensues, exile cards from the top of your library until you exile a nonland permanent card. Put that card onto the battlefield or into your hand."
+  },
+  {
+    "name": "Kharasha Foothills",
+    "image_path": "res/planes/KharashaFoothills.png",
+    "planes_text": "Whenever a creature you control attacks a player, for each other opponent, you may create a token that's a copy of that creature, tapped and attacking that opponent. Exile those tokens at the beginning of the next end step. \n\nWhenever chaos ensues, you may sacrifice any number of creatures. If you do, Kharasha Foothills deals that much damage to target creature."
+  },
+  {
+    "name": "Kilnspire District",
+    "image_path": "res/planes/KilnspireDistrict.png",
+    "planes_text": "When you planeswalk to Kilnspire District and at the beginning of your first main phase, put a charge counter on Kilnspire District, then add  for each charge counter on it. \n\nWhenever chaos ensues, you may pay . If you do, Kilnspire District deals X damage to any target."
+  },
+  {
+    "name": "Krosa",
+    "image_path": "res/planes/Krosa.png",
+    "planes_text": "All creatures get +2/+2. \n\nWhenever chaos ensues, you may add {WUBRG}."
+  },
+  {
+    "name": "Lair of the Ashen Idol",
+    "image_path": "res/planes/LairOfTheAshenTool.png",
+    "planes_text": "At the beginning of your upkeep, sacrifice a creature. If you can't, planeswalk. \n\nWhenever chaos ensues, any number of target players each create a 2/2 black Zombie creature token."
+  },
+  {
+    "name": "Lethe Lake",
+    "image_path": "res/planes/LetheLake.png",
+    "planes_text": "At the beginning of your upkeep, mill ten cards. \n\nWhenever chaos ensues, target player mills ten cards."
+  },
+  {
+    "name": "Littjara",
+    "image_path": "res/planes/Littjara.png",
+    "planes_text": "When you planeswalk to Littjara and at the beginning of your upkeep, create a 2/2 blue Shapeshifter creature token with changeling. (It is every creature type.) \n\nWhenever chaos ensues, choose a creature type. Put a +1/+1 counter on each creature you control of that type."
+  },
+  {
+    "name": "Llanowar",
+    "image_path": "res/planes/Llanowar.png",
+    "planes_text": "All creatures have Tap: Add {GG}. \n\nWhenever chaos ensues, untap all creatures you control."
+  },
+  {
+    "name": "Megaflora Jungle",
+    "image_path": "res/planes/MegafloraJungle.png",
+    "planes_text": "Each creature with mana value 2 or less gets +2/+2. \n\nWhenever chaos ensues, create a 1/1 green Insect creature token with flying named Butterfly."
+  },
+  {
+    "name": "Minamo",
+    "image_path": "res/planes/Minamo.png",
+    "planes_text": "Whenever a player casts a spell, that player may draw a card. \n\nWhenever chaos ensues, each player may return a blue card from their graveyard to their hand."
+  },
+  {
+    "name": "Mirrored Depths",
+    "image_path": "res/planes/MirroredDepths.png",
+    "planes_text": "Whenever a player casts a spell, that player flips a coin. If the player loses the flip, counter that spell. \n\nWhenever chaos ensues, target player reveals the top card of their library. If it's a nonland card, you may cast it without paying its mana cost."
+  },
+  {
+    "name": "Morphic Tide",
+    "image_path": "res/planes/MorphicTide.png",
+    "planes_text": "When you encounter Morphic Tide, each player shuffles all permanents they own into their library, then reveals that many cards from the top of their library. Each player puts all artifact, creature, land, and planeswalker cards revealed this way onto the battlefield, then does the same for enchantment cards, then puts all cards revealed this way that weren't put onto the battlefield on the bottom of their library in any order. (Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Mount Keralia",
+    "image_path": "res/planes/MountKeralia.png",
+    "planes_text": "At the beginning of your end step, put a pressure counter on Mount Keralia. When you planeswalk away from Mount Keralia, it deals damage equal to the number of pressure counters on it to each creature and each planeswalker. \n\nWhenever chaos ensues, prevent all damage that planes named Mount Keralia would deal this game to permanents you control."
+  },
+  {
+    "name": "Murasa",
+    "image_path": "res/planes/Murasa.png",
+    "planes_text": "Whenever a nontoken creature enters, its controller may search their library for a basic land card, put it onto the battlefield tapped, then shuffle. \n\nWhenever chaos ensues, target land becomes a 4/4 creature that's still a land."
+  },
+  {
+    "name": "Mutual Epiphany",
+    "image_path": "res/planes/MutalEpiphany.png",
+    "planes_text": "When you encounter Mutual Epiphany, each player draws four cards. (Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Naar Isle",
+    "image_path": "res/planes/NaarIsle.png",
+    "planes_text": "At the beginning of your upkeep, put a flame counter on Naar Isle, then Naar Isle deals damage to you equal to the number of flame counters on it. \n\nWhenever chaos ensues, Naar Isle deals 3 damage to target player or planeswalker."
+  },
+  {
+    "name": "Naktamun",
+    "image_path": "res/planes/Naktamun.png",
+    "planes_text": "Each creature card in your graveyard has embalm. Its embalm cost is equal to its mana cost. (Exile a creature card from your graveyard and pay its embalm cost: Create a token that's a copy of it, except it's a white Zombie in addition to its other types with no mana cost. Embalm only as a sorcery.) \n\nWhenever chaos ensues, you may discard a card. If you do, draw a card."
+  },
+  {
+    "name": "Naya",
+    "image_path": "res/planes/Naya.png",
+    "planes_text": "You may play any number of lands on each of your turns. \n\nWhenever chaos ensues, target red, green, or white creature you control gets +1/+1 until end of turn for each land you control."
+  },
+  {
+    "name": "Nephalia",
+    "image_path": "res/planes/Nephalia.png",
+    "planes_text": "At the beginning of your end step, mill seven cards. Then return a card at random from your graveyard to your hand. \n\nWhenever chaos ensues, return target card from your graveyard to your hand."
+  },
+  {
+    "name": "New Argive",
+    "image_path": "res/planes/NewArgive.png",
+    "planes_text": "Whenever a historic creature you control attacks, it gets +2/+2 until end of turn. (Artifacts, legendaries, and Sagas are historic.) \n\nWhenever chaos ensues, reveal cards from the top of your library until you reveal a historic card. Put that card into your hand and the rest on the bottom of your library in a random order."
+  },
+  {
+    "name": "Norn's Dominion",
+    "image_path": "res/planes/NornsDominion.png",
+    "planes_text": "When you planeswalk away from Norn's Dominion, destroy each nonland permanent without a fate counter on it, then remove all fate counters from all permanents. \n\nWhenever chaos ensues, you may put a fate counter on target permanent."
+  },
+  {
+    "name": "Norn's Seedcore",
+    "image_path": "res/planes/NornsSeedcore.png",
+    "planes_text": "When you planeswalk to Norn's Seedcore, chaos ensues. \n\nWhenever chaos ensues, reveal cards from the top of your planar deck until you reveal a plane card. Planeswalk to it, except don't planeswalk away from any plane. Put the rest of the revealed cards on the bottom of your planar deck in any order."
+  },
+  {
+    "name": "Nyx",
+    "image_path": "res/planes/Nyx.png",
+    "planes_text": "Nontoken creatures are enchantments in addition to their other types. Constellation — Whenever an enchantment you control enters, you gain 1 life. \n\nWhenever chaos ensues, choose a color. Add an amount of mana of that color equal to your devotion to that color."
+  },
+  {
+    "name": "Onakke Catacomb",
+    "image_path": "res/planes/OnnakeCatacombs.png",
+    "planes_text": "All creatures are black and have deathtouch. \n\nWhenever chaos ensues, creatures you control get +1/+0 and gain first strike until end of turn."
+  },
+  {
+    "name": "Orochi Colony",
+    "image_path": "res/planes/OrochiColony.png",
+    "planes_text": "Whenever a creature you control deals combat damage to a player, you may search your library for a basic land card, put it onto the battlefield tapped, then shuffle. \n\nWhenever chaos ensues, target creature can't be blocked this turn."
+  },
+  {
+    "name": "Orzhova",
+    "image_path": "res/planes/Orzhova.png",
+    "planes_text": "When you planeswalk away from Orzhova, each player returns all creature cards from their graveyard to the battlefield. \n\nWhenever chaos ensues, for each opponent, exile up to one target creature card from that player's graveyard."
+  },
+  {
+    "name": "Otaria",
+    "image_path": "res/planes/Otaria.png",
+    "planes_text": "Instant and sorcery cards in graveyards have flashback. The flashback cost is equal to the card's mana cost. (Its owner may cast the card from their graveyard for its mana cost. Then they exile it.) \n\nWhenever chaos ensues, take an extra turn after this one."
+  },
+  {
+    "name": "Paliano",
+    "image_path": "res/planes/Paliano.png",
+    "planes_text": "When one or more creatures you control deal combat damage to a player, if there is no monarch, you become the monarch. \n\nWhenever chaos ensues, create a 1/1 black Assassin creature token with deathtouch and haste."
+  },
+  {
+    "name": "Panopticon",
+    "image_path": "res/planes/Panopticon.png",
+    "planes_text": "When you planeswalk to Panopticon, draw a card. At the beginning of your draw step, draw an additional card. \n\nWhenever chaos ensues, draw a card."
+  },
+  {
+    "name": "Planewide Disaster",
+    "image_path": "res/planes/PlanewideDisaster.png",
+    "planes_text": "When you encounter Planewide Disaster, destroy all creatures. (Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Pools of Becoming",
+    "image_path": "res/planes/PoolsOfBecoming.png",
+    "planes_text": "At the beginning of your end step, put the cards in your hand on the bottom of your library in any order, then draw that many cards. \n\nWhenever chaos ensues, reveal the top three cards of your planar deck. Each of the revealed cards' chaos abilities triggers. Then put the revealed cards on the bottom of your planar deck in any order."
+  },
+  {
+    "name": "Prahv",
+    "image_path": "res/planes/Prahv.png",
+    "planes_text": "If you cast a spell this turn, you can't attack with creatures. If you attacked with creatures this turn, you can't cast spells. \n\nWhenever chaos ensues, you gain life equal to the number of cards in your hand."
+  },
+  {
+    "name": "Quicksilver Sea",
+    "image_path": "res/planes/QuicksilverSea.png",
+    "planes_text": "When you planeswalk to Quicksilver Sea and at the beginning of your upkeep, scry 4. (Look at the top four cards of your library, then put any number of them on the bottom and the rest on top in any order.) \n\nWhenever chaos ensues, reveal the top card of your library. You may play it without paying its mana cost."
+  },
+  {
+    "name": "Raven's Run",
+    "image_path": "res/planes/RavensRun.png",
+    "planes_text": "All creatures have wither. (They deal damage to creatures in the form of -1/-1 counters.) \n\nWhenever chaos ensues, put a -1/-1 counter on target creature, two -1/-1 counters on another target creature, and three -1/-1 counters on a third target creature."
+  },
+  {
+    "name": "Reality Shaping",
+    "image_path": "res/planes/RealityShaping.png",
+    "planes_text": "When you encounter Reality Shaping, starting with you, each player may put a permanent card from their hand onto the battlefield. (Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Riptide Island",
+    "image_path": "res/planes/RipTideIsland.png",
+    "planes_text": "When you planeswalk to Riptide Island and at the beginning of your upkeep, create two 1/1 colorless Sliver creature tokens. \n\nWhenever chaos ensues, Slivers you control gain haste and get +X/+X until end of turn, where X is the number of Slivers you control."
+  },
+  {
+    "name": "Sanctum of Serra",
+    "image_path": "res/planes/SanctumOfSerra.png",
+    "planes_text": "When you planeswalk away from Sanctum of Serra, destroy all nonland permanents. \n\nWhenever chaos ensues, you may have your life total become 20."
+  },
+  {
+    "name": "Sea of Sand",
+    "image_path": "res/planes/SeaOfSand.png",
+    "planes_text": "Players reveal each card they draw. Whenever a player draws a land card, that player gains 3 life. Whenever a player draws a nonland card, that player loses 3 life. \n\nWhenever chaos ensues, put target permanent on top of its owner's library."
+  },
+  {
+    "name": "Selesnya Loft Gardens",
+    "image_path": "res/planes/SelesnyaLoftGardens.png",
+    "planes_text": "If an effect would create one or more tokens, it creates twice that many of those tokens instead. If an effect would put one or more counters on a permanent, it puts twice that many of those counters on that permanent instead. \n\nWhenever chaos ensues, until end of turn, whenever you tap a land for mana, add one mana of any type that land produced."
+  },
+  {
+    "name": "Shiv",
+    "image_path": "res/planes/Sensia.png",
+    "planes_text": "All creatures have {R}: This creature gets +1/+0 until end of turn. \n\nWhenever chaos ensues, create a 5/5 red Dragon creature token with flying."
+  },
+  {
+    "name": "Skybreen",
+    "image_path": "res/planes/Shiv.png",
+    "planes_text": "Players play with the top card of their libraries revealed. Spells that share a card type with the top card of a library can't be cast. \n\nWhenever chaos ensues, target player loses life equal to the number of cards in their hand."
+  },
+  {
+    "name": "Sokenzan",
+    "image_path": "res/planes/Skybreen.png",
+    "planes_text": "All creatures get +1/+1 and have haste. \n\nWhenever chaos ensues, untap all creatures that attacked this turn. If it's a main phase, there is an additional combat phase after this phase, followed by an additional main phase."
+  },
+  {
+    "name": "Spatial Merging",
+    "image_path": "res/planes/Sokenzan.png",
+    "planes_text": "When you encounter Spatial Merging, reveal cards from the top of your planar deck until you reveal two plane cards. Simultaneously planeswalk to both of them. Put all other cards revealed this way on the bottom of your planar deck in any order."
+  },
+  {
+    "name": "Stairs to Infinity",
+    "image_path": "res/planes/SpatialMerging.png",
+    "planes_text": "Players have no maximum hand size. Whenever you roll the planar die, draw a card. \n\nWhenever chaos ensues, reveal the top card of your planar deck. You may put it on the bottom of your planar deck."
+  },
+  {
+    "name": "Stensia",
+    "image_path": "res/planes/StairsToInfinity.png",
+    "planes_text": "Whenever a creature deals damage to one or more players for the first time each turn, put a +1/+1 counter on it. \n\nWhenever chaos ensues, each creature you control gains Tap : This creature deals 1 damage to target player or planeswalker until end of turn."
+  },
+  {
+    "name": "Strixhaven",
+    "image_path": "res/planes/Strixhaven.png",
+    "planes_text": "Instant and sorcery spells players cast have demonstrate. (Whenever a player casts an instant or sorcery spell, they may copy it. If they do, they choose an opponent to also copy it. Players may choose new targets for their copies.) \n\nWhenever chaos ensues, return up to one target instant or sorcery card from a graveyard to its owner's hand."
+  },
+  {
+    "name": "Stronghold Furnace",
+    "image_path": "res/planes/StrongholdFurnace.png",
+    "planes_text": "If a source would deal damage to a permanent or player, it deals double that damage instead. \n\nWhenever chaos ensues, Stronghold Furnace deals 1 damage to any target."
+  },
+  {
+    "name": "Takenuma",
+    "image_path": "res/planes/Takenuma.png",
+    "planes_text": "Whenever a creature leaves the battlefield, its controller draws a card. \n\nWhenever chaos ensues, return target creature you control to its owner's hand."
+  },
+  {
+    "name": "Talon Gates",
+    "image_path": "res/planes/TalonGates.png",
+    "planes_text": "Any time you could cast a sorcery, you may exile a nonland card from your hand with X time counters on it, where X is its mana value. If the exiled card doesn't have suspend, it gains suspend. (At the beginning of its owner's upkeep, they remove a time counter. When the last is removed, the player may cast it without paying its mana cost. If it's a creature, it has haste.) \n\nWhenever chaos ensues, remove two time counters from each suspended card you own."
+  },
+  {
+    "name": "Tazeem",
+    "image_path": "res/planes/Tazeem.png",
+    "planes_text": "Creatures can't block. \n\nWhenever chaos ensues, draw a card for each land you control."
+  },
+  {
+    "name": "Tember City",
+    "image_path": "res/planes/TemberCity.png",
+    "planes_text": "Whenever a player taps a land for mana, Tember City deals 1 damage to that player. \n\nWhenever chaos ensues, each other player sacrifices a nonland permanent of their choice."
+  },
+  {
+    "name": "Ten Wizards Mountain",
+    "image_path": "res/planes/TenWizardsMountain.png",
+    "planes_text": "Whenever you roll the planar die, put a +1/+1 counter on up to one target creature. \n\nWhenever chaos ensues, creatures you control gain flying until end of turn."
+  },
+  {
+    "name": "The Aether Flues",
+    "image_path": "res/planes/TheAetherFlues.png",
+    "planes_text": "When you planeswalk to The Aether Flues and at the beginning of your upkeep, you may sacrifice a creature. If you do, reveal cards from the top of your library until you reveal a creature card, put that card onto the battlefield, then shuffle all other cards revealed this way into your library. \n\nWhenever chaos ensues, you may put a creature card from your hand onto the battlefield."
+  },
+  {
+    "name": "The Caldaia",
+    "image_path": "res/planes/TheCaladia.png",
+    "planes_text": "Creature spells you cast from your hand have blitz . (If you cast a spell for its blitz cost, it gains haste and When this creature dies, draw a card. Sacrifice it at the beginning of the next end step.) \n\nWhenever chaos ensues, return target creature card from your graveyard to your hand."
+  },
+  {
+    "name": "The Dark Barony",
+    "image_path": "res/planes/TheDarkBarony.png",
+    "planes_text": "Whenever a nonblack card is put into a player's graveyard from anywhere, that player loses 1 life. \n\nWhenever chaos ensues, each opponent discards a card."
+  },
+  {
+    "name": "The Eon Fog",
+    "image_path": "res/planes/TheEonFog.png",
+    "planes_text": "Players skip their untap steps. \n\nWhenever chaos ensues, untap all permanents you control."
+  },
+  {
+    "name": "The Fertile Lands of Saulvinia",
+    "image_path": "res/planes/TheFertileLandsOfSaulvinia.png",
+    "planes_text": "Whenever a player taps a land for mana, that player adds one mana of any type that land produced. \n\nWhenever chaos ensues, reveal cards from the top of your planar deck until you reveal a plane card. Chaos ensues on that plane. Then put all cards revealed this way on the bottom of your planar deck in any order."
+  },
+  {
+    "name": "The Fourth Sphere",
+    "image_path": "res/planes/TheFourthSpear.png",
+    "planes_text": "At the beginning of your upkeep, sacrifice a nonblack creature. \n\nWhenever chaos ensues, create a 2/2 black Zombie creature token."
+  },
+  {
+    "name": "The Golden City of Orazca",
+    "image_path": "res/planes/TheGoldenCityOfOrazaca.png",
+    "planes_text": "Ascend (If you control ten or more permanents, you get the city's blessing for the rest of the game.) Whenever one or more creatures you control deal combat damage to a player, create a Treasure token. Then draw a card if you have the city's blessing. \n\nWhenever chaos ensues, you may put a permanent card from your hand onto the battlefield tapped."
+  },
+  {
+    "name": "The Great Aerie",
+    "image_path": "res/planes/TheGreatAerie.png",
+    "planes_text": "When you planeswalk to The Great Aerie and at the beginning of your upkeep, bolster 3. (Choose a creature with the least toughness among creatures you control and put three +1/+1 counters on it.) \n\nWhenever chaos ensues, choose up to one target creature you control and up to one target creature an opponent controls. Each of those creatures deals damage equal to its toughness to the other."
+  },
+  {
+    "name": "The Great Forest",
+    "image_path": "res/planes/TheGreatForest.png",
+    "planes_text": "Each creature assigns combat damage equal to its toughness rather than its power. \n\nWhenever chaos ensues, creatures you control get +0/+2 and gain trample until end of turn."
+  },
+  {
+    "name": "The Hippodrome",
+    "image_path": "res/planes/TheHippoDrome.png",
+    "planes_text": "All creatures get -5/-0. \n\nWhenever chaos ensues, you may destroy target creature if its power is 0 or less."
+  },
+  {
+    "name": "The Maelstrom",
+    "image_path": "res/planes/TheMaelstrom.png",
+    "planes_text": "When you planeswalk to The Maelstrom and at the beginning of your upkeep, you may reveal the top card of your library. If it's a permanent card, you may put it onto the battlefield. If you revealed a card but didn't put it onto the battlefield, put it on the bottom of your library. \n\nWhenever chaos ensues, return target permanent card from your graveyard to the battlefield."
+  },
+  {
+    "name": "The Pit",
+    "image_path": "res/planes/ThePit.png",
+    "planes_text": "When you planeswalk to The Pit, each player creates their choice of a 3/3 white Angel creature token with flying or a 6/6 black Demon creature token with flying, trample, and At the beginning of your upkeep, sacrifice another creature. If you can't, this token deals 6 damage to you. \n\nWhenever chaos ensues, each player sacrifices a nonartifact creature of their choice."
+  },
+  {
+    "name": "The Western Cloud",
+    "image_path": "res/planes/TheWesternCloud.png",
+    "planes_text": "Prevent all damage that would be dealt to creatures and planeswalkers you control. \n\nWhenever chaos ensues, create three tapped Treasure tokens. They each deal 1 damage to each creature and each planeswalker."
+  },
+  {
+    "name": "The Wilds",
+    "image_path": "res/planes/TheWilds.png",
+    "planes_text": "When you planeswalk to The Wilds and at the beginning of your upkeep, create a Food token. \n\nWhenever chaos ensues, target player sacrifices a creature of their choice. If they do, you create a Food token. You create two Food tokens instead if the sacrificed creature's toughness was 4 or greater."
+  },
+  {
+    "name": "The Zephyr Maze",
+    "image_path": "res/planes/TheZephyrMage.png",
+    "planes_text": "Creatures with flying get +2/+0. Creatures without flying get -2/-0. \n\nWhenever chaos ensues, target creature gains flying until end of turn."
+  },
+  {
+    "name": "Time Distortion",
+    "image_path": "res/planes/TimeDistorition.png",
+    "planes_text": "When you encounter Time Distortion, reverse the game's turn order. (For example, if play had proceeded clockwise around the table, it now goes counterclockwise. Then planeswalk away from this phenomenon.)"
+  },
+  {
+    "name": "Towashi",
+    "image_path": "res/planes/Towashi.png",
+    "planes_text": "Modified creatures you control have trample and Whenever this creature deals combat damage to a player or planeswalker, draw a card. (Equipment, Auras you control, and counters are modifications.) \n\nWhenever chaos ensues, distribute three +1/+1 counters among one, two, or three target creatures you control."
+  },
+  {
+    "name": "Trail of the Mage-Rings",
+    "image_path": "res/planes/TrailOfTheMageRings.png",
+    "planes_text": "Instant and sorcery spells have rebound. (The spell's controller exiles the spell as it resolves if they cast it from their hand. At the beginning of that player's next upkeep, they may cast that card from exile without paying its mana cost.) \n\nWhenever chaos ensues, you may search your library for an instant or sorcery card, reveal it, put it into your hand, then shuffle."
+  },
+  {
+    "name": "Truga Jungle",
+    "image_path": "res/planes/TrugaJungle.png",
+    "planes_text": "All lands have Tap : Add one mana of any color. \n\nWhenever chaos ensues, reveal the top three cards of your library. Put all land cards revealed this way into your hand and the rest on the bottom of your library in any order."
+  },
+  {
+    "name": "Turri Island",
+    "image_path": "res/planes/TurriIsland.png",
+    "planes_text": "Creature spells cost  less to cast. \n\nWhenever chaos ensues, reveal the top three cards of your library. Put all creature cards revealed this way into your hand and the rest into your graveyard."
+  },
+  {
+    "name": "Undercity Reaches",
+    "image_path": "res/planes/UndercityReaches.png",
+    "planes_text": "Whenever a creature deals combat damage to a player, its controller may draw a card. \n\nWhenever chaos ensues, you have no maximum hand size for the rest of the game."
+  },
+  {
+    "name": "Unyaro",
+    "image_path": "res/planes/Unyaro.png",
+    "planes_text": "At the beginning of your end step, if you planeswalked to Unyaro this turn, untap all creatures. They phase out until a player planeswalks. (Treat them and anything attached to them as though they didn't exist.) \n\nWhenever chaos ensues, create two 2/2 white and blue Knight creature tokens with vigilance."
+  },
+  {
+    "name": "Valor's Reach",
+    "image_path": "res/planes/ValorsReach.png",
+    "planes_text": "Whenever your team attacks with exactly two creatures, those creatures gain double strike until end of turn. \n\nWhenever chaos ensues, untap up to two target creatures your team controls. If it's a main phase, there is an additional combat phase after this phase, followed by an additional main phase."
+  },
+  {
+    "name": "Velis Vel",
+    "image_path": "res/planes/VeilsVel.png",
+    "planes_text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it. (For example, if two Elemental Shamans and an Elemental Spirit are on the battlefield, each gets +2/+2.) \n\nWhenever chaos ensues, target creature gains all creature types until end of turn."
+  },
+  {
+    "name": "Windriddle Palaces",
+    "image_path": "res/planes/WindriddlePalaces.png",
+    "planes_text": "Players play with the top card of their libraries revealed. You may play lands and cast spells from the top of any player's library. \n\nWhenever chaos ensues, each player mills a card."
+  }
+]

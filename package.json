@@ -1,0 +1,43 @@
+{
+  "name": "magic-web-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack --hostname 127.0.0.1",
+    "dev:lan": "next dev --webpack --hostname 0.0.0.0",
+    "build": "next build --webpack",
+    "start": "next start --hostname 127.0.0.1",
+    "start:lan": "next start --hostname 0.0.0.0",
+    "lint": "eslint",
+    "test": "node --conditions=react-server --import tsx --test --experimental-test-isolation=none tests/*.test.ts",
+    "db:migrate": "node --conditions=react-server --import tsx scripts/migrate.ts",
+    "db:import": "node --conditions=react-server --import tsx scripts/import.ts",
+    "test:shared": "node --import tsx scripts/prove-shared-game.ts"
+  },
+  "dependencies": {
+    "@next/env": "^16.3.5",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-orm": "^0.45.2",
+    "next": "16.3.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.5",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.13",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": "22.x || 24.x"
+  }
+}

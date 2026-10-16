@@ -1,0 +1,341 @@
+[Agent of the Iron Throne]
+Commander creatures you own have -Whenever an artifact or creature you control is put into a graveyard from the battlefield, each opponent loses 1 life.
+
+[Amalia Benavides Aguirre]
+Ward-Pay 3 life.
+Whenever you gain life, Amalia Benavides Aguirre explores. Then destroy all other creatures if its power is exactly 20. (To have this creature explore, reveal the top card of your library. Put that card into your hand if it's a land. Otherwise, put a +1/+1 counter on this creature, then put the card back or put it into your graveyard.)" magic text.
+
+[Aminatou, Veil Piercer]
+At the beginning of your upkeep, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)
+Each enchantment card in your hand has miracle. Its miracle cost is equal to its mana cost reduced by
+4. (You may cast a card for its miracle cost when you draw it if it's the first card you drew this turn.)
+
+[AminatouVeilPiercer]
+At the beginning of your upkeep, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)
+Each enchantment card in your hand has miracle. Its miracle cost is equal to its mana cost reduced by
+4. (You may cast a card for its miracle cost when you draw it if it's the first card you drew this turn.)
+
+[Arabella, Abandoned Doll]
+Whenever Arabella attacks, it deals X damage to each opponent and you gain X life, where X is the number of creatures you control with power 2 or less.
+
+[Aragorn, King of Gondor]
+Vigilance, lifelink
+When Aragorn enters, you become the monarch.
+Whenever Aragorn attacks, up to one target creature can't block this turn. If you're the monarch, creatures can't block this turn.
+
+[Ashling, the Limitless]
+Elemental permanent spells you cast from your hand gain evoke
+4 as you cast them. (If you cast a spell for its evoke cost, it's sacrificed when it enters.)
+Whenever you sacrifice a nontoken Elemental, create a token that's a copy of it. The token gains haste until end of turn. At the beginning of your next end step, sacrifice it unless you pay WUBRG.
+
+[Auntie Ool, Cursewretch]
+Ward-Blight 2. (To blight 2, a player puts two -1/-1 counters on a creature they control.)
+Whenever one or more -1/-1 counters are put on a creature, draw a card if you control that creature. If you don't control it, its controller loses 1 life.
+
+[Averna, the Chaos Bloom]
+As you cascade, you may put a land card from among the exiled cards onto the battlefield tapped. (Do this after the last card is exiled but before deciding whether to cast a nonland card.)
+
+[Bilbo, Retired Burglar]
+When Bilbo enters or leaves the battlefield, the Ring tempts you.
+Whenever Bilbo deals combat damage to a player, create a Treasure token.
+
+[Bumi, Unleashed]
+Trample
+When Bumi enters, earthbend 4.
+Whenever Bumi deals combat damage to a player, untap all lands you control. After this phase, there is an additional combat phase. Only land creatures can attack during that combat phase.
+
+[Caeser, Legion's Emperor]
+Whenever you attack, you may sacrifice another creature. When you do, choose two -
+* Create two 1/1 red and white Soldier creature tokens with haste that are tapped and attacking.
+* You draw a card and you lose 1 life.
+* Caesar deals damage equal to the number of creature tokens you control to target opponent.
+
+[Chatterfang, Squirrel General]
+Forestwalk (This creature can't be blocked as long as defending player controls a Forest.)
+If one or more tokens would be created under your control, those tokens plus that many 1/1 green Squirrel creature tokens are created instead.
+{B}, Sacrifice X Squirrels: Target creature gets +X/-X until end of turn.
+
+[Chulane , Teller of Tales]
+Vigilance
+Whenever you cast a creature spell, draw a card, then you may put a land card from your hand onto the battlefield.
+3,Tap : Return target creature you control to its owner's hand.
+
+[Denethor, Ruling Steward]
+At the beginning of your end step, if a creature died under your control this turn, create a 1/1 white Human Soldier creature token.
+2, Sacrifice another creature: Each opponent loses 1 life and you gain 1 life.
+
+[Dina, Essence Brewer]
+Whenever you sacrifice a creature, draw a card. This ability triggers only once each turn.
+2,tap,Sacrifice another creature: You gain X life and put X +1+1 counters on target creature you control, where X is the sacrificed creature's power.
+
+[Don Andres, the Renegade]
+Each creature you control but don't own gets +2/+2, has menace and deathtouch, and is a Pirate in addition to its other types.
+Whenever you cast a noncreature spell you don't own, create two tapped Treasure tokens.
+
+[Doran, Besieged by Time]
+Each creature spell you cast with toughness greater than its power costs 1 less to cast.
+Whenever a creature you control attacks or blocks, it gets +X/+X until end of turn, where X is the difference between its power and toughness.
+
+[Eluge, the Shoreless Sea]
+Eluge's power and toughness are each equal to the number of Islands you control.
+Whenever Eluge enters or attacks, put a flood counter on target land. It's an Island in addition to its other types for as long as it has a flood counter on it.
+The first instant or sorcery spell you cast each turn costs  ({U} or 1) less to cast for each land you control with a flood counter on it.
+
+[Eowyn Shieldmaiden]
+First Strike
+At the beginning of combat on your turn, if another Human entered the battlefield under your control this turn, create two 2/2 red Human Knight creature tokens with trample and hste. Then if you control six or more Humans, draw a card.
+
+[Excava, the Risen Past]
+Flying, haste
+Whenever Excava attacks, return up to one target artifact, creature, or non-Aura enchantment card with mana value 3 or less from your graveyard to the battlefield with a finality counter on it. It's a 1/1 Spirit creature with flying in addition to its other types. (If a creature with a finality counter on it would die, exile it instead.)
+
+[Felothar, Dawn of the Abzan]
+Trample
+Whenever Felothar enters or attacks, you may sacrifice a nonland permanent. When you do, put a +1/+1 counter on each creature you control.
+
+[Fynn, the Fangbearer]
+Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)
+Whenever a creature you control with deathtouch deals combat damage to a player, that player gets two poison counters. (A player with ten or more poison counters loses the game.)
+
+[Ganax, Astral Hunter]
+Flying
+Whenever Ganax or another Dragon you control enters, create a Treasure token. (It's an artifact with ", Sacrifice this token: Add one mana of any color.")
+Choose a Background (You can have a Background as a second commander.)
+
+[Ganax, Astral Hunter - Agent of the Iron Throne]
+Flying
+Whenever Ganax or another Dragon you control enters, create a Treasure token. (It's an artifact with ", Sacrifice this token: Add one mana of any color.")
+Choose a Background (You can have a Background as a second commander.)
+
+[Ganax, Astral Hunter / Agent of the Iron Throne]
+Ganax, Astral Hunter
+Flying
+Whenever Ganax or another Dragon you control enters, create a Treasure token. (It's an artifact with ", Sacrifice this token: Add one mana of any color.")
+Choose a Background (You can have a Background as a second commander.)
+
+Agent of the Iron Throne
+Commander creatures you own have -Whenever an artifact or creature you control is put into a graveyard from the battlefield, each opponent loses 1 life.
+
+[Garna, Bloodfist of Keld]
+Whenever another creature you control dies, draw a card if it was attacking. Otherwise, Garna deals 1 damage to each opponent.
+
+[Gorma, the Gullet]
+Whenever another creature you control dies, put a +1/+1 counter on Gorma.
+Nontoken creatures you control enter with an additional +1/+1 counter on them for each creature that died under your control this turn.
+
+[Hakbal of the Surging Soul]
+At the beginning of combat on your turn, each Merfolk creature you control explores. (Reveal the top card of your library. Put that card into your hand if it's a land. Otherwise, put a +1/+1 counter on the exploring creature, then put the card back or put it into your graveyard.)
+Whenever Hakbal attacks, you may put a land card from your hand onto the battlefield. If you don't, draw a card.
+
+[Hearthhull, the Worldseed]
+Station (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 8+.)
+2+ | 1, , Sacrifice a land: Draw two cards. You may play an additional land this turn.
+8+ | Flying, vigilance, haste
+Whenever you sacrifice a land, each opponent loses 2 life.
+
+[High Perfect Morcant]
+Whenever High Perfect Morcant or another Elf you control enters, each opponent blights 1. (They each put a -1/-1 counter on a creature they control.)
+Tap three untapped Elves you control: Proliferate. Activate only as a sorcery. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)
+
+[Inspirit, Flagship Vessel]
+Station (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 8+.)
+1+ | At the beginning of combat on your turn, put your choice of a +1/+1 counter or two charge counters on up to one other target artifact.
+8+ | Flying
+Other artifacts you control have hexproof and indestructible.
+
+[Kamiz, Obscura Oculus]
+Whenever you attack, target attacking creature can't be blocked this turn. It connives. Then choose another attacking creature with lesser power. That creature gains double strike until end of turn. (To have a creature connive, draw a card, then discard a card. If you discarded a nonland card, put a +1/+1 counter on that creature.)
+
+[Killian, Devisive Mentor]
+Whenever an enchantment you control enters, tap up to one target creature and goad it. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)
+Whenever one or more creatures that are enchanted by an Aura you control attack, draw a card.
+
+[King Darien XLVIII]
+Other creatures you control get +1/+1.
+3{G}{W}: Put a +1/+1 counter on King Darien and create a 1/1 white Soldier creature token.
+Sacrifice King Darien: Creature tokens you control gain hexproof and indestructible until end of turn.
+
+[Kona, Rescue Beastie]
+Survival - At the beginning of your second main phase, if Kona is tapped, you may put a permanent card from your hand onto the battlefield.
+
+[Kotis, the Fangkeeper]
+Indestructible
+Whenever Kotis deals combat damage to a player, exile the top X cards of their library, where X is the amount of damage dealt. You may cast any number of spells with mana value X or less from among them without paying their mana costs.
+
+[Lae'zel, Vlaakith's Champion]
+If you would put one or more counters on a creature or planeswalker you control or on yourself, put that many plus one of each of those kinds of counters on that permanent or player instead.
+Choose a Background (You can have a Background as a second commander.)
+
+[Lae'zel, Vlaakith's Champion - Master Chef]
+If you would put one or more counters on a creature or planeswalker you control or on yourself, put that many plus one of each of those kinds of counters on that permanent or player instead.
+Choose a Background (You can have a Background as a second commander.)
+
+[Lae'zel, Vlaakith's Champion / Master Chef]
+Lae'zel, Vlaakith's Champion
+If you would put one or more counters on a creature or planeswalker you control or on yourself, put that many plus one of each of those kinds of counters on that permanent or player instead.
+Choose a Background (You can have a Background as a second commander.)
+
+Master Chef
+Commander creatures you own have "This creature enters with an additional +1/+1 counter on it" and "Other creatures you control enter with an additional +1/+1 counter on them."
+
+[Leonardo, the Balance]
+Whenever a token you control enters, you may put a +1/+1 counter on each creature you control. Do this only once each turn.
+{WUBRG}: Creatures you control gain menace, trample, and lifelink until end of turn.
+Partner-Character select (You can have two commanders if both have this ability.)
+
+[Leonardo, the Balance / Michelangelo, the Heart]
+Leonardo, the Balance
+Whenever a token you control enters, you may put a +1/+1 counter on each creature you control. Do this only once each turn.
+{WUBRG}: Creatures you control gain menace, trample, and lifelink until end of turn.
+Partner-Character select (You can have two commanders if both have this ability.)
+
+Michelangelo, the Heart
+Trample
+Raid (the Fridge) - At the beginning of your second main phase, if you attacked this turn, put a +1/+1 counter on target creature and create a Food token.
+Partner-Character select (You can have two commanders if both have this ability.)
+
+[Livaan, Cultist of Tiamat]
+Whenever you cast a noncreature spell, target creature gets +X/+0 until end of turn, where X is that spell's mana value.
+Choose a Background (You can have a Background as a second commander.)
+
+[Livaan, Cultist of Tiamat / Sword Coast Sailor]
+Livaan, Cultist of Tiamat
+Whenever you cast a noncreature spell, target creature gets +X/+0 until end of turn, where X is that spell's mana value.
+Choose a Background (You can have a Background as a second commander.)
+
+Sword Coast Sailor
+Commander creatures you own have @Whenever this creature attacks a player, if no opponent has more life than that player, this creature can't be blocked this turn.
+
+[Maralen, Fae Ascendant]
+Flying
+Whenever Maralen or another Elf or Faerie you control enters, exile the top two cards of target opponent's library.
+Once each turn, you may cast a spell with mana value less than or equal to the number of Elves and Faeries you control from among cards exiled with Maralen this turn without paying its mana cost.
+
+[Master Chef]
+Commander creatures you own have "This creature enters with an additional +1/+1 counter on it" and "Other creatures you control enter with an additional +1/+1 counter on them."
+
+[Michelangelo, the Heart]
+Trample
+Raid (the Fridge) - At the beginning of your second main phase, if you attacked this turn, put a +1/+1 counter on target creature and create a Food token.
+Partner-Character select (You can have two commanders if both have this ability.)
+
+[Morska, Undersea Sleuth]
+You have no maximum hand size.
+At the beginning of your upkeep, investigate. (Create a Clue token. It's an artifact with "2, Sacrifice this token: Draw a card.")
+Whenever you draw your second card each turn, put two +1/+1 counters on Morska.
+
+[Ms. Bumbleflower]
+Vigilance
+Whenever you cast a spell, target opponent draws a card. Put a +1/+1 counter on target creature. It gains flying until end of turn. If this is the second time this ability has resolved this turn, you draw two cards.
+
+[Muddle, the Ever-Changing]
+Whenever you cast an instant or sorcery spell, Muddle becomes a copy of up to one target nonlegendary creature you control until end of turn, except it has myriad. (Whenever it attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)
+
+[New Commander]
+
+
+[Niki, Light of Hope]
+When Niko enters, create two Shard tokens. (They're enchantments with "
+2, Sacrifice this token: Scry 1, then draw a card.")
+2,Tap : Exile target nonlegendary creature you control. Shards you control become copies of it until the next end step. Return it to the battlefield under its owner's control at the beginning of the next end step.
+
+[Obeka, Splitter of Seconds]
+Menace
+Whenever Obeka deals combat damage to a player, you get that many additional upkeep steps after this phase.
+
+[Primo, the Unbounded]
+Trample
+Primo enters with twice X +1/+1 counters on it.
+Whenever one or more creatures you control with base power 0 deal combat damage to a player, create a 0/0 green and blue Fractal creature token. Put a number of +1/+1 counters on it equal to the damage dealt.
+
+[Quintorius, History Chaser]
+Whenever one or more cards leave your graveyard, create a 3/2 red and white Spirit creature token.
++1: You may discard a card. If you do, draw two cards, then mill a card.
+−4: Spirits you control gain double strike and vigilance until end of turn.
+Quintorius, History Chaser can be your commander.
+
+[Ramos, Dragon Engine]
+Flying
+Whenever you cast a spell, put a +1/+1 counter on Ramos for each of that spell's colors.
+Remove five +1/+1 counters from Ramos: Add 2x{WUBRG} . Activate only once each turn.
+
+[Rootha, Mastering the Moment]
+At the beginning of combat on your turn, if you've cast an instant or sorcery spell this turn, create an X/X blue and red Elemental creature token with flying and haste, where X is the greatest mana value among instant and sorcery spells you've cast this turn.
+
+[Sam, Loyal Attendant]
+Partner with Frodo, Adventurous Hobbit (When this creature enters, target player may put Frodo into their hand from their library, then shuffle.)
+At the beginning of combat on your turn, create a Food token. (It's an artifact with "
+2,Tap , Sacrifice this token: You gain 3 life.")
+Activated abilities of Foods you control cost 1 less to activate.
+
+[Samut, Vizier of Naktamun]
+First strike, vigilance, haste
+Whenever a creature you control deals combat damage to a player, if that creature entered this turn, draw a card.
+
+[Satoru Umezawa]
+Whenever you activate a ninjutsu ability, look at the top three cards of your library. Put one of them into your hand and the rest on the bottom of your library in any order. This ability triggers only once each turn.
+Each creature card in your hand has ninjutsu
+2{U}{B}.
+
+[Scriv, the Obligator]
+Flying, deathtouch
+Whenever Scriv enters or attacks, create a white Aura enchantment token named Contract attached to target creature an opponent controls. The token has enchant creature and "Whenever enchanted creature attacks, it gets +2/+0 until end of turn if it's attacking one of your opponents. Otherwise, its controller loses 2 life."
+
+[Shiko and Narset, Unified]
+Flying, vigilance
+Flurry - Whenever you cast your second spell each turn, copy that spell if it targets a permanent or player, and you may choose new targets for the copy. If you don't copy a spell this way, draw a card.
+
+[Sword Coast Sailor]
+Commander creatures you own have @Whenever this creature attacks a player, if no opponent has more life than that player, this creature can't be blocked this turn.
+
+[Teval, the Balanced Scale]
+Flying
+Whenever Teval attacks, mill three cards. Then you may return a land card from your graveyard to the battlefield tapped.
+Whenever one or more cards leave your graveyard, create a 2/2 black Zombie Druid creature token.
+
+[The Scarab God]
+At the beginning of your upkeep, each opponent loses X life and you scry X, where X is the number of Zombies you control.
+2{U}{B}: Exile target creature card from a graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie.
+When The Scarab God dies, return it to its owner's hand at the beginning of the next end step.
+
+[Tifa, Martial Artist]
+Melee (Whenever this creature attacks, it gets +1/+1 until end of turn for each opponent you attacked this combat.)
+Whenever one or more creatures you control with power 7 or greater deal combat damage to a player, untap all creatures you control. If it's the first combat phase of your turn, there is an additional combat phase after this phase.
+
+[Tinybones, Bauble Burglar]
+Whenever an opponent discards a card, exile it from their graveyard with a stash counter on it.
+During your turn, you may play cards you don't own with stash counters on them from exile, and mana of any type can be spent to cast those spells.
+3{B},Tap : Each opponent discards a card. Activate only as a sorcery.
+
+[Ureni of the Unwritten]
+Flying, trample
+Whenever Ureni enters or attacks, look at the top eight cards of your library. You may put a Dragon creature card from among them onto the battlefield. Put the rest on the bottom of your library in a random order.
+
+[Urza, Lord Protector]
+Artifact, instant, and sorcery spells you cast cost 1 less to cast.
+7: If you both own and control Urza, Lord Protector and an artifact named The Mightstone and Weakstone, exile them, then meld them into Urza, Planeswalker. Activate only as a sorcery.
+
+[Volo, Guide to Monsters]
+Whenever you cast a creature spell that doesn't share a creature type with a creature you control or a creature card in your graveyard, copy that spell. (A copy of a creature spell becomes a token.)
+
+[Vren, the Relentless]
+Ward 2
+If a creature an opponent controls would die, exile it instead.
+At the beginning of each end step, create X 1/1 black Rat creature tokens with "This token gets +1/+1 for each other Rat you control," where X is the number of creatures that were exiled under your opponents' control this turn.
+
+[Wick, the Whorled Mind]
+Whenever Wick or another Rat you control enters, create a 1/1 black Snail creature token if you don't control a Snail. Otherwise, put a +1/+1 counter on a Snail you control.
+{U}{B}{R}, Sacrifice a Snail: Wick deals damage equal to the sacrificed creature's power to each opponent. Then draw cards equal to the sacrificed creature's power.
+
+[Ygra, Eater of All]
+Ward-Sacrifice a Food.
+Other creatures are Food artifacts in addition to their other types and have "
+2,Tap , Sacrifice this permanent: You gain 3 life."
+Whenever a Food is put into a graveyard from the battlefield, put two +1/+1 counters on Ygra.
+
+[Zimone, Infinite Analyst]
+The first spell you cast with X in its mana cost each turn costs 1 less to cast for each +1/+1 counter on Zimone.
+Whenever you cast your first spell with X in its mana cost each turn, put two +1/+1 counters on Zimone.
+
+[Zimone, Mystery Unraveler]
+Landfall - Whenever a land you control enters, manifest dread if this is the first time this ability has resolved this turn. Otherwise, you may turn a permanent you control face up. (To manifest dread, look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)
