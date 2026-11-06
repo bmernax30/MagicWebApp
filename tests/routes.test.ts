@@ -193,6 +193,29 @@ describe('HTTP route contracts with independent clients', () => {
         assert.equal((await read(game.code)).players[0].life, 40);
         assert.equal((await readLog(new Request(`${origin}/api/games/${game.code}/log?before=bad`), context(game.code))).status, 400);
     });
+    test('both clients observe the same successor session and can change commanders before exiting', async () => {
+        const game = await create();
+        const finish = { id: randomUUID(), type: 'finish', round: 1, revision: game.revision };
+        const response = await changeGame(request(game.code, finish), context(game.code));
+        assert.equal(response.status, 200);
+        const ended = await response.json() as Game;
+        const [a, b] = await Promise.all([read(game.code), read(game.code)]);
+        assert.equal(a.nextGameCode, ended.nextGameCode);
+        assert.equal(b.nextGameCode, ended.nextGameCode);
+        const next = await read(ended.nextGameCode!);
+        assert.deepEqual(next.players.map(p => p.name), game.players.map(p => p.name));
+        const catalog = await (await readCatalog()).json();
+        const profile = catalog.profiles.find((p: { name: string }) => p.name === next.players[0].name);
+        const replacement = profile.commanders.find((name: string) => name !== next.players[0].commander);
+        const changed = await changeGame(request(next.code, { id: randomUUID(), type: 'change-commander', round: 1, revision: next.revision, player: 1, commander: replacement }), context(next.code));
+        assert.equal(changed.status, 200);
+        const state = await changed.json() as Game;
+        assert.equal((await read(next.code)).players[0].commander, replacement);
+        const exit = await changeGame(request(next.code, { id: randomUUID(), type: 'exit', round: 1, revision: state.revision }), context(next.code));
+        assert.equal(exit.status, 200);
+        assert.equal((await read(next.code)).status, 'exited');
+        assert.equal((await read(next.code)).nextGameCode, null);
+    });
     test('unknown game codes return a useful 404 response', async () => {
         const response = await readGame(new Request(`${origin}/api/games/ABC234`), context('ABC234'));
         assert.equal(response.status, 404);

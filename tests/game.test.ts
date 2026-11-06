@@ -136,11 +136,15 @@ test('poison elimination, finish-once win tracking, lock, restart, and delayed o
         assert.equal(after.profiles.find(v => v.name === p.name)!.wins, before.profiles.find(v => v.name === p.name)!.wins + 1);
         assert.equal(after.commanders.find(v => v.name === p.commander)!.wins, before.commanders.find(v => v.name === p.commander)!.wins + 1);
         assert.throws(() => f.service.act(g.code, counter()), /finished/);
-        state = f.service.act(g.code, { id: randomUUID(), type: 'restart', round: 1, revision: state.revision });
+        assert.ok(state.nextGameCode);
+        const next = f.service.get(state.nextGameCode!);
+        assert.equal(next.previousGameCode, g.code);
+        assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'restart', round: 1, revision: state.revision }), /finished/);
+        state = f.service.act(next.code, { id: randomUUID(), type: 'restart', round: 1, revision: next.revision });
         assert.equal(state.round, 2);
         assert.equal(state.players[0].poison, 0);
         assert.equal(state.winner, null);
-        assert.throws(() => f.service.act(g.code, counter()), /restarted/);
+        assert.throws(() => f.service.act(next.code, counter()), /restarted/);
     }
     finally {
         f.close();
@@ -386,5 +390,235 @@ test('earlier requests remain readable but cannot be undone without a before sna
         state = f.service.act(game.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId: latest.id });
         assert.equal(state.players[0].life, 30);
         assert.equal(f.service.log(game.code).undoableId, null);
+    } finally { f.close(); }
+});
+
+test('finish archives the scores and atomically creates exactly one linked session with the same people', () => {
+    const f = fixture(), other = openDatabase(f.filename);
+    try {
+        let game = f.service.create({ settings: { ...settings, number_of_players: 4, planechase_enabled: true } });
+        const profiles = f.service.catalog().profiles.slice(0, 2);
+        for (let i = 0; i < 2; i++) game = f.service.act(game.code, { id: randomUUID(), type: 'join', round: 1, revision: game.revision, player: i + 1, name: profiles[i].name, commander: profiles[i].commanders[0] });
+        game = f.service.act(game.code, { ...counter(), counter: 'poison', delta: 10 });
+        const beforeWins = f.service.catalog();
+        const finish = { id: randomUUID(), type: 'finish', round: 1, revision: game.revision };
+        const finished = f.service.act(game.code, finish);
+        assert.equal(finished.status, 'finished');
+        assert.equal(finished.winner, 2);
+        assert.ok(finished.endedAt);
+        assert.deepEqual(finished.players, game.players);
+        assert.ok(finished.nextGameCode && finished.nextGameCode !== game.code);
+        const next = gameService(other).get(finished.nextGameCode!);
+        assert.equal(next.status, 'active');
+        assert.equal(next.previousGameCode, game.code);
+        assert.equal(next.nextGameCode, null);
+        assert.equal(next.winner, null);
+        assert.equal(next.round, 1);
+        assert.deepEqual(next.settings, game.settings);
+        assert.deepEqual(next.players.map(p => [p.number, p.name, p.commander, p.joined]), game.players.map(p => [p.number, p.name, p.commander, p.joined]));
+        assert.ok(next.players.every(p => p.life === 40 && p.poison === 0 && p.damage.every(d => d === 0)));
+        assert.equal(next.planeHistory.length, 1);
+        assert.equal(f.service.log(next.code).entries[0].message, `New session started with players from ${game.code}.`);
+        assert.deepEqual(f.service.act(game.code, finish), finished);
+        assert.throws(() => gameService(other).act(game.code, { ...finish, id: randomUUID() }), /Scores changed/);
+        assert.equal((f.store.sqlite.prepare('SELECT count(*) n FROM games').get() as { n: number }).n, 2);
+        const afterWins = f.service.catalog();
+        const winner = game.players[1];
+        assert.equal(afterWins.profiles.find(p => p.name === winner.name)!.wins, beforeWins.profiles.find(p => p.name === winner.name)!.wins + 1);
+        assert.equal(afterWins.commanders.find(p => p.name === winner.commander)!.wins, beforeWins.commanders.find(p => p.name === winner.commander)!.wins + 1);
+        assert.equal(f.service.get(game.code).players[0].poison, 10);
+    } finally { other.sqlite.close(); f.close(); }
+});
+
+test('a successor creation failure rolls back finish, its win, and its log entry together', () => {
+    const f = fixture();
+    try {
+        const initial = create(f.service), game = f.service.act(initial.code, { ...counter(), delta: -40 });
+        const catalog = f.service.catalog(), log = f.service.log(game.code);
+        f.store.sqlite.exec("CREATE TRIGGER reject_next BEFORE INSERT ON games WHEN json_extract(NEW.state,'$.previousGameCode') IS NOT NULL BEGIN SELECT RAISE(ABORT,'next-session test failure'); END");
+        assert.throws(() => f.service.act(game.code, { id: randomUUID(), type: 'finish', round: 1, revision: game.revision }), /next-session test failure/);
+        assert.deepEqual(f.service.get(game.code), game);
+        assert.deepEqual(f.service.catalog(), catalog);
+        assert.deepEqual(f.service.log(game.code), log);
+        assert.equal((f.store.sqlite.prepare('SELECT count(*) n FROM games').get() as { n: number }).n, 1);
+    } finally { f.close(); }
+});
+
+test('finishing without a winner still records a session and carries players forward without awarding wins', () => {
+    const f = fixture();
+    try {
+        const game = create(f.service), before = f.service.catalog();
+        const finished = f.service.act(game.code, { id: randomUUID(), type: 'finish', round: 1, revision: game.revision });
+        assert.equal(finished.winner, null);
+        assert.ok(finished.nextGameCode);
+        assert.deepEqual(f.service.catalog(), before);
+        assert.equal(f.service.get(finished.nextGameCode!).players.filter(p => p.joined).length, 2);
+        assert.throws(() => f.service.act(game.code, { id: randomUUID(), type: 'exit', round: 1, revision: finished.revision }), /finished/);
+    } finally { f.close(); }
+});
+
+test('changing commanders is validated and logged without resetting any scores; the new commander earns the win', () => {
+    const f = fixture();
+    try {
+        let game = create(f.service);
+        game = f.service.act(game.code, { ...counter(), counter: 'commander', source: 1, delta: 5 });
+        game = f.service.act(game.code, { ...counter(), counter: 'poison', delta: 2 });
+        const profile = f.service.catalog().profiles.find(p => p.name === game.players[0].name)!;
+        const replacement = profile.commanders.find(name => name !== game.players[0].commander)!;
+        const oldCommander = game.players[0].commander;
+        const before = f.service.catalog();
+        const change = { id: randomUUID(), type: 'change-commander', round: 1, revision: game.revision, player: 1, commander: replacement };
+        assert.throws(() => f.service.act(game.code, { ...change, commander: 'unknown' }), /from this player/);
+        assert.throws(() => f.service.act(game.code, { ...change, commander: '' }), /from this player/);
+        assert.throws(() => f.service.act(game.code, { ...change, player: 6 }), /joined player/);
+        const changed = f.service.act(game.code, change);
+        assert.equal(changed.players[0].commander, replacement);
+        assert.deepEqual({ ...changed.players[0], commander: oldCommander }, game.players[0]);
+        assert.deepEqual(changed.players[1], game.players[1]);
+        assert.match(f.service.log(game.code).entries[0].message, /changed commander/);
+        assert.deepEqual(f.service.act(game.code, change), changed);
+        assert.throws(() => f.service.act(game.code, { ...change, id: randomUUID() }), /Scores changed/);
+        game = f.service.act(game.code, { ...counter(), player: 2, delta: -40 });
+        game = f.service.act(game.code, { id: randomUUID(), type: 'finish', round: 1, revision: game.revision });
+        const after = f.service.catalog();
+        assert.equal(after.commanders.find(c => c.name === replacement)!.wins, before.commanders.find(c => c.name === replacement)!.wins + 1);
+        assert.equal(after.commanders.find(c => c.name === oldCommander)!.wins, before.commanders.find(c => c.name === oldCommander)!.wins);
+        assert.throws(() => f.service.act(game.code, { ...change, id: randomUUID(), revision: game.revision }), /finished/);
+    } finally { f.close(); }
+});
+
+test('session link migration preserves old scores and existing non-null session chains', () => {
+    const f = fixture();
+    try {
+        const legacy = create(f.service);
+        const raw = JSON.parse(JSON.stringify(legacy));
+        delete raw.nextGameCode; delete raw.previousGameCode; delete raw.endedAt;
+        f.store.sqlite.prepare('UPDATE games SET state=? WHERE code=?').run(JSON.stringify(raw), legacy.code);
+        const started = create(f.service);
+        const finished = f.service.act(started.code, { id: randomUUID(), type: 'finish', round: 1, revision: started.revision });
+        const next = f.service.get(finished.nextGameCode!);
+        const migration = readFileSync('drizzle/0003_session_links.sql', 'utf8');
+        f.store.sqlite.exec(migration);
+        assert.deepEqual(f.service.get(legacy.code), legacy);
+        assert.deepEqual(f.service.get(started.code), finished);
+        assert.deepEqual(f.service.get(next.code), next);
+        f.store.sqlite.exec(migration);
+        assert.deepEqual(f.service.get(started.code), finished);
+    } finally { f.close(); }
+});
+
+test('emotes synchronize sender/target, preserve scores, deduplicate, and enforce a shared five-second cooldown', t => {
+    const f = fixture(), other = openDatabase(f.filename);
+    let now = 1800000000000;
+    t.mock.method(Date, 'now', () => now);
+    try {
+        const g = create(f.service), second = gameService(other);
+        const input = { id: randomUUID(), type: 'emote', round: g.round, revision: g.revision, player: 1, target: 2, emote: 'threat' };
+        const sent = f.service.act(g.code, input);
+        assert.deepEqual(sent.players, g.players);
+        assert.deepEqual(second.get(g.code).emotes, sent.emotes);
+        assert.equal(sent.emotes[0].senderName, g.players[0].name);
+        assert.equal(sent.emotes[0].target, 2);
+        assert.equal(sent.emotes[0].expiresAt, now + 6000);
+        assert.equal(second.act(g.code, input).revision, sent.revision);
+        assert.throws(() => second.act(g.code, { ...input, id: randomUUID(), target: 1, emote: 'salt' }), /five seconds/);
+        now += 4999;
+        assert.throws(() => second.act(g.code, { ...input, id: randomUUID() }), /five seconds/);
+        // Another sender has an independent cooldown; self-targeting is supported.
+        const both = second.act(g.code, { ...input, id: randomUUID(), player: 2, target: 2, emote: 'nice' });
+        assert.equal(both.emotes.length, 2);
+        now++;
+        const again = f.service.act(g.code, { ...input, id: randomUUID(), emote: 'in-response' });
+        assert.equal(again.emotes.length, 2);
+        assert.equal(again.emotes.find(e => e.sender === 1)!.kind, 'in-response');
+        assert.equal(f.service.log(g.code).undoableId, null);
+        const restarted = f.service.act(g.code, { id: randomUUID(), type: 'restart', round: again.round, revision: again.revision });
+        assert.ok(restarted.emotes.every(e => e.expiresAt === 0));
+        assert.throws(() => second.act(g.code, { ...input, id: randomUUID(), round: restarted.round }), /five seconds/);
+    } finally { other.sqlite.close(); f.close(); }
+});
+
+test('emotes reject unknown choices, missing seats, unjoined players and ended games', () => {
+    const f = fixture();
+    try {
+        let g = f.service.create({ settings });
+        const input = { id: randomUUID(), type: 'emote', round: 1, revision: 0, player: 1, target: 2, emote: 'salt' };
+        assert.throws(() => f.service.act(g.code, input), /joined/);
+        g = create(f.service);
+        assert.throws(() => f.service.act(g.code, { ...input, emote: 'unknown' }));
+        assert.throws(() => f.service.act(g.code, { ...input, target: 3 }), /joined/);
+        const finished = f.service.act(g.code, { id: randomUUID(), type: 'finish', round: 1, revision: g.revision });
+        assert.throws(() => f.service.act(g.code, input), /finished/);
+        assert.deepEqual(f.service.get(finished.nextGameCode!).emotes, []);
+    } finally { f.close(); }
+});
+
+test('emote migration backfills legacy games without changing scores or existing emotes', () => {
+    const f = fixture();
+    try {
+        const g = create(f.service);
+        f.store.sqlite.prepare("UPDATE games SET state=json_remove(state,'$.emotes') WHERE code=?").run(g.code);
+        assert.deepEqual(f.service.get(g.code).emotes, []);
+        f.store.sqlite.exec(readFileSync('drizzle/0004_emotes.sql', 'utf8'));
+        const sent = f.service.act(g.code, { id: randomUUID(), type: 'emote', round: 1, revision: g.revision, player: 1, target: 2, emote: 'salt' });
+        f.store.sqlite.exec(readFileSync('drizzle/0004_emotes.sql', 'utf8'));
+        assert.deepEqual(f.service.get(g.code), sent);
+        assert.deepEqual(sent.players, g.players);
+    } finally { f.close(); }
+});
+
+test('kick and leave open fresh seats, preserve opponents, log removal, and block stale occupants and undo', () => {
+    for (const type of ['kick', 'leave'] as const) {
+        const f = fixture();
+        try {
+            let g = create(f.service);
+            g = f.service.act(g.code, { ...counter(), counter: 'commander', player: 2, source: 1, delta: 5 });
+            const oldEvent = f.service.log(g.code).entries[0].id;
+            const oldSeat = g.players[0], otherLife = g.players[1].life;
+            const wins = f.service.catalog().profiles.map(p => p.wins);
+            const action = { id: randomUUID(), type, round: g.round, revision: g.revision, player: 1, seatVersion: 0 };
+            assert.throws(() => f.service.act(g.code, { ...action, revision: 0 }), /Scores changed/);
+            const removed = f.service.act(g.code, action);
+            assert.equal(removed.status, 'active');
+            assert.equal(removed.players[0].joined, false);
+            assert.equal(removed.players[0].seatVersion, 1);
+            assert.equal(removed.players[0].name, 'Seat 1');
+            assert.equal(removed.players[0].commander, '');
+            assert.equal(removed.players[0].life, 40);
+            assert.equal(removed.players[1].life, otherLife);
+            assert.equal(removed.players[1].damage[0], 0);
+            assert.deepEqual(f.service.catalog().profiles.map(p => p.wins), wins);
+            assert.equal(f.service.act(g.code, action).revision, removed.revision);
+            assert.match(f.service.log(g.code).entries[0].message, /Seat 1 is open/);
+            assert.equal(f.service.log(g.code).undoableId, null);
+            assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'undo', eventId: oldEvent, round: g.round, revision: removed.revision }), /latest remaining/);
+            const join = { id: randomUUID(), type: 'join', round: g.round, revision: removed.revision, player: 1, name: oldSeat.name, commander: oldSeat.commander };
+            assert.throws(() => f.service.act(g.code, join), /changed occupants/);
+            const rejoined = f.service.act(g.code, { ...join, seatVersion: 1 });
+            assert.ok(rejoined.players[0].joined);
+            assert.throws(() => f.service.act(g.code, counter()), /changed occupants/);
+            assert.throws(() => f.service.act(g.code, { ...counter(), player: 2, counter: 'commander', source: 1 }), /source seat changed/);
+            const changed = f.service.act(g.code, { ...counter(), seatVersion: 1 });
+            assert.equal(changed.players[0].life, 39);
+            const damaged = f.service.act(g.code, { ...counter(), player: 2, counter: 'commander', source: 1, sourceVersion: 1 });
+            assert.equal(damaged.players[1].damage[0], 0); // negative damage clamps at zero
+        } finally { f.close(); }
+    }
+});
+
+test('seat-version migration preserves identities and totals, and removal rejects empty or finished seats', () => {
+    const f = fixture();
+    try {
+        const empty = f.service.create({ settings });
+        assert.throws(() => f.service.act(empty.code, { id: randomUUID(), type: 'kick', player: 1, round: 1, revision: 0 }), /already open/);
+        const g = create(f.service);
+        f.store.sqlite.prepare("UPDATE games SET state=json_remove(state,'$.players[0].seatVersion','$.players[1].seatVersion') WHERE code=?").run(g.code);
+        const before = f.service.get(g.code);
+        f.store.sqlite.exec(readFileSync('drizzle/0005_seat_versions.sql', 'utf8'));
+        assert.deepEqual(f.service.get(g.code), before);
+        f.store.sqlite.exec(readFileSync('drizzle/0005_seat_versions.sql', 'utf8'));
+        assert.deepEqual(f.service.get(g.code), before);
+        const finished = f.service.act(g.code, { id: randomUUID(), type: 'finish', round: 1, revision: g.revision });
+        assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'leave', player: 1, round: 1, revision: finished.revision }), /finished/);
     } finally { f.close(); }
 });

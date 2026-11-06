@@ -1,6 +1,7 @@
 import 'server-only';
+import { EMOTE_COOLDOWN_MS, EMOTE_DURATION_MS, EMOTES } from '../lib/emotes';
 import { completeCommanderMetadata } from '../lib/commander-defaults';
-import { randomInt } from 'node:crypto';
+import { randomInt, randomUUID } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { eq, asc } from 'drizzle-orm';
 import type { openDatabase } from '../db/client';
@@ -32,7 +33,11 @@ export function gameService({ sqlite, orm }: Store) {
             throw new GameError('Game not found. Check the six-character code.', 404);
         const game = { ...JSON.parse(row.state), revision: row.revision } as Game;
         // Older saved games already had their players assigned at creation.
-        game.players = game.players.map(p => ({ ...p, joined: p.joined ?? true }));
+        game.players = game.players.map(p => ({ ...p, joined: p.joined ?? true, seatVersion: p.seatVersion ?? 0 }));
+        game.previousGameCode ??= null;
+        game.nextGameCode ??= null;
+        game.endedAt ??= null;
+        game.emotes ??= [];
         return game;
     }
     function randomPlane(current?: string) {
@@ -42,34 +47,36 @@ export function gameService({ sqlite, orm }: Store) {
         const choices = list.filter(p => p.name !== current);
         return (choices.length ? choices : list)[randomInt(choices.length || list.length)].name;
     }
+    function insertSession(settings: Settings, previous?: Game): Game {
+        const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code: string;
+        do { code = Array.from({ length: 6 }, () => alphabet[randomInt(alphabet.length)]).join(''); }
+        while (orm.select().from(tables.games).where(eq(tables.games.code, code)).get());
+        const seats = previous?.players ?? Array.from({ length: settings.number_of_players }, (_, i) => ({ number: i + 1, joined: false, seatVersion: 0, name: `Seat ${i + 1}`, commander: '', hidden: false }));
+        const game: Game = {
+            code, revision: 0, round: 1, status: 'active', emotes: [], settings: structuredClone(settings),
+            previousGameCode: previous?.code ?? null, nextGameCode: null, endedAt: null,
+            players: seats.map(p => ({ ...p, life: settings.starting_life_total, poison: 0, damage: seats.map(() => 0) })),
+            winner: null, planeHistory: settings.planechase_enabled ? [randomPlane()] : [],
+            planeIndex: settings.planechase_enabled ? 0 : -1, createdAt: new Date().toISOString(),
+        };
+        orm.insert(tables.games).values({ code, state: JSON.stringify(game), revision: 0, createdAt: game.createdAt }).run();
+        if (previous) {
+            const event: StoredGameEvent = { type: 'session-start', round: 1, at: game.createdAt, message: `New session started with players from ${previous.code}.` };
+            orm.insert(tables.actions).values({ game: code, id: randomUUID(), payload: JSON.stringify({ type: 'session-start', round: 1 }), event: JSON.stringify(event), revision: 0 }).run();
+        }
+        return game;
+    }
     function create(input: unknown): Game {
         const data = createGameSchema.parse(input);
-        return sqlite.transaction(() => {
-            catalog();
-            const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code: string;
-            do {
-                code = Array.from({ length: 6 }, () => alphabet[randomInt(alphabet.length)]).join('');
-            } while (orm.select().from(tables.games).where(eq(tables.games.code, code)).get());
-            const game: Game = {
-                code, revision: 0, round: 1, status: 'active', settings: data.settings,
-                players: Array.from({ length: data.settings.number_of_players }, (_, i) => ({
-                    number: i + 1, joined: false, name: `Seat ${i + 1}`, commander: '',
-                    life: data.settings.starting_life_total, poison: 0,
-                    damage: Array.from({ length: data.settings.number_of_players }, () => 0), hidden: false,
-                })),
-                winner: null, planeHistory: data.settings.planechase_enabled ? [randomPlane()] : [],
-                planeIndex: data.settings.planechase_enabled ? 0 : -1, createdAt: new Date().toISOString(),
-            };
-            orm.insert(tables.games).values({ code, state: JSON.stringify(game), revision: 0, createdAt: game.createdAt }).run();
-            return game;
-        }).immediate();
+        return sqlite.transaction(() => { catalog(); return insertSession(data.settings); }).immediate();
     }
     type ActionRow = { id: string; revision: number; payload: string; event: string | null; undone_by: string | null };
     const snapshot = (p: Game['players'][number]): CounterSnapshot => ({ life: p.life, poison: p.poison, damage: [...p.damage] });
     const signed = (n: number) => n >= 0 ? `+${n}` : String(n);
     function undoable(game: Game): ActionRow | undefined {
-        return (sqlite.prepare('SELECT * FROM actions WHERE game=? AND event IS NOT NULL AND undone_by IS NULL ORDER BY revision DESC').all(game.code) as ActionRow[])
+        const barrier = sqlite.prepare("SELECT MAX(revision) AS revision FROM actions WHERE game=? AND json_extract(payload,'$.type') IN ('join','kick','leave')").get(game.code) as { revision: number | null };
+        return (sqlite.prepare('SELECT * FROM actions WHERE game=? AND revision > ? AND event IS NOT NULL AND undone_by IS NULL ORDER BY revision DESC').all(game.code, barrier.revision ?? -1) as ActionRow[])
             .find(row => { const event = JSON.parse(row.event!) as StoredGameEvent; return event.type === 'counter' && event.round === game.round && event.before && event.after; });
     }
     function log(code: string, before?: number): GameLog {
@@ -100,14 +107,24 @@ export function gameService({ sqlite, orm }: Store) {
             }
             if (action.round !== game.round)
                 throw new GameError('This game was restarted. Refresh before making changes.', 409);
-            if (action.type === 'restart' || action.type === 'finish' || action.type === 'exit' || action.type === 'undo') {
+            if (action.type === 'restart' || action.type === 'finish' || action.type === 'exit' || action.type === 'undo' || action.type === 'change-commander' || action.type === 'kick' || action.type === 'leave') {
                 if (action.revision !== game.revision)
                     throw new GameError('Scores changed. Review the latest scores and try again.', 409);
             }
             if (game.status === 'exited')
                 throw new GameError('This game session has ended. Create a new game to play again.', 409);
-            if (game.status === 'finished' && action.type !== 'restart')
+            if (game.status === 'finished')
                 throw new GameError('This game has finished.', 409);
+            if ('player' in action) {
+                const seat = game.players[action.player - 1];
+                if (seat && (action.seatVersion ?? 0) !== (seat.seatVersion ?? 0))
+                    throw new GameError('This seat changed occupants. Reopen player controls.', 409);
+            }
+            if (action.type === 'counter' && action.counter === 'commander' && action.source) {
+                const source = game.players[action.source - 1];
+                if (source && (action.sourceVersion ?? 0) !== (source.seatVersion ?? 0))
+                    throw new GameError('The source seat changed occupants. Review commander damage.', 409);
+            }
             let event: StoredGameEvent = { type: action.type, round: game.round, at: new Date().toISOString(), message: '' };
             if (action.type === 'undo') {
                 const target = undoable(game);
@@ -135,9 +152,45 @@ export function gameService({ sqlite, orm }: Store) {
                 game.winner = winnerOf(game.players);
                 event.message = `Player ${p.number} joined as ${p.name}.`;
             }
+            else if (action.type === 'kick' || action.type === 'leave') {
+                const p = game.players[action.player - 1];
+                if (!p?.joined) throw new GameError('This seat is already open.', 409);
+                event.message = `${p.name} (player ${p.number}) ${action.type === 'kick' ? 'was kicked from' : 'left'} the game. Seat ${p.number} is open.`;
+                Object.assign(p, { joined: false, seatVersion: (p.seatVersion ?? 0) + 1,
+                    name: `Seat ${p.number}`, commander: '', hidden: false,
+                    life: game.settings.starting_life_total, poison: 0, damage: game.players.map(() => 0) });
+                for (const other of game.players) other.damage[p.number - 1] = 0;
+                game.emotes = game.emotes.filter(e => e.sender !== p.number && e.target !== p.number);
+                game.winner = winnerOf(game.players);
+            }
+            else if (action.type === 'emote') {
+                const sender = game.players[action.player - 1];
+                const target = game.players[action.target - 1];
+                if (!sender?.joined || !target?.joined) throw new GameError('Emotes require joined sender and target seats.');
+                const now = Date.now();
+                const latest = game.emotes.find(e => e.sender === sender.number);
+                if (latest && now - latest.sentAt < EMOTE_COOLDOWN_MS)
+                    throw new GameError('Wait five seconds between emotes.', 429);
+                // Keep at most one record per sender: bounded storage and shared cooldown across devices.
+                game.emotes = game.emotes.filter(e => e.sender !== sender.number);
+                game.emotes.push({ id: action.id, sender: sender.number, senderName: sender.name,
+                    target: target.number, kind: action.emote, sentAt: now, expiresAt: now + EMOTE_DURATION_MS });
+                event.message = `${sender.name} (player ${sender.number}) sent ${EMOTES.find(e => e.id === action.emote)!.label} to ${target.name} (player ${target.number}).`;
+            }
+            else if (action.type === 'change-commander') {
+                const p = game.players[action.player - 1];
+                if (!p?.joined) throw new GameError('Choose a joined player before changing commanders.');
+                const linked = orm.select().from(tables.profileCommanders).all().some(link => link.profile === p.name && link.commander === action.commander);
+                if ((game.settings.game_type === 'Commander' || action.commander) && !linked)
+                    throw new GameError('Choose a commander from this player’s profile.');
+                const old = p.commander;
+                p.commander = action.commander;
+                event.message = p.hidden ? `Player ${p.number} changed their hidden commander.` : `Player ${p.number} changed commander from ${old || 'none'} to ${p.commander || 'none'}. Scores unchanged.`;
+            }
             else if (action.type === 'exit') {
                 event.message = 'Game session exited without recording a win.';
                 game.status = 'exited';
+                game.endedAt = event.at;
                 game.winner = null;
             }
             else if (action.type === 'counter') {
@@ -179,15 +232,20 @@ export function gameService({ sqlite, orm }: Store) {
             else if (action.type === 'finish') {
                 event.message = 'Game finished.';
                 game.status = 'finished';
+                game.endedAt = event.at;
                 game.winner = winnerOf(game.players);
                 if (game.winner !== null) {
                     const p = game.players[game.winner - 1];
                     sqlite.prepare('UPDATE profiles SET wins=wins+1 WHERE name=?').run(p.name);
                     sqlite.prepare('UPDATE commanders SET wins=wins+1 WHERE name=?').run(p.commander);
                 }
+                const next = insertSession(game.settings, game);
+                game.nextGameCode = next.code;
+                event.message = `Game finished${game.winner ? `; player ${game.winner} won` : ' without a winner'}. Next session: ${next.code}.`;
             }
             else if (action.type === 'restart') {
                 event.message = `Game restarted for round ${game.round + 1}.`;
+                game.emotes = game.emotes.map(e => ({ ...e, expiresAt: 0 }));
                 game.round++;
                 game.status = 'active';
                 game.winner = null;

@@ -10,6 +10,7 @@ const defaults: Settings = { number_of_players: 4, starting_life_total: 40, game
 export function Lobby() {
     const router = useRouter();
     const [catalog, setCatalog] = useState<Catalog | null>(null), [settings, setSettings] = useState(defaults);
+    const [notice, setNotice] = useState('');
     const [code, setCode] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false), [tab, setTab] = useState('play');
     const load = useCallback(async () => { try {
         const c = await api<Catalog>('/api/catalog');
@@ -25,6 +26,8 @@ export function Lobby() {
         api<Catalog>('/api/catalog', undefined, controller.signal).then(c => {
             setCatalog(c);
             setSettings(c.settings);
+            const reason = new URLSearchParams(window.location.search).get('notice');
+            setNotice(reason === 'seat-left' ? 'You left the table or were removed. Your seat is now open.' : reason === 'game-ended' ? 'You were disconnected because the game session ended.' : '');
         }).catch((error: Error) => {
             if (!controller.signal.aborted) setError(error.message);
         });
@@ -39,6 +42,7 @@ export function Lobby() {
         setBusy(false);
     } }
     return <main className="lobby"><header className="masthead"><Link className="brand" href="/">✦ MAGIC MERNA <span>THE SHARED GAME TABLE</span></Link><span className="badge">WEB EDITION · {APP_VERSION}</span></header>
+    {notice && <div className="panel session-notice" role="status">{notice}<button className="quiet" onClick={() => setNotice('')}>Dismiss</button></div>}
     <section className="intro"><p className="eyebrow">GATHER YOUR PLAYGROUP</p><h1>One table.<br /><em>Every player connected.</em></h1><p>Create your game, share the code, and let every player keep score from their phone.</p></section>
     <nav className="tabs" aria-label="Lobby sections">{[['play', 'Play'], ['profiles', 'Profiles & commanders'], ['leaders', 'Leaderboards']].map(([id, label]) => <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}</button>)}</nav>
     {error && <div role="alert" className="error">{error}<button onClick={() => void load()}>Retry connection</button></div>}

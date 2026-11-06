@@ -48,6 +48,7 @@ export type Catalog = {
 export type Player = {
     number: number;
     joined: boolean;
+    seatVersion?: number;
     name: string;
     commander: string;
     life: number;
@@ -56,10 +57,14 @@ export type Player = {
     hidden: boolean;
 };
 export type Game = {
+    emotes: import('./emotes').GameEmote[];
     code: string;
     revision: number;
     round: number;
     status: 'active' | 'finished' | 'exited';
+    previousGameCode: string | null;
+    nextGameCode: string | null;
+    endedAt: string | null;
     settings: Settings;
     players: Player[];
     winner: number | null;

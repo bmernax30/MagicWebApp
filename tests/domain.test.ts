@@ -25,3 +25,15 @@ test('open seats are not opponents and a lone joined player is not yet a winner'
     assert.equal(winnerOf([player(1), player(2, { joined: false })]), null);
     assert.equal(winnerOf([player(1), player(2, { life: 0 }), player(3, { joined: false })]), 1);
 });
+
+test('all player views leave closed sessions and preserve their seat in a successor session', async () => {
+    const { sessionDestination } = await import('../src/lib/session-navigation');
+    assert.equal(sessionDestination(null, '1', false), null);
+    assert.equal(sessionDestination({ status: 'active', nextGameCode: null }, '1', false), null);
+    for (const view of ['scoreboard', 'compact', 'select', 'log', '1', '2', '6']) {
+        assert.equal(sessionDestination({ status: 'exited', nextGameCode: null }, view, false), '/?notice=game-ended');
+        assert.equal(sessionDestination({ status: 'finished', nextGameCode: 'ABC234' }, view, false), `/game/ABC234?view=${view}`);
+    }
+    assert.equal(sessionDestination({ status: 'finished', nextGameCode: null }, '1', false), '/?notice=game-ended');
+    assert.equal(sessionDestination({ status: 'finished', nextGameCode: 'ABC234' }, 'log', true), null);
+});

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { Game, GameLog as Log } from '@/lib/types';
 import { api } from './client-api';
@@ -21,7 +22,7 @@ export function GameLogScreen({ game, busy, onUndo }: { game: Game; busy: boolea
         } catch (e) { setError((e as Error).message); }
         finally { setLoadingMore(false); }
     }
-    return <section className="panel game-log"><p className="eyebrow">TABLE HISTORY · NEWEST FIRST</p><h2>Game log</h2>
+    return <section className="panel game-log"><p className="eyebrow">TABLE HISTORY · NEWEST FIRST</p><h2>Game log</h2>{game.previousGameCode && <p><Link href={`/game/${game.previousGameCode}?view=log&archive=1`}>View the previous saved session →</Link></p>}
         <p>Undo walks backward through applied score changes in the current round. It restores both commander damage and its life change. Finished and exited games are locked.</p>
         {error && <p role="alert" className="error">{error}</p>}
         {!log && !error && <p role="status">Loading game log…</p>}

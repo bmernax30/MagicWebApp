@@ -2381,7 +2381,7 @@
     },
     "Dina, Essence Brewer": {
       "primary_name": "Dina, Essence Brewer",
-      "image_path": "",
+      "image_path": "res/commanders/DinaEssenceBrewer.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 1,
       "attack_power": 2,
@@ -2791,7 +2791,7 @@
     },
     "Kilo, Apogee Mind": {
       "primary_name": "Kilo, Apogee Mind",
-      "image_path": "",
+      "image_path": "res/commanders/kilo_apogee_mind.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 2,
       "attack_power": 3,
@@ -2941,7 +2941,7 @@
     },
     "Zidane, Tantalus Thief": {
       "primary_name": "Zidane, Tantalus Thief",
-      "image_path": "",
+      "image_path": "res/commanders/zidane_tantalus_thief.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 2,
       "attack_power": 3,
@@ -2975,7 +2975,7 @@
     },
     "Iroh, Tea Master": {
       "primary_name": "Iroh, Tea Master",
-      "image_path": "",
+      "image_path": "res/commanders/iroh_tea_master.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 2,
       "attack_power": 2,
@@ -3009,7 +3009,7 @@
     },
     "Tony Stark": {
       "primary_name": "Tony Stark",
-      "image_path": "",
+      "image_path": "res/commanders/tony_stark.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 1,
@@ -3043,7 +3043,7 @@
     },
     "The Invincible Iron Man": {
       "primary_name": "The Invincible Iron Man",
-      "image_path": "",
+      "image_path": "res/commanders/the_invincible_iron_man.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 5,
@@ -3077,7 +3077,7 @@
     },
     "Tony Stark / The Invincible Iron Man": {
       "primary_name": "Tony Stark",
-      "image_path": "",
+      "image_path": "res/commanders/tony_stark.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 1,
@@ -3094,7 +3094,7 @@
       "second_commander": {
         "enabled": true,
         "name": "The Invincible Iron Man",
-        "image_path": "",
+        "image_path": "res/commanders/the_invincible_iron_man.png",
         "text_path": "res/commanders/commander_text/commander_text.txt",
         "attack_power": 5,
         "defense_power": 5,
@@ -3179,7 +3179,7 @@
     },
     "Namor the Sub-Mariner": {
       "primary_name": "Namor the Sub-Mariner",
-      "image_path": "",
+      "image_path": "res/commanders/namor_the_sub_mariner.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 0,
@@ -3247,7 +3247,7 @@
     },
     "The Great Goblin": {
       "primary_name": "The Great Goblin",
-      "image_path": "",
+      "image_path": "res/commanders/the_great_goblin.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 3,
@@ -3315,7 +3315,7 @@
     },
     "Thranduil the Strategist": {
       "primary_name": "Thranduil the Strategist",
-      "image_path": "",
+      "image_path": "res/commanders/thranduil_the_strategist.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 4,
@@ -3352,7 +3352,7 @@
     },
     "Lord of the Nazgul": {
       "primary_name": "Lord of the Nazgul",
-      "image_path": "",
+      "image_path": "res/commanders/lord_of_the_nazgul.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 4,
@@ -3386,7 +3386,7 @@
     },
     "Silverquill, the Disputant": {
       "primary_name": "Silverquill, the Disputant",
-      "image_path": "",
+      "image_path": "res/commanders/silverquill_the_disputant.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 4,
@@ -3423,7 +3423,7 @@
     },
     "Phelia, Exuberant Shephard": {
       "primary_name": "Phelia, Exuberant Shephard",
-      "image_path": "",
+      "image_path": "res/commanders/phelia_exuberant_shephard.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 1,
       "attack_power": 2,

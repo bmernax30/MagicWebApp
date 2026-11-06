@@ -729,3 +729,34 @@
 .game-log-entries small { color: var(--muted); font-size: 11px; }
 .game-log-entries p { color: var(--text); margin: 8px 0; }
 .game-log-entries .undone-event p { text-decoration: line-through; color: var(--muted); }
+
+.commander-picker { margin: 18px 0 24px; padding: 16px; text-align: left; border: 1px solid var(--line); border-radius: 8px; }
+.commander-picker summary { color: var(--gold); cursor: pointer; min-height: 44px; padding: 10px 0; }
+.commander-picker p { font-size: 13px; margin-top: 12px; }
+.commander-picker form label { max-width: none; }
+.session-notice { margin-top: 24px; }
+.session-archive { margin-bottom: 24px; }
+
+/* Emotes share the score polling channel; their overlay never blocks table controls. */
+.mini-scores .emote-player { position: relative; overflow: visible; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+.emote-trigger { font-size: .75rem; padding: .45rem .6rem; margin-top: .4rem; }
+.emote-picker { position: absolute; z-index: 30; bottom: 0; left: 50%; transform: translateX(-50%); width: min(260px, 80vw); padding: .65rem; background: #17202e; color: #fff; border: 1px solid #8494aa; border-radius: 12px; box-shadow: 0 10px 35px #0009; }
+.emote-picker-heading { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.emote-picker-heading button { padding: .2rem .6rem; }
+.emote-options { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; margin-top: .5rem; }
+.emote-options button { display: flex; flex-direction: column; align-items: center; padding: .4rem; font-size: .8rem; }
+.emote-options img { width: 68px; height: 68px; object-fit: contain; }
+.score-card { position: relative; }
+.score-emotes { position: absolute; inset: 4rem .5rem .5rem; z-index: 5; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); align-items: start; gap: .5rem; pointer-events: none; }
+.score-emote { display: flex; flex-direction: column; align-items: center; justify-self: center; background: #101724e8; border: 1px solid #eee8; border-radius: 12px; padding: .35rem .6rem; box-shadow: 0 5px 20px #0009; min-width: 0; min-height: 0; max-width: 100%; max-height: 100%; }
+.score-emote img { width: clamp(80px, 13vw, 160px); max-width: 100%; min-height: 0; height: auto; aspect-ratio: 1; object-fit: contain; }
+.score-emote span { flex-shrink: 0; color: white; font-size: .8rem; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) { .score-emote { animation: emote-arrive .2s ease-out; } }
+@keyframes emote-arrive { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.emote-player:first-child .emote-picker { left: 0; transform: none; }
+.emote-player:last-child .emote-picker { left: auto; right: 0; transform: none; }
+@media (max-width: 600px) {
+    .controller .mini-scores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .emote-player:nth-child(odd) .emote-picker { left: 0; right: auto; transform: none; }
+    .emote-player:nth-child(even) .emote-picker { left: auto; right: 0; transform: none; }
+}
