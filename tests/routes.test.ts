@@ -9,6 +9,7 @@ import { database } from '../src/db/client';
 import { importMagic } from '../src/db/import';
 import { GET as readCatalog, POST as updateCatalog } from '../src/app/api/catalog/route';
 import { POST as createGame } from '../src/app/api/games/route';
+import { GET as readLog } from '../src/app/api/games/[code]/log/route';
 import { GET as readGame, POST as changeGame } from '../src/app/api/games/[code]/route';
 import type { Game } from '../src/lib/types';
 
@@ -33,6 +34,7 @@ describe('HTTP route contracts with independent clients', () => {
         try {
             db.pragma('foreign_keys = ON');
             db.exec(readFileSync('drizzle/0000_magic.sql', 'utf8'));
+        db.exec(readFileSync('drizzle/0002_game_log.sql', 'utf8'));
             importMagic(db, path.resolve('seed-data/res'));
         } finally { db.close(); }
     });
@@ -85,7 +87,7 @@ describe('HTTP route contracts with independent clients', () => {
             { status: 403, headers: { 'Content-Type': 'application/json', Origin: 'https://other.example' }, body: JSON.stringify(counter()) },
             { status: 415, headers: { 'Content-Type': 'text/plain', Origin: origin }, body: JSON.stringify(counter()) },
             { status: 400, headers: { 'Content-Type': 'application/json', Origin: origin }, body: '{bad' },
-            { status: 400, headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify({ ...counter(), delta: 999 }) },
+            { status: 400, headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify({ ...counter(), delta: 1000000 }) },
         ];
         for (const input of invalid) {
             const response = await changeGame(new Request(url, { method: 'POST', headers: input.headers, body: input.body }), context(game.code));
@@ -176,6 +178,20 @@ describe('HTTP route contracts with independent clients', () => {
         assert.equal((await changeGame(request(game.code, counter()), context(game.code))).status, 409);
         assert.equal((await changeGame(request(game.code, { id: randomUUID(), type: 'join', round: 1, revision: a.revision, player: 1, name: game.players[0].name, commander: game.players[0].commander }), context(game.code))).status, 409);
         assert.deepEqual(await (await readCatalog()).json(), before);
+    });
+    test('game log exposes applied deltas and a reviewed undo restores the shared scoreboard', async () => {
+        const game = await create();
+        const changed = await changeGame(request(game.code, { ...counter(), delta: -10 }), context(game.code));
+        const state = await changed.json() as Game;
+        const response = await readLog(new Request(`${origin}/api/games/${game.code}/log`), context(game.code));
+        assert.equal(response.status, 200);
+        const log = await response.json();
+        assert.equal(log.entries[0].message, 'Player 1 -10 life.');
+        const undo = { id: randomUUID(), type: 'undo', round: state.round, revision: state.revision, eventId: log.entries[0].id };
+        const undone = await changeGame(request(game.code, undo), context(game.code));
+        assert.equal(undone.status, 200);
+        assert.equal((await read(game.code)).players[0].life, 40);
+        assert.equal((await readLog(new Request(`${origin}/api/games/${game.code}/log?before=bad`), context(game.code))).status, 400);
     });
     test('unknown game codes return a useful 404 response', async () => {
         const response = await readGame(new Request(`${origin}/api/games/ABC234`), context('ABC234'));

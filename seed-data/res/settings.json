@@ -27,7 +27,11 @@
       "Ganax, Astral Hunter / Agent of the Iron Throne",
       "Lae'zel, Vlaakith's Champion / Master Chef",
       "Livaan, Cultist of Tiamat / Sword Coast Sailor",
-      "Rootha, Mastering the Moment"
+      "Rootha, Mastering the Moment",
+      "Hawkeye, Young Avenger",
+      "Namor the Sub-Mariner",
+      "Chatterfang, Squirrel General",
+      "Phelia, Exuberant Shephard"
     ],
     "Merna": [
       "High Perfect Morcant",
@@ -39,11 +43,14 @@
       "Garna, Bloodfist of Keld",
       "Denethor, Ruling Steward",
       "Bumi, Unleashed",
-      "Aragorn, King of Gondor",
       "Ashling, the Limitless",
       "Kamiz, Obscura Oculus",
       "Zimone, Infinite Analyst",
-      "Felothar, Dawn of the Abzan"
+      "Felothar, Dawn of the Abzan",
+      "Kilo, Apogee Mind",
+      "Zidane, Tantalus Thief",
+      "Silverquill, the Disputant",
+      "Human Torch"
     ],
     "Strobel": [
       "Quintorius, History Chaser",
@@ -59,7 +66,13 @@
       "Chulane , Teller of Tales",
       "AminatouVeilPiercer",
       "Tifa, Martial Artist",
-      "Killian, Devisive Mentor"
+      "Killian, Devisive Mentor",
+      "Morska, Undersea Sleuth",
+      "New Commander",
+      "Strobel new commander.",
+      "Doctor Doom, King of Latveria",
+      "Iroh, Tea Master",
+      "Tony Stark / The Invincible Iron Man"
     ],
     "Sharpie": [
       "Morska, Undersea Sleuth",
@@ -70,10 +83,16 @@
       "Fynn, the Fangbearer",
       "Maralen, Fae Ascendant",
       "Quintorius, History Chaser",
-      "New Commander"
+      "New Commander",
+      "Arwen Undomiel",
+      "Doctor Doom, King of Latveria",
+      "Lord of the Nazgul"
     ],
     "Mike": [
-      "Hakbal of the Surging Soul"
+      "Hakbal of the Surging Soul",
+      "Rootha, Mastering the Moment",
+      "Bello, Bard of the Brambles.",
+      "Azami, Lady of Scrolls"
     ],
     "Deeks": [
       "The Scarab God"
@@ -84,23 +103,28 @@
     "Ben S": [
       "Eowyn Shieldmaiden",
       "Leonardo, the Balance / Michelangelo, the Heart",
-      "Dina, Essence Brewer"
+      "Dina, Essence Brewer",
+      "New Commander",
+      "The Great Goblin",
+      "Ben New Commander",
+      "Thranduil the Strategist"
     ]
   },
   "player_profile_wins": {
-    "Strobel": 2,
-    "Sharpie": 1,
-    "Zach": 2,
-    "Merna": 1,
-    "Ben S": 1
+    "Strobel": 5,
+    "Sharpie": 2,
+    "Zach": 13,
+    "Merna": 7,
+    "Ben S": 3,
+    "Mike": 1
   },
-  "last_profile_name": "Ben S",
+  "last_profile_name": "Merna",
   "commander_profiles": {
     "Amalia Benavides Aguirre": {
       "primary_name": "Amalia Benavides Aguirre",
       "image_path": "res/commanders/AmaliaBenavidesAguirre.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 2,
       "defense_power": 2,
       "colors": [
@@ -137,7 +161,7 @@
       "primary_name": "Arabella, Abandoned Doll",
       "image_path": "res/commanders/ArabellaAbandonedDoll.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 1,
+      "total_wins": 2,
       "attack_power": 1,
       "defense_power": 3,
       "colors": [
@@ -248,20 +272,21 @@
       "primary_name": "Samut, Vizier of Naktamun",
       "image_path": "res/commanders/SamutVizierOfNakamun.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
-      "attack_power": 0,
-      "defense_power": 0,
+      "total_wins": 2,
+      "attack_power": 2,
+      "defense_power": 3,
       "colors": [
+        "red",
         "green",
-        "red"
+        "colorless"
       ],
       "color_cost": {
         "white": 0,
         "blue": 0,
-        "red": 0,
-        "green": 0,
+        "red": 1,
+        "green": 1,
         "black": 0,
-        "colorless": 0
+        "colorless": 1
       },
       "second_commander": {
         "enabled": false,
@@ -322,7 +347,7 @@
       "primary_name": "Auntie Ool, Cursewretch",
       "image_path": "res/commanders/AuntieOolCursewretch.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 1,
+      "total_wins": 2,
       "attack_power": 4,
       "defense_power": 4,
       "colors": [
@@ -401,19 +426,19 @@
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
       "attack_power": 0,
-      "defense_power": 0,
+      "defense_power": 5,
       "colors": [
-        "black",
+        "white",
         "green",
-        "white"
+        "black"
       ],
       "color_cost": {
-        "white": 0,
+        "white": 1,
         "blue": 0,
         "red": 0,
-        "green": 0,
-        "black": 0,
-        "colorless": 0
+        "green": 1,
+        "black": 1,
+        "colorless": 1
       },
       "second_commander": {
         "enabled": false,
@@ -510,7 +535,7 @@
       "primary_name": "Teval, the Balanced Scale",
       "image_path": "res/commanders/TevalTheBalancedScale.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 0,
       "defense_power": 0,
       "colors": [
@@ -548,7 +573,7 @@
       "primary_name": "Vren, the Relentless",
       "image_path": "res/commanders/VrenTheUnrelentless.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 0,
       "defense_power": 0,
       "colors": [
@@ -1034,8 +1059,8 @@
       "image_path": "res/commanders/BumiUnleashed.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
-      "attack_power": 0,
-      "defense_power": 0,
+      "attack_power": 5,
+      "defense_power": 4,
       "colors": [
         "red",
         "green",
@@ -1110,7 +1135,7 @@
       "primary_name": "Ashling, the Limitless",
       "image_path": "res/commanders/AshlingtheLimitless.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 2,
       "defense_power": 3,
       "colors": [
@@ -1152,20 +1177,20 @@
       "image_path": "res/commanders/KamizObscuraOculus.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
-      "attack_power": 0,
-      "defense_power": 0,
+      "attack_power": 2,
+      "defense_power": 4,
       "colors": [
-        "black",
+        "white",
         "blue",
-        "white"
+        "black"
       ],
       "color_cost": {
-        "white": 0,
-        "blue": 0,
+        "white": 1,
+        "blue": 1,
         "red": 0,
         "green": 0,
-        "black": 0,
-        "colorless": 0
+        "black": 1,
+        "colorless": 1
       },
       "second_commander": {
         "enabled": false,
@@ -1189,7 +1214,7 @@
       "primary_name": "Quintorius, History Chaser",
       "image_path": "res/commanders/QuintoriusHistoryChaser.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 1,
+      "total_wins": 2,
       "attack_power": 0,
       "defense_power": 0,
       "colors": [
@@ -1226,18 +1251,19 @@
       "primary_name": "Morska, Undersea Sleuth",
       "image_path": "res/commanders/MorskaUnderseaSleuth.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
-      "attack_power": 0,
-      "defense_power": 0,
+      "total_wins": 1,
+      "attack_power": 2,
+      "defense_power": 3,
       "colors": [
+        "white",
         "blue",
         "green"
       ],
       "color_cost": {
-        "white": 0,
-        "blue": 0,
+        "white": 1,
+        "blue": 1,
         "red": 0,
-        "green": 0,
+        "green": 1,
         "black": 0,
         "colorless": 0
       },
@@ -1524,7 +1550,7 @@
       "primary_name": "Chatterfang, Squirrel General",
       "image_path": "res/commanders/ChatterfangSquirrelGeneral.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 0,
       "defense_power": 0,
       "colors": [
@@ -2052,40 +2078,42 @@
       "image_path": "res/commanders/LeonardoTheBalance.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
       "total_wins": 0,
-      "attack_power": 0,
-      "defense_power": 0,
+      "attack_power": 3,
+      "defense_power": 3,
       "colors": [
-        "black",
+        "white",
         "blue",
-        "green",
         "red",
-        "white"
+        "green",
+        "black",
+        "colorless"
       ],
       "color_cost": {
-        "white": 0,
+        "white": 1,
         "blue": 0,
         "red": 0,
         "green": 0,
         "black": 0,
-        "colorless": 0
+        "colorless": 3
       },
       "second_commander": {
         "enabled": true,
         "name": "Michelangelo, the Heart",
         "image_path": "res/commanders/MichelangeloTheHeart.png",
         "text_path": "res/commanders/commander_text/commander_text.txt",
-        "attack_power": 0,
-        "defense_power": 0,
+        "attack_power": 2,
+        "defense_power": 1,
         "colors": [
-          "green"
+          "green",
+          "colorless"
         ],
         "color_cost": {
           "white": 0,
           "blue": 0,
           "red": 0,
-          "green": 0,
+          "green": 1,
           "black": 0,
-          "colorless": 0
+          "colorless": 1
         }
       }
     },
@@ -2355,7 +2383,7 @@
       "primary_name": "Dina, Essence Brewer",
       "image_path": "",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 2,
       "defense_power": 3,
       "colors": [
@@ -2690,7 +2718,7 @@
       "primary_name": "Zimone, Infinite Analyst",
       "image_path": "res/commanders/ZimonInfiniteAnalyst.png",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
+      "total_wins": 1,
       "attack_power": 0,
       "defense_power": 0,
       "colors": [
@@ -2723,45 +2751,11 @@
         }
       }
     },
-    "New Commander": {
-      "primary_name": "New Commander",
-      "image_path": "",
-      "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 0,
-      "attack_power": 0,
-      "defense_power": 0,
-      "colors": [],
-      "color_cost": {
-        "white": 0,
-        "blue": 0,
-        "red": 0,
-        "green": 0,
-        "black": 0,
-        "colorless": 0
-      },
-      "second_commander": {
-        "enabled": false,
-        "name": "",
-        "image_path": "",
-        "text_path": "",
-        "attack_power": 0,
-        "defense_power": 0,
-        "colors": [],
-        "color_cost": {
-          "white": 0,
-          "blue": 0,
-          "red": 0,
-          "green": 0,
-          "black": 0,
-          "colorless": 0
-        }
-      }
-    },
     "Eowyn Shieldmaiden": {
       "primary_name": "Eowyn Shieldmaiden",
       "image_path": "",
       "text_path": "res/commanders/commander_text/commander_text.txt",
-      "total_wins": 1,
+      "total_wins": 2,
       "attack_power": 0,
       "defense_power": 0,
       "colors": [
@@ -2794,21 +2788,743 @@
           "colorless": 0
         }
       }
+    },
+    "Kilo, Apogee Mind": {
+      "primary_name": "Kilo, Apogee Mind",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 2,
+      "attack_power": 3,
+      "defense_power": 3,
+      "colors": [
+        "white",
+        "blue",
+        "red"
+      ],
+      "color_cost": {
+        "white": 1,
+        "blue": 1,
+        "red": 1,
+        "green": 0,
+        "black": 0,
+        "colorless": 0
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Arwen Undomiel": {
+      "primary_name": "Arwen Undomiel",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 2,
+      "defense_power": 2,
+      "colors": [
+        "blue",
+        "green"
+      ],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 0,
+        "green": 1,
+        "black": 0,
+        "colorless": 0
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Doctor Doom, King of Latveria": {
+      "primary_name": "Doctor Doom, King of Latveria",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 3,
+      "defense_power": 3,
+      "colors": [
+        "blue",
+        "red",
+        "black",
+        "colorless"
+      ],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 1,
+        "green": 0,
+        "black": 1,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Strobel new commander.": {
+      "primary_name": "Strobel new commander.",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 3,
+      "defense_power": 3,
+      "colors": [
+        "red"
+      ],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 2,
+        "green": 0,
+        "black": 0,
+        "colorless": 2
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Zidane, Tantalus Thief": {
+      "primary_name": "Zidane, Tantalus Thief",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 2,
+      "attack_power": 3,
+      "defense_power": 3,
+      "colors": [],
+      "color_cost": {
+        "white": 1,
+        "blue": 0,
+        "red": 1,
+        "green": 0,
+        "black": 0,
+        "colorless": 3
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Iroh, Tea Master": {
+      "primary_name": "Iroh, Tea Master",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 2,
+      "attack_power": 2,
+      "defense_power": 2,
+      "colors": [],
+      "color_cost": {
+        "white": 1,
+        "blue": 0,
+        "red": 1,
+        "green": 0,
+        "black": 0,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Tony Stark": {
+      "primary_name": "Tony Stark",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 1,
+      "defense_power": 3,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "The Invincible Iron Man": {
+      "primary_name": "The Invincible Iron Man",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 5,
+      "defense_power": 5,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 1,
+        "green": 0,
+        "black": 0,
+        "colorless": 4
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Tony Stark / The Invincible Iron Man": {
+      "primary_name": "Tony Stark",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 1,
+      "defense_power": 3,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": true,
+        "name": "The Invincible Iron Man",
+        "image_path": "",
+        "text_path": "res/commanders/commander_text/commander_text.txt",
+        "attack_power": 5,
+        "defense_power": 5,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 1,
+          "red": 1,
+          "green": 0,
+          "black": 0,
+          "colorless": 4
+        }
+      }
+    },
+    "Bello, Bard of the Brambles.": {
+      "primary_name": "Bello, Bard of the Brambles.",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 3,
+      "defense_power": 3,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 1,
+        "green": 1,
+        "black": 0,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Hawkeye, Young Avenger": {
+      "primary_name": "Hawkeye, Young Avenger",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 2,
+      "attack_power": 2,
+      "defense_power": 4,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 1,
+        "green": 0,
+        "black": 0,
+        "colorless": 3
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Namor the Sub-Mariner": {
+      "primary_name": "Namor the Sub-Mariner",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 0,
+      "defense_power": 4,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 2,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Azami, Lady of Scrolls": {
+      "primary_name": "Azami, Lady of Scrolls",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 1,
+      "attack_power": 0,
+      "defense_power": 2,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 3,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 2
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "The Great Goblin": {
+      "primary_name": "The Great Goblin",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 3,
+      "defense_power": 2,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 1,
+        "green": 0,
+        "black": 1,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Ben New Commander": {
+      "primary_name": "Ben New Commander",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 0,
+      "defense_power": 0,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 0
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Thranduil the Strategist": {
+      "primary_name": "Thranduil the Strategist",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 4,
+      "defense_power": 4,
+      "colors": [
+        "blue",
+        "green"
+      ],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 0,
+        "green": 1,
+        "black": 0,
+        "colorless": 3
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Lord of the Nazgul": {
+      "primary_name": "Lord of the Nazgul",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 4,
+      "defense_power": 3,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 1,
+        "red": 0,
+        "green": 0,
+        "black": 1,
+        "colorless": 3
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Silverquill, the Disputant": {
+      "primary_name": "Silverquill, the Disputant",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 0,
+      "attack_power": 4,
+      "defense_power": 4,
+      "colors": [
+        "white",
+        "black"
+      ],
+      "color_cost": {
+        "white": 1,
+        "blue": 0,
+        "red": 0,
+        "green": 0,
+        "black": 1,
+        "colorless": 2
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "Phelia, Exuberant Shephard": {
+      "primary_name": "Phelia, Exuberant Shephard",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 1,
+      "attack_power": 2,
+      "defense_power": 2,
+      "colors": [
+        "white"
+      ],
+      "color_cost": {
+        "white": 1,
+        "blue": 0,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 1
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
+    },
+    "New Commander": {
+      "primary_name": "New Commander",
+      "image_path": "",
+      "text_path": "",
+      "total_wins": 0,
+      "attack_power": 0,
+      "defense_power": 0,
+      "colors": [],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 0,
+        "green": 0,
+        "black": 0,
+        "colorless": 0
+      }
+    },
+    "Human Torch": {
+      "primary_name": "Human Torch",
+      "image_path": "",
+      "text_path": "res/commanders/commander_text/commander_text.txt",
+      "total_wins": 1,
+      "attack_power": 3,
+      "defense_power": 2,
+      "colors": [
+        "red"
+      ],
+      "color_cost": {
+        "white": 0,
+        "blue": 0,
+        "red": 1,
+        "green": 0,
+        "black": 0,
+        "colorless": 3
+      },
+      "second_commander": {
+        "enabled": false,
+        "name": "",
+        "image_path": "",
+        "text_path": "",
+        "attack_power": 0,
+        "defense_power": 0,
+        "colors": [],
+        "color_cost": {
+          "white": 0,
+          "blue": 0,
+          "red": 0,
+          "green": 0,
+          "black": 0,
+          "colorless": 0
+        }
+      }
     }
   },
-  "last_commander_profile_name": "Bumi, Unleashed",
+  "last_commander_profile_name": "Human Torch",
   "player_setup": {
     "player_names": [
       "Merna",
       "Strobel",
-      "Ben S",
-      "Zach"
+      "Zach",
+      "Ben S"
     ],
     "commander_names": [
-      "Bumi, Unleashed",
-      "AminatouVeilPiercer",
-      "Dina, Essence Brewer",
-      "Auntie Ool, Cursewretch"
+      "Human Torch",
+      "Leonardo, the Balance / Michelangelo, the Heart",
+      "Inspirit, Flagship Vessel",
+      "Dina, Essence Brewer"
     ]
   }
 }
+

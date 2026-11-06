@@ -2,6 +2,7 @@ import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
 import type Database from 'better-sqlite3';
+import { completeCommanderMetadata } from '../lib/commander-defaults';
 // This import is a one-time copy. It never writes to MagicApp or resets web data.
 export function importMagic(db: Database.Database, source: string) {
     const saved = JSON.parse(fs.readFileSync(path.join(source, 'settings.json'), 'utf8'));
@@ -35,7 +36,7 @@ export function importMagic(db: Database.Database, source: string) {
                 names.add(name);
         for (const name of names) {
             const { total_wins = 0, ...metadata } = saved.commander_profiles[name] ?? { ...empty, primary_name: name };
-            db.prepare('INSERT INTO commanders VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(metadata), (rules[name] ?? rules[metadata.primary_name] ?? '').trim());
+            db.prepare('INSERT INTO commanders VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(completeCommanderMetadata(metadata)), (rules[name] ?? rules[metadata.primary_name] ?? '').trim());
         }
         for (const [name, list] of Object.entries(saved.player_profiles) as [
             string,
@@ -52,6 +53,7 @@ export function importMagic(db: Database.Database, source: string) {
         for (const key of ['last_profile_name', 'last_commander_profile_name'])
             if (saved[key] !== undefined)
                 db.prepare('INSERT INTO settings VALUES (?,?)').run(key, JSON.stringify(saved[key]));
+        db.prepare('INSERT INTO settings VALUES (?,?)').run('seed_sync_baseline', JSON.stringify(saved));
         db.prepare('INSERT INTO settings VALUES (?,?)').run('imported', JSON.stringify({ at: new Date().toISOString(), source: 'MagicApp' }));
         return true;
     }).immediate();

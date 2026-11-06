@@ -1,10 +1,12 @@
 import 'server-only';
+import { completeCommanderMetadata } from '../lib/commander-defaults';
 import { randomInt } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { eq, asc } from 'drizzle-orm';
 import type { openDatabase } from '../db/client';
 import * as tables from '../db/schema';
 import { actionSchema, catalogWriteSchema, createGameSchema } from '../lib/validation';
-import { winnerOf, type Catalog, type Game, type Commander, type Settings } from '../lib/types';
+import { winnerOf, type Catalog, type Game, type Commander, type Settings, type StoredGameEvent, type GameLog, type CounterSnapshot } from '../lib/types';
 type Store = ReturnType<typeof openDatabase>;
 export class GameError extends Error {
     constructor(message: string, public status = 400) { super(message); }
@@ -18,7 +20,7 @@ export function gameService({ sqlite, orm }: Store) {
         return {
             settings: JSON.parse(defaults.value) as Settings,
             profiles: orm.select().from(tables.profiles).orderBy(asc(tables.profiles.name)).all().map(p => ({ ...p, commanders: links.filter(l => l.profile === p.name).map(l => l.commander) })),
-            commanders: orm.select().from(tables.commanders).orderBy(asc(tables.commanders.name)).all().map(c => ({ ...c, metadata: JSON.parse(c.metadata) } as Commander)),
+            commanders: orm.select().from(tables.commanders).orderBy(asc(tables.commanders.name)).all().map(c => ({ ...c, metadata: completeCommanderMetadata(JSON.parse(c.metadata)) } as Commander)),
             planes: orm.select().from(tables.planes).orderBy(asc(tables.planes.name)).all(),
         };
     }
@@ -63,6 +65,27 @@ export function gameService({ sqlite, orm }: Store) {
             return game;
         }).immediate();
     }
+    type ActionRow = { id: string; revision: number; payload: string; event: string | null; undone_by: string | null };
+    const snapshot = (p: Game['players'][number]): CounterSnapshot => ({ life: p.life, poison: p.poison, damage: [...p.damage] });
+    const signed = (n: number) => n >= 0 ? `+${n}` : String(n);
+    function undoable(game: Game): ActionRow | undefined {
+        return (sqlite.prepare('SELECT * FROM actions WHERE game=? AND event IS NOT NULL AND undone_by IS NULL ORDER BY revision DESC').all(game.code) as ActionRow[])
+            .find(row => { const event = JSON.parse(row.event!) as StoredGameEvent; return event.type === 'counter' && event.round === game.round && event.before && event.after; });
+    }
+    function log(code: string, before?: number): GameLog {
+        const game = get(code);
+        const candidate = game.status === 'active' ? undoable(game) : undefined;
+        const rows = sqlite.prepare('SELECT * FROM actions WHERE game=? AND revision < ? ORDER BY revision DESC LIMIT 51').all(code, before ?? Number.MAX_SAFE_INTEGER) as ActionRow[];
+        return { revision: game.revision, undoableId: candidate?.id ?? null,
+            nextCursor: rows.length > 50 ? rows[49].revision : null,
+            entries: rows.slice(0, 50).map(row => {
+                const input = JSON.parse(row.payload);
+                const event = row.event ? JSON.parse(row.event) as StoredGameEvent : null;
+                const legacy = input.type === 'counter' ? `Player ${input.player} requested ${signed(input.delta)} ${input.counter}${input.source ? ` from player ${input.source}` : ''} (earlier request; exact applied change unavailable).` : `Earlier ${input.type} action.`;
+                return { id: row.id, revision: row.revision, round: event?.round ?? input.round, at: event?.at ?? null,
+                    message: event?.message ?? legacy, undoneBy: row.undone_by, canUndo: row.id === candidate?.id };
+            }) };
+    }
     function act(code: string, input: unknown): Game {
         const action = actionSchema.parse(input);
         return sqlite.transaction(() => {
@@ -77,7 +100,7 @@ export function gameService({ sqlite, orm }: Store) {
             }
             if (action.round !== game.round)
                 throw new GameError('This game was restarted. Refresh before making changes.', 409);
-            if (action.type === 'restart' || action.type === 'finish' || action.type === 'exit') {
+            if (action.type === 'restart' || action.type === 'finish' || action.type === 'exit' || action.type === 'undo') {
                 if (action.revision !== game.revision)
                     throw new GameError('Scores changed. Review the latest scores and try again.', 409);
             }
@@ -85,7 +108,19 @@ export function gameService({ sqlite, orm }: Store) {
                 throw new GameError('This game session has ended. Create a new game to play again.', 409);
             if (game.status === 'finished' && action.type !== 'restart')
                 throw new GameError('This game has finished.', 409);
-            if (action.type === 'join') {
+            let event: StoredGameEvent = { type: action.type, round: game.round, at: new Date().toISOString(), message: '' };
+            if (action.type === 'undo') {
+                const target = undoable(game);
+                if (!target || target.id !== action.eventId) throw new GameError('Only the latest remaining score event in this round can be undone. Refresh the log.', 409);
+                const prior = JSON.parse(target.event!) as StoredGameEvent;
+                const p = game.players[prior.player! - 1];
+                if (!p || !isDeepStrictEqual(snapshot(p), prior.after)) throw new GameError('Scores no longer match this log entry. Refresh before undoing.', 409);
+                Object.assign(p, structuredClone(prior.before!));
+                sqlite.prepare('UPDATE actions SET undone_by=? WHERE game=? AND id=?').run(action.id, code, target.id);
+                game.winner = winnerOf(game.players);
+                event.message = `Undo: ${prior.message}`;
+            }
+            else if (action.type === 'join') {
                 const p = game.players[action.player - 1];
                 if (!p) throw new GameError('Seat not in this game.');
                 if (p.joined) throw new GameError('This seat has already been filled. Choose another seat or open its controls.', 409);
@@ -98,8 +133,10 @@ export function gameService({ sqlite, orm }: Store) {
                 p.commander = action.commander;
                 p.joined = true;
                 game.winner = winnerOf(game.players);
+                event.message = `Player ${p.number} joined as ${p.name}.`;
             }
             else if (action.type === 'exit') {
+                event.message = 'Game session exited without recording a win.';
                 game.status = 'exited';
                 game.winner = null;
             }
@@ -108,17 +145,27 @@ export function gameService({ sqlite, orm }: Store) {
                 if (!p)
                     throw new GameError('Player not in this game.');
                 if (!p.joined) throw new GameError('Join this seat before changing scores.', 409);
+                const before = snapshot(p);
+                let applied: number;
                 if (action.counter === 'commander') {
                     if (game.settings.game_type !== 'Commander')
                         throw new GameError('Commander damage is unavailable in Standard.');
-                    if (!action.source || action.source === action.player || !game.players[action.source - 1]?.joined)
-                        throw new GameError('Choose an opposing commander.');
+                    if (!action.source || !game.players[action.source - 1]?.joined)
+                        throw new GameError('Choose a joined player’s commander.');
                     const i = action.source - 1, before = p.damage[i];
                     p.damage[i] = Math.max(0, Math.min(999999, before + action.delta));
-                    p.life = Math.max(0, Math.min(999999, p.life - (p.damage[i] - before)));
+                    applied = p.damage[i] - before;
+                    p.life = Math.max(0, Math.min(999999, p.life - applied));
                 }
-                else
-                    p[action.counter] = Math.max(0, Math.min(999999, p[action.counter] + action.delta));
+                else {
+                    const previous = p[action.counter];
+                    p[action.counter] = Math.max(0, Math.min(999999, previous + action.delta));
+                    applied = p[action.counter] - previous;
+                }
+                const message = action.counter === 'commander'
+                    ? `Player ${p.number} ${signed(applied)} commander damage from player ${action.source} and ${signed(p.life - before.life)} life.`
+                    : `Player ${p.number} ${signed(applied)} ${action.counter === 'poison' ? 'poison' : 'life'}.`;
+                event = { ...event, player: p.number, before, after: snapshot(p), message };
                 game.winner = winnerOf(game.players);
             }
             else if (action.type === 'visibility') {
@@ -127,8 +174,10 @@ export function gameService({ sqlite, orm }: Store) {
                     throw new GameError('Player not in this game.');
                 if (!p.joined) throw new GameError('Join this seat before changing its display.', 409);
                 p.hidden = !p.hidden;
+                event.message = `Player ${p.number} ${p.hidden ? 'hid' : 'revealed'} their commander.`;
             }
             else if (action.type === 'finish') {
+                event.message = 'Game finished.';
                 game.status = 'finished';
                 game.winner = winnerOf(game.players);
                 if (game.winner !== null) {
@@ -138,6 +187,7 @@ export function gameService({ sqlite, orm }: Store) {
                 }
             }
             else if (action.type === 'restart') {
+                event.message = `Game restarted for round ${game.round + 1}.`;
                 game.round++;
                 game.status = 'active';
                 game.winner = null;
@@ -152,6 +202,7 @@ export function gameService({ sqlite, orm }: Store) {
             else if (action.type === 'plane') {
                 if (!game.settings.planechase_enabled)
                     throw new GameError('Planechase is disabled.');
+                event.message = action.direction === 'previous' ? 'Returned to the previous plane.' : 'Planeswalked to a new plane.';
                 if (action.direction === 'previous')
                     game.planeIndex = Math.max(0, game.planeIndex - 1);
                 else {
@@ -162,7 +213,7 @@ export function gameService({ sqlite, orm }: Store) {
             }
             game.revision++;
             orm.update(tables.games).set({ state: JSON.stringify(game), revision: game.revision }).where(eq(tables.games.code, code)).run();
-            orm.insert(tables.actions).values({ game: code, id: action.id, payload: JSON.stringify(action), revision: game.revision }).run();
+            orm.insert(tables.actions).values({ game: code, id: action.id, payload: JSON.stringify(action), event: JSON.stringify(event), revision: game.revision }).run();
             return game;
         }).immediate();
     }
@@ -199,5 +250,5 @@ export function gameService({ sqlite, orm }: Store) {
             return catalog();
         }).immediate();
     }
-    return { catalog, get, create, act, saveCatalog };
+    return { catalog, get, create, act, saveCatalog, log };
 }

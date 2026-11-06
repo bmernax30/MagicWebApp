@@ -1,18 +1,19 @@
 {
   "name": "magic-web-app",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack --hostname 127.0.0.1",
-    "dev:lan": "next dev --webpack --hostname 0.0.0.0",
+    "dev": "next dev --webpack --hostname 127.0.0.1 --port 6001",
+    "dev:lan": "next dev --webpack --hostname 0.0.0.0 --port 6001",
     "build": "next build --webpack",
-    "start": "next start --hostname 127.0.0.1",
-    "start:lan": "next start --hostname 0.0.0.0",
+    "start": "next start --hostname 127.0.0.1 --port 6001",
+    "start:lan": "next start --hostname 0.0.0.0 --port 6001",
     "lint": "eslint",
     "test": "node --conditions=react-server --import tsx --test --experimental-test-isolation=none tests/*.test.ts",
     "db:migrate": "node --conditions=react-server --import tsx scripts/migrate.ts",
     "db:import": "node --conditions=react-server --import tsx scripts/import.ts",
-    "test:shared": "node --import tsx scripts/prove-shared-game.ts"
+    "test:shared": "node --import tsx scripts/prove-shared-game.ts",
+    "db:sync": "node --conditions=react-server --import tsx scripts/sync-seed.ts"
   },
   "dependencies": {
     "@next/env": "^16.3.5",

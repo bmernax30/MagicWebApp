@@ -75,3 +75,14 @@ export function winnerOf(players: Player[]) {
     return alive.length === 1 ? alive[0].number : null;
 }
 export function assetUrl(path: string) { return path.startsWith('res/') && !path.includes('..') ? '/' + path : ''; }
+
+export type CounterSnapshot = Pick<Player, 'life' | 'poison' | 'damage'>;
+export type StoredGameEvent = {
+    type: string; round: number; at: string; message: string;
+    player?: number; before?: CounterSnapshot; after?: CounterSnapshot;
+};
+export type GameLogEntry = {
+    id: string; revision: number; round: number; at: string | null;
+    message: string; undoneBy: string | null; canUndo: boolean;
+};
+export type GameLog = { entries: GameLogEntry[]; nextCursor: number | null; revision: number; undoableId: string | null };

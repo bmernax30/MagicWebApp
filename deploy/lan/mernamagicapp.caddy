@@ -1,0 +1,16 @@
+# BEGIN MagicWebApp LAN
+http://mernamagicapp.local {
+	bind 192.168.86.175 127.0.0.1
+	@outside not remote_ip 192.168.86.0/24 127.0.0.0/8
+	respond @outside "Household network only" 403
+	request_body {
+		max_size 1MB
+	}
+	header {
+		X-Frame-Options DENY
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+	}
+	reverse_proxy 127.0.0.1:6001
+}
+# END MagicWebApp LAN

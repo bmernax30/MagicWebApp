@@ -718,3 +718,14 @@
 }
 .win-totals strong { margin-left: 5px; color: var(--gold); font-variant-numeric: tabular-nums; }
 .compact .win-totals { gap: 4px 12px; font-size: 11px; }
+
+.pending-change { margin: 20px 0; padding: 20px; border: 1px solid var(--gold-dark); border-radius: 8px; background: #302d2544; }
+.pending-change > strong { display: block; color: var(--gold); font-size: 42px; font-variant-numeric: tabular-nums; }
+.pending-change .actions { justify-content: center; }
+.pending-change p { margin-bottom: 10px; }
+.game-log { max-width: 1000px; margin: 24px auto; }
+.game-log-entries { list-style: none; margin: 0; padding: 0; }
+.game-log-entries li { display: flex; justify-content: space-between; align-items: start; gap: 16px; padding: 20px 0; border-top: 1px solid var(--line); }
+.game-log-entries small { color: var(--muted); font-size: 11px; }
+.game-log-entries p { color: var(--text); margin: 8px 0; }
+.game-log-entries .undone-event p { text-decoration: line-through; color: var(--muted); }

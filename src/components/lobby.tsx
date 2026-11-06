@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import type { Catalog, Game, Settings } from '@/lib/types';
 import { api } from './client-api';
+import { APP_VERSION } from '@/lib/version';
 import { ProfileManager } from './profile-manager';
 const defaults: Settings = { number_of_players: 4, starting_life_total: 40, game_type: 'Commander', planechase_enabled: false };
 export function Lobby() {
@@ -37,7 +38,7 @@ export function Lobby() {
         setError((e as Error).message);
         setBusy(false);
     } }
-    return <main className="lobby"><header className="masthead"><Link className="brand" href="/">✦ MAGIC MERNA <span>THE SHARED GAME TABLE</span></Link><span className="badge">WEB EDITION · 01</span></header>
+    return <main className="lobby"><header className="masthead"><Link className="brand" href="/">✦ MAGIC MERNA <span>THE SHARED GAME TABLE</span></Link><span className="badge">WEB EDITION · {APP_VERSION}</span></header>
     <section className="intro"><p className="eyebrow">GATHER YOUR PLAYGROUP</p><h1>One table.<br /><em>Every player connected.</em></h1><p>Create your game, share the code, and let every player keep score from their phone.</p></section>
     <nav className="tabs" aria-label="Lobby sections">{[['play', 'Play'], ['profiles', 'Profiles & commanders'], ['leaders', 'Leaderboards']].map(([id, label]) => <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}</button>)}</nav>
     {error && <div role="alert" className="error">{error}<button onClick={() => void load()}>Retry connection</button></div>}
@@ -72,6 +73,6 @@ export function Lobby() {
             name: string;
             wins: number;
         }[])].sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name)).map((p, i) => <div className="leader" key={p.name}><span>{i + 1}</span><strong>{p.name}</strong><span>{p.wins} wins</span></div>)}</section>)}</div>}
-    <footer>Magic Merna · Built for your playgroup <span>Scores saved in SQLite</span></footer>
+    <footer>Magic Merna v{APP_VERSION} · Built for your playgroup <span>Scores saved in SQLite</span></footer>
   </main>;
 }

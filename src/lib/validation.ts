@@ -5,8 +5,9 @@ export const createGameSchema = z.strictObject({ settings: settingsSchema });
 const base = { id: z.uuid(), round: z.number().int().min(1), revision: z.number().int().min(0) };
 const player = z.number().int().min(1).max(6);
 export const actionSchema = z.discriminatedUnion('type', [
-    z.strictObject({ ...base, type: z.literal('counter'), player, counter: z.enum(['life', 'poison', 'commander']), source: player.optional(), delta: z.union([z.literal(-5), z.literal(-1), z.literal(1), z.literal(5)]) }),
+    z.strictObject({ ...base, type: z.literal('counter'), player, counter: z.enum(['life', 'poison', 'commander']), source: player.optional(), delta: z.number().int().min(-999999).max(999999).refine(n => n !== 0, 'Change must be nonzero') }),
     z.strictObject({ ...base, type: z.literal('visibility'), player }),
+    z.strictObject({ ...base, type: z.literal('undo'), eventId: z.uuid() }),
     z.strictObject({ ...base, type: z.literal('finish') }),
     z.strictObject({ ...base, type: z.literal('exit') }),
     z.strictObject({ ...base, type: z.literal('join'), player, name, commander: z.string().trim().max(120) }),

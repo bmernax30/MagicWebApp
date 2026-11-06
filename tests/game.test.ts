@@ -8,12 +8,14 @@ import Database from 'better-sqlite3';
 import { openDatabase } from '../src/db/client';
 import { importMagic } from '../src/db/import';
 import { gameService } from '../src/server/game-service';
+import { completeCommanderMetadata } from '../src/lib/commander-defaults';
 import { isAlive } from '../src/lib/types';
 import type { GameAction } from '../src/lib/validation';
 function fixture() {
     const directory = mkdtempSync(path.join(tmpdir(), 'magic-test-')), filename = path.join(directory, 'test.sqlite');
     const init = new Database(filename);
     init.exec(readFileSync('drizzle/0000_magic.sql', 'utf8'));
+        init.exec(readFileSync('drizzle/0002_game_log.sql', 'utf8'));
     init.close();
     const store = openDatabase(filename);
     importMagic(store.sqlite, path.resolve('seed-data/res'));
@@ -45,7 +47,7 @@ test('legacy import preserves every profile, partner metadata, rules, wins and p
             const { total_wins, ...metadata } = value as Record<string, unknown>;
             const c1 = c.commanders.find(c => c.name === name)!;
             assert.equal(c1.wins, total_wins);
-            assert.deepEqual(c1.metadata, metadata);
+            assert.deepEqual(c1.metadata, completeCommanderMetadata(metadata));
         }
         assert.ok(c.commanders.some(c => c.rules.length > 0));
         assert.equal(importMagic(f.store.sqlite, path.resolve('seed-data/res')), false);
@@ -110,7 +112,9 @@ test('commander damage changes life atomically, clamps at zero, and eliminates a
         state = f.service.act(g.code, { ...counter(), counter: 'commander', source: 2 });
         assert.equal(state.players[0].life, 20);
         assert.equal(state.winner, null);
-        assert.throws(() => f.service.act(g.code, { ...counter(), counter: 'commander', source: 1 }), /opposing/);
+        state = f.service.act(g.code, { ...counter(), counter: 'commander', source: 1, delta: 5 });
+        assert.equal(state.players[0].damage[0], 5);
+        assert.equal(state.players[0].life, 15);
     }
     finally {
         f.close();
@@ -180,7 +184,7 @@ test('games stay isolated and malformed input never changes scores', () => {
         const a = create(f.service), b = create(f.service);
         f.service.act(a.code, counter());
         assert.equal(f.service.get(b.code).players[0].life, 40);
-        assert.throws(() => f.service.act(a.code, { ...counter(), delta: 100 }));
+        assert.throws(() => f.service.act(a.code, { ...counter(), delta: 1000000 }));
         assert.throws(() => f.service.create({ settings, players: [] }));
         assert.throws(() => f.service.get('BAD'));
         assert.equal(f.service.get(a.code).revision, a.revision + 1);
@@ -229,7 +233,7 @@ test('creation makes open seats; join validates profiles and commanders and neve
         assert.equal(f.service.act(game.code, join).revision, 1);
         assert.throws(() => gameService(other).act(game.code, { ...join, id: randomUUID(), name: second.name, commander: second.commanders[0] }), /already been filled/);
         assert.equal(gameService(other).get(game.code).players[0].name, first.name);
-        assert.throws(() => f.service.act(game.code, { ...counter(), counter: 'commander', source: 2 }), /opposing commander/);
+        assert.throws(() => f.service.act(game.code, { ...counter(), counter: 'commander', source: 2 }), /joined player/);
         const updated = f.service.act(game.code, { ...join, id: randomUUID(), player: 2, name: second.name, commander: second.commanders[0] });
         assert.equal(updated.players[1].joined, true);
         assert.equal(updated.players[0].life, 40);
@@ -277,5 +281,110 @@ test('seat migration preserves legacy games and leaves new empty seats untouched
         assert.deepEqual(f.service.get(open.code), open);
         f.store.sqlite.exec(sql);
         assert.deepEqual(f.service.get(legacy.code), legacy);
+    } finally { f.close(); }
+});
+
+test('batched deltas create one exact log entry; self commander damage and undo restore both counters', () => {
+    const f = fixture();
+    try {
+        const g = create(f.service);
+        const action = { ...counter(), delta: -10 };
+        let state = f.service.act(g.code, action);
+        let log = f.service.log(g.code);
+        assert.equal(log.entries[0].message, 'Player 1 -10 life.');
+        assert.equal(log.entries[0].canUndo, true);
+        assert.equal(state.players[0].life, 30);
+        f.service.act(g.code, action);
+        assert.equal(f.service.log(g.code).entries.length, log.entries.length);
+        state = f.service.act(g.code, { ...counter(), counter: 'commander', source: 1, delta: 5 });
+        log = f.service.log(g.code);
+        assert.equal(log.entries[0].message, 'Player 1 +5 commander damage from player 1 and -5 life.');
+        assert.equal(state.players[0].damage[0], 5);
+        assert.equal(state.players[0].life, 25);
+        const undo = { id: randomUUID(), type: 'undo', round: state.round, revision: state.revision, eventId: log.entries[0].id };
+        state = f.service.act(g.code, undo);
+        assert.equal(state.players[0].damage[0], 0);
+        assert.equal(state.players[0].life, 30);
+        assert.equal(f.service.act(g.code, undo).revision, state.revision);
+        log = f.service.log(g.code);
+        assert.ok(log.entries[1].undoneBy);
+        const next = log.entries.find(e => e.canUndo)!;
+        state = f.service.act(g.code, { ...undo, id: randomUUID(), revision: state.revision, eventId: next.id });
+        assert.equal(state.players[0].life, 40);
+        assert.equal(f.service.log(g.code).undoableId, null);
+    } finally { f.close(); }
+});
+
+test('undo uses reviewed revision and strict reverse score order, restores clamped values, and cannot cross rounds', () => {
+    const f = fixture();
+    try {
+        const g = create(f.service);
+        let state = f.service.act(g.code, { ...counter(), delta: -100 });
+        const first = f.service.log(g.code).entries[0];
+        assert.equal(first.message, 'Player 1 -40 life.');
+        assert.equal(state.winner, 2);
+        state = f.service.act(g.code, { ...counter(), player: 2, counter: 'poison', delta: 5 });
+        assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId: first.id }), /latest remaining/);
+        const last = f.service.log(g.code).entries[0];
+        assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision - 1, eventId: last.id }), /Scores changed/);
+        state = f.service.act(g.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId: last.id });
+        assert.equal(state.players[1].poison, 0);
+        state = f.service.act(g.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId: first.id });
+        assert.equal(state.players[0].life, 40);
+        assert.equal(state.winner, null);
+        state = f.service.act(g.code, { ...counter(), delta: -3 });
+        const priorRound = f.service.log(g.code).entries[0];
+        state = f.service.act(g.code, { id: randomUUID(), type: 'restart', round: 1, revision: state.revision });
+        assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'undo', round: 2, revision: state.revision, eventId: priorRound.id }), /latest remaining/);
+    } finally { f.close(); }
+});
+
+test('logs paginate without losing events and finished games cannot undo awarded wins', () => {
+    const f = fixture();
+    try {
+        const g = create(f.service);
+        let state = g;
+        for (let i = 0; i < 55; i++) state = f.service.act(g.code, { ...counter(), counter: 'poison', delta: 1 });
+        const first = f.service.log(g.code);
+        assert.equal(first.entries.length, 50);
+        const older = f.service.log(g.code, first.nextCursor!);
+        assert.equal(older.entries.length, 7); // two seat joins + 55 score events
+        assert.equal(new Set([...first.entries, ...older.entries].map(e => e.id)).size, 57);
+        const eventId = first.entries[0].id;
+        state = f.service.act(g.code, { id: randomUUID(), type: 'finish', round: 1, revision: state.revision });
+        assert.equal(f.service.log(g.code).undoableId, null);
+        assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId }), /finished/);
+    } finally { f.close(); }
+});
+
+test('undo and its audit entry roll back together if persistence fails', () => {
+    const f = fixture();
+    try {
+        const game = create(f.service), state = f.service.act(game.code, { ...counter(), delta: -10 });
+        const entry = f.service.log(game.code).entries[0];
+        f.store.sqlite.exec("CREATE TRIGGER reject_undo BEFORE INSERT ON actions WHEN json_extract(NEW.payload,'$.type')='undo' BEGIN SELECT RAISE(ABORT,'test write failure'); END");
+        assert.throws(() => f.service.act(game.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId: entry.id }), /test write failure/);
+        assert.deepEqual(f.service.get(game.code), state);
+        assert.equal(f.service.log(game.code).entries[0].undoneBy, null);
+        assert.equal(f.service.log(game.code).entries[0].canUndo, true);
+    } finally { f.close(); }
+});
+
+test('earlier requests remain readable but cannot be undone without a before snapshot', () => {
+    const f = fixture();
+    try {
+        const game = create(f.service);
+        game.players[0].life = 30;
+        game.revision++;
+        const id = randomUUID();
+        f.store.sqlite.prepare('UPDATE games SET state=?,revision=? WHERE code=?').run(JSON.stringify(game), game.revision, game.code);
+        f.store.sqlite.prepare('INSERT INTO actions(game,id,payload,revision) VALUES (?,?,?,?)').run(game.code, id, JSON.stringify({ ...counter(), id, delta: -10 }), game.revision);
+        assert.equal(f.service.log(game.code).undoableId, null);
+        assert.match(f.service.log(game.code).entries[0].message, /earlier request/);
+        let state = f.service.act(game.code, { ...counter(), delta: -5 });
+        const latest = f.service.log(game.code).entries[0];
+        state = f.service.act(game.code, { id: randomUUID(), type: 'undo', round: 1, revision: state.revision, eventId: latest.id });
+        assert.equal(state.players[0].life, 30);
+        assert.equal(f.service.log(game.code).undoableId, null);
     } finally { f.close(); }
 });
