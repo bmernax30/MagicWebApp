@@ -775,3 +775,8 @@
 .card-legalities { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .card-legalities dt { text-transform: capitalize; font-weight: 600; }
 .card-legalities dd { margin: 4px 0; }
+
+.lobby-tabs { flex-wrap: wrap; }
+.lobby-tabs [role="tab"][aria-selected="true"] { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+.lobby-section[hidden] { display: none; }
+.profile-editor { max-width: 900px; margin: 24px auto; }

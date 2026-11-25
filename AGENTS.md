@@ -11,3 +11,12 @@
 - Default to loopback. LAN commands are an explicit trusted-playgroup option requested for this app; public hosting requires a reviewed access model.
 - Run lint, tests, production build, and the shared HTTP proof when dependencies are available. Report blocked checks honestly.
 - Do not commit or publish without user authorization.
+
+## GitHub issue workflow
+
+- Read the requested `MAGIC-###` issue and its comments; clarify missing requirements when needed.
+- Work on `development/MAGIC-###` based on the latest appropriate main branch.
+- Implement, validate, and launch an isolated preview for user testing. Wait for user confirmation before committing or pushing.
+- After confirmation, increment the patch (last) version number once per completed issue. When the patch would reach 10, increment the minor (middle) number and reset patch to 0: `1.0.8 -> 1.0.9 -> 1.1.0`. Keep the major number unchanged unless requested.
+- Keep `package.json`, the root package entries in `package-lock.json`, and the README's current version aligned. The UI reads the package version automatically.
+- Commit and push the approved issue to its development branch. The user reviews and merges; do not merge it yourself.
