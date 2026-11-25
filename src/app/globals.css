@@ -780,3 +780,10 @@
 .lobby-tabs [role="tab"][aria-selected="true"] { background: var(--gold); color: var(--bg); border-color: var(--gold); }
 .lobby-section[hidden] { display: none; }
 .profile-editor { max-width: 900px; margin: 24px auto; }
+
+.seat-resume-dialog { padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); width: min(540px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; }
+.seat-resume-dialog::backdrop { background: #000b; }
+.seat-resume-dialog .panel { margin: 0; width: 100%; }
+.seat-resume-setup { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; text-align: left; }
+.seat-resume-setup dt { color: var(--muted); font-size: .8rem; }
+.seat-resume-setup dd { margin: 4px 0 0; overflow-wrap: anywhere; font-weight: 600; }

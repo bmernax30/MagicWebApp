@@ -28,6 +28,9 @@ async function main() {
     assert.equal(a.players[0].life, 30);
     assert.equal(a.players[1].life, 30);
     assert.equal(a.revision, initialRevision + 20);
+    const reconnected = await request<Game>(url.toLowerCase());
+    assert.deepEqual(reconnected, a, 'A new phone must resume the exact saved setup and scores.');
+    assert.deepEqual(reconnected.players.map(p => [p.name, p.commander]), game.players.map(p => [p.name, p.commander]));
     await request(url, actions[0]);
     assert.equal((await request<Game>(url)).revision, initialRevision + 20);
     const selfDamage = await request<Game>(url, { id: randomUUID(), type: 'counter', round: a.round, revision: a.revision, player: 1, counter: 'commander', source: 1, delta: 5 });
@@ -74,6 +77,6 @@ async function main() {
     const exited = await request<Game>(nextUrl, { id: randomUUID(), type: 'exit', round: kicked.round, revision: kicked.revision });
     assert.equal(exited.status, 'exited');
     assert.equal((await request<Game>(nextUrl)).status, 'exited');
-    console.log(`PASS: ${game.code}: concurrent scoring, self damage, undo, commander switching, shared emotes and cooldown, exactly one successor ${next.code}, carried-over seats, leave/rejoin/kick, stale-seat protection, and shared exit. No profile wins awarded.`);
+    console.log(`PASS: ${game.code}: seat reconnection, concurrent scoring, self damage, undo, commander switching, shared emotes and cooldown, exactly one successor ${next.code}, carried-over seats, leave/rejoin/kick, stale-seat protection, and shared exit. No profile wins awarded.`);
 }
 void main().catch(error => { console.error(error); process.exitCode = 1; });
