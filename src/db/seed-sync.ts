@@ -1,6 +1,7 @@
 import 'server-only';
+import { isLegacyPlaceholder } from '../lib/legacy-commander-names';
+import { importLegacyCommander,legacyDisplayMetadata } from './commander-history';
 import fs from 'node:fs';
-import path from 'node:path';
 import type Database from 'better-sqlite3';
 import { completeCommanderMetadata } from '../lib/commander-defaults';
 import type { CommanderMetadata } from '../lib/types';
@@ -53,11 +54,13 @@ export function syncSeed(db: Database.Database, next: Seed, initialBaseline?: Se
         }
         const oldCommanders = commanders(baseline), newCommanders = commanders(next);
         for (const [name, value] of Object.entries(newCommanders)) {
+            if(isLegacyPlaceholder(name)||isLegacyPlaceholder(String(value.primary_name??'')))continue;
             const { total_wins = 0, ...metadata } = value;
             const { total_wins: oldWins = 0, ...oldMetadata } = oldCommanders[name] ?? {};
-            const row = db.prepare('SELECT metadata,wins FROM commanders WHERE name=?').get(name) as { metadata: string; wins: number } | undefined;
+            const row = db.prepare('SELECT metadata,wins FROM legacy_commanders WHERE name=?').get(name) as { metadata: string; wins: number } | undefined;
             if (!row) {
-                db.prepare('INSERT INTO commanders(name,wins,metadata,rules) VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(metadata), '');
+                db.prepare('INSERT INTO legacy_commanders(name,wins,metadata,rules) VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(metadata), '');
+                importLegacyCommander(db,{name,wins:Number(total_wins),metadata:JSON.stringify(metadata),rules:''});
                 report.addedCommanders.push(name);
             } else {
                 const merged = merge(JSON.parse(row.metadata), oldMetadata, metadata, name);
@@ -65,7 +68,12 @@ export function syncSeed(db: Database.Database, next: Seed, initialBaseline?: Se
                 const wins = row.wins + delta;
                 if (!Number.isSafeInteger(wins) || wins < 0) throw new Error(`Unsafe win adjustment for ${name}; no data changed.`);
                 if (!isDeepStrictEqual(merged, JSON.parse(row.metadata))) report.metadataUpdates++;
-                db.prepare('UPDATE commanders SET metadata=?, wins=? WHERE name=?').run(JSON.stringify(merged), wins, name);
+                db.prepare('UPDATE legacy_commanders SET metadata=?, wins=? WHERE name=?').run(JSON.stringify(merged), wins, name);
+                const alias=db.prepare('SELECT deck_id FROM commander_aliases WHERE name=?').get(name) as {deck_id:string};
+                const deck=db.prepare('SELECT baseline_wins,cards FROM commander_decks WHERE id=?').get(alias.deck_id) as {baseline_wins:number;cards:string};
+                if(deck.baseline_wins+delta<0)throw new Error(`Unsafe win adjustment for ${name}; recorded history cannot be erased.`);
+                db.prepare('UPDATE commander_decks SET baseline_wins=baseline_wins+?,baseline_plays=baseline_plays+? WHERE id=?').run(delta,delta,alias.deck_id);
+                if(JSON.parse(deck.cards).length===0)db.prepare('UPDATE commander_decks SET legacy_metadata=? WHERE id=?').run(JSON.stringify(legacyDisplayMetadata(merged as Partial<CommanderMetadata>)),alias.deck_id);
                 report.winDelta += delta;
             }
         }
@@ -75,14 +83,12 @@ export function syncSeed(db: Database.Database, next: Seed, initialBaseline?: Se
             if (!row) { db.prepare('INSERT INTO profiles VALUES (?,?)').run(name, wins); report.addedProfiles.push(name); }
             else {
                 const updated = row.wins + wins - oldWins;
-                if (!Number.isSafeInteger(updated) || updated < 0) throw new Error(`Unsafe win adjustment for ${name}; no data changed.`);
+                if (!Number.isSafeInteger(updated) || updated < Number((db.prepare('SELECT COALESCE(SUM(won),0) AS n FROM game_appearances WHERE profile=?').get(name) as {n:number}).n)) throw new Error(`Unsafe win adjustment for ${name}; no data changed.`);
                 db.prepare('UPDATE profiles SET wins=? WHERE name=?').run(updated, name);
                 report.winDelta += wins - oldWins;
             }
-            const oldList = new Set(baseline.player_profiles[name] ?? []), newList = new Set(list);
-            // Apply source additions/removals only; web-only relationships survive.
-            for (const commander of newList) if (!oldList.has(commander) || !row) report.addedLinks += db.prepare('INSERT OR IGNORE INTO profile_commanders VALUES (?,?)').run(name, commander).changes;
-            for (const commander of oldList) if (!newList.has(commander)) report.removedLinks += db.prepare('DELETE FROM profile_commanders WHERE profile=? AND commander=?').run(name, commander).changes;
+            // Legacy assignment lists are no longer permissions or history.
+            void list;
         }
         const defaults = db.prepare("SELECT value FROM settings WHERE key='defaults'").get() as { value: string };
         db.prepare("UPDATE settings SET value=? WHERE key='defaults'").run(JSON.stringify(merge(JSON.parse(defaults.value), baseline.settings, next.settings, 'settings')));
@@ -90,16 +96,4 @@ export function syncSeed(db: Database.Database, next: Seed, initialBaseline?: Se
         db.prepare("INSERT INTO settings(key,value) VALUES ('seed_sync_baseline',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(JSON.stringify(next));
         return report;
     }).immediate();
-}
-export function missingCommanderImages(db: Database.Database, publicDirectory: string) {
-    const missing: { name: string; image: string; reason: string }[] = [];
-    for (const row of db.prepare('SELECT name,metadata FROM commanders ORDER BY name').all() as { name: string; metadata: string }[]) {
-        const meta = JSON.parse(row.metadata);
-        for (const card of [{ name: row.name, image_path: meta.image_path }, ...(meta.second_commander?.enabled ? [{ name: `${row.name} (partner: ${meta.second_commander.name})`, image_path: meta.second_commander.image_path }] : [])]) {
-            const image = String(card.image_path ?? '');
-            const safe = image.startsWith('res/') && !image.includes('..');
-            if (!image || !safe || !fs.existsSync(path.join(publicDirectory, image))) missing.push({ name: card.name, image, reason: !image ? 'No image assigned' : !safe ? 'Image path is not a bundled asset' : 'Assigned file is missing' });
-        }
-    }
-    return missing;
 }

@@ -42,3 +42,17 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Retired commander artwork; keep local copies available only for old running builds.
+/public/res/commanders/*.[pP][nN][gG]
+/public/res/commanders/*.[jJ][pP][gG]
+/public/res/commanders/*.[jJ][pP][eE][gG]
+/public/res/commanders/*.[wW][eE][bB][pP]
+/public/res/commanders/*.[gG][iI][fF]
+/public/res/commanders/*.[aA][vV][iI][fF]
+/seed-data/res/commanders/*.[pP][nN][gG]
+/seed-data/res/commanders/*.[jJ][pP][gG]
+/seed-data/res/commanders/*.[jJ][pP][eE][gG]
+/seed-data/res/commanders/*.[wW][eE][bB][pP]
+/seed-data/res/commanders/*.[gG][iI][fF]
+/seed-data/res/commanders/*.[aA][vV][iI][fF]

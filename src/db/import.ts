@@ -1,4 +1,5 @@
 import 'server-only';
+import { migrateCommanderHistory } from './commander-history';
 import fs from 'node:fs';
 import path from 'node:path';
 import type Database from 'better-sqlite3';
@@ -25,7 +26,7 @@ export function importMagic(db: Database.Database, source: string) {
     return db.transaction(() => {
         if (db.prepare("SELECT 1 FROM settings WHERE key='imported'").get())
             return false;
-        if ((db.prepare('SELECT (SELECT count(*) FROM profiles)+(SELECT count(*) FROM commanders)+(SELECT count(*) FROM games)+(SELECT count(*) FROM settings)+(SELECT count(*) FROM planes) AS n').get() as {
+        if ((db.prepare('SELECT (SELECT count(*) FROM profiles)+(SELECT count(*) FROM legacy_commanders)+(SELECT count(*) FROM games)+(SELECT count(*) FROM settings)+(SELECT count(*) FROM planes) AS n').get() as {
             n: number;
         }).n)
             throw new Error('Import requires an empty database.');
@@ -36,15 +37,14 @@ export function importMagic(db: Database.Database, source: string) {
                 names.add(name);
         for (const name of names) {
             const { total_wins = 0, ...metadata } = saved.commander_profiles[name] ?? { ...empty, primary_name: name };
-            db.prepare('INSERT INTO commanders VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(completeCommanderMetadata(metadata)), (rules[name] ?? rules[metadata.primary_name] ?? '').trim());
+            db.prepare('INSERT INTO legacy_commanders VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(completeCommanderMetadata(metadata)), (rules[name] ?? rules[metadata.primary_name] ?? '').trim());
         }
         for (const [name, list] of Object.entries(saved.player_profiles) as [
             string,
             string[]
         ][]) {
             db.prepare('INSERT INTO profiles VALUES (?,?)').run(name, saved.player_profile_wins[name] ?? 0);
-            for (const commander of new Set(list))
-                db.prepare('INSERT INTO profile_commanders VALUES (?,?)').run(name, commander);
+            void list;
         }
         for (const p of planes)
             db.prepare('INSERT INTO planes VALUES (?,?,?)').run(p.name, p.image_path, p.planes_text);
@@ -55,6 +55,7 @@ export function importMagic(db: Database.Database, source: string) {
                 db.prepare('INSERT INTO settings VALUES (?,?)').run(key, JSON.stringify(saved[key]));
         db.prepare('INSERT INTO settings VALUES (?,?)').run('seed_sync_baseline', JSON.stringify(saved));
         db.prepare('INSERT INTO settings VALUES (?,?)').run('imported', JSON.stringify({ at: new Date().toISOString(), source: 'MagicApp' }));
+        migrateCommanderHistory(db);
         return true;
     }).immediate();
 }

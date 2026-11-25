@@ -18,6 +18,7 @@ export type CommanderMetadata = {
     };
 };
 export type Commander = {
+    id: string; plays: number; unattributedWins: number; cards: import('./card-search').CardDetails[];
     name: string;
     wins: number;
     metadata: CommanderMetadata;
@@ -26,7 +27,8 @@ export type Commander = {
 export type Profile = {
     name: string;
     wins: number;
-    commanders: string[];
+    plays: number; unattributedWins: number; unattributedPlays: number;
+    history: { deckId: string; name: string; plays: number; wins: number; lastPlayed: string | null }[];
 };
 export type Settings = {
     number_of_players: number;
@@ -51,6 +53,7 @@ export type Player = {
     seatVersion?: number;
     name: string;
     commander: string;
+    deckId?: string | null;
     life: number;
     poison: number;
     damage: number[];
@@ -79,7 +82,10 @@ export function winnerOf(players: Player[]) {
     const alive = joined.filter(isAlive);
     return alive.length === 1 ? alive[0].number : null;
 }
-export function assetUrl(path: string) { return path.startsWith('res/') && !path.includes('..') ? '/' + path : ''; }
+export function assetUrl(path: string) {
+    if(path.startsWith('res/') && !path.includes('..'))return '/' + path;
+    try { const url=new URL(path);return url.protocol==='https:'&&url.hostname==='cards.scryfall.io'&&!url.username&&!url.password?url.href:''; }catch{return '';}
+}
 
 export type CounterSnapshot = Pick<Player, 'life' | 'poison' | 'damage'>;
 export type StoredGameEvent = {

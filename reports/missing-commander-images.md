@@ -1,12 +1,5 @@
-# Commanders missing usable images
+# Commander artwork inventory retired
 
-- **Arwen Undomiel** — No image assigned
-- **Azami, Lady of Scrolls** — No image assigned
-- **Bello, Bard of the Brambles.** — No image assigned
-- **Ben New Commander** — No image assigned
-- **Doctor Doom, King of Latveria** — No image assigned
-- **Eowyn Shieldmaiden** — No image assigned
-- **Hawkeye, Young Avenger** — No image assigned
-- **Human Torch** — No image assigned
-- **New Commander** — No image assigned
-- **Strobel new commander.** — No image assigned
+Commander artwork is fetched from Scryfall on demand. Card details and image URLs are held temporarily in memory, never saved to SQLite. Only commander identity, usage and win history are persisted locally.
+
+Local commander image files are retired; plane and emote assets remain bundled.

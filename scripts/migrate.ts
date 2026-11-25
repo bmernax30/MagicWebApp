@@ -3,6 +3,7 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { migrateCommanderHistory } from '../src/db/commander-history';
 import { databasePath } from '../src/db/client';
 loadEnvConfig(process.cwd());
 const filename = databasePath();
@@ -24,6 +25,7 @@ try {
                 throw new Error(`Applied migration changed: ${name}`);
             if (!applied) {
                 db.exec(sql);
+                if(name==='0006_commander_history.sql')migrateCommanderHistory(db);
                 db.prepare('INSERT INTO magic_migrations VALUES (?, ?)').run(name, hash);
             }
         }).immediate();
