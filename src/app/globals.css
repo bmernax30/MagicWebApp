@@ -787,3 +787,19 @@
 .seat-resume-setup { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; text-align: left; }
 .seat-resume-setup dt { color: var(--muted); font-size: .8rem; }
 .seat-resume-setup dd { margin: 4px 0 0; overflow-wrap: anywhere; font-weight: 600; }
+
+.player-actions { display: grid; grid-template-columns: 1fr; gap: 6px; width: 100%; margin-top: 6px; }
+.player-actions.with-commander { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.player-actions button { min-width: 0; padding: 8px 4px; font-size: .75rem; margin: 0; }
+.commander-trigger[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.commander-source { margin: 16px 0 0; font-size: .9rem; }
+.commander-source strong { display: block; color: var(--gold); }
+.controller .pending-change { margin: 12px 0; padding: 10px 12px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 16px; }
+.controller .pending-change > p { margin: 0; font-size: .8rem; }
+.controller .pending-change > strong { font-size: 28px; }
+.controller .pending-change .actions { gap: 8px; }
+.controller .pending-change .muted { flex-basis: 100%; }
+.player-leave { max-width: 650px; margin: 28px auto 0; }
+.leave-game { width: 100%; background: #9f242d; border: 1px solid #ed747b; color: #fff; min-height: 48px; }
+.leave-game:hover:not(:disabled) { background: #bc2d38; border-color: #ff9ba0; }
+.controller .mini-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; }
