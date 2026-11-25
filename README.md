@@ -1,6 +1,6 @@
 # MagicWebApp
 
-Current version: **1.0.1**.
+Current version: **1.0.2**.
 
 A shared Magic: The Gathering game table for a Linux server and your playgroup’s phones. Create a table, share its game code, and let each player choose a seat and keep score. The main scoreboard stays synchronized across devices.
 
@@ -65,7 +65,7 @@ Refresh the website on every phone after restarting. Migration `0001_seat_sessio
 ## What is implemented
 
 - Create a Commander or Standard table with 2–6 empty seats, 1–999 starting life, optional Planechase, and saved default settings. Profile and commander selection happens when joining, not when creating the table.
-- A unique six-character code identifies each saved game. Join by code, or use `/game/CODE?view=select`; choose an open seat, a saved player profile, and a commander from that profile. Commander games require a commander; Standard permits none. Seat assignment is atomic: the first join succeeds and another simultaneous join receives a conflict. Filled seats reopen their existing controls.
+- A unique six-character code identifies each saved game. Join by code, or use `/game/CODE?view=select`; choose an open seat, a saved player profile, and a commander from that profile. Commander games require a commander; Standard permits none. Seat assignment is atomic: the first join succeeds and another simultaneous join receives a conflict. Filled seats offer **Take over seat**: confirm the existing setup to reopen controls without resetting or reassigning anything.
 - Main and compact scoreboards show each joined player’s total profile wins and the selected commander’s total wins. Totals refresh when a game is finished or restarted, including changes made from another device.
 - Shared scoreboard, compact scoreboard, and `/game/CODE?view=1` through `?view=6` individual phone controllers. All views use the same saved state; each phone chooses its own display mode.
 - Click/tap controls for life, poison, and commander damage, including damage from your own commander. Taps accumulate a separate signed pending change; Apply commits the batch as one event, and Cancel discards the draft. The displayed total changes only after Apply. Game hotkeys are removed. Names and profile content can still be entered in normal web forms.
@@ -157,7 +157,7 @@ python3 tests/sqlite_smoke.py
 
 Tests use temporary databases, not the configured live database. The test runner uses in-process isolation so restricted environments execute every test without launching child processes. Coverage includes import fidelity, SQLite constraints, independent-client persistence, duplicate actions, score rules, winner recording, restart conflicts, input validation, game isolation, Planechase, and catalog writes. Route tests call the actual handlers with independent web Request/Response objects, including 20 concurrent changes, same-origin checks, input errors, and conflict responses. They do not open a socket or replace the live HTTP proof.
 
-**Verification in the implementation environment:** Dependencies and the lockfile are installed using Node 24.19.0 and npm 11.16.0. ESLint passed with no warnings, all 52 Node tests passed, TypeScript checking passed, and the production build passed with `MAGIC_RESTRICTED_BUILD=1`. Three Python SQLite/schema/asset tests passed. Migration and initial import succeeded for the default `data/magic.sqlite` database. The concurrent route test preserved every delta, returned identical scores to independent clients, and ignored a duplicate action. The project owner has confirmed phone access on the Linux server. The live HTTP proof also passed against an isolated production server: 20 concurrent changes, identical client reads, duplicate-action protection, self-commander damage, log messages, undo, commander changes, shared emotes and server-enforced cooldowns, exactly one successor session, carried-over players, and shared exit. The temporary server used a separate database and was stopped after verification. The new session-transition and commander-switching screens still need a phone check.
+**Verification in the implementation environment:** Dependencies and the lockfile are installed using Node 24.19.0 and npm 11.16.0. ESLint passed with no warnings, all 53 Node tests passed, TypeScript checking passed, and the production build passed with `MAGIC_RESTRICTED_BUILD=1`. Three Python SQLite/schema/asset tests passed. Migration and initial import succeeded for the default `data/magic.sqlite` database. The concurrent route test preserved every delta, returned identical scores to independent clients, and ignored a duplicate action. The project owner has confirmed phone access on the Linux server. The live HTTP proof also passed against an isolated production server: 20 concurrent changes, identical client reads, duplicate-action protection, self-commander damage, log messages, undo, commander changes, shared emotes and server-enforced cooldowns, exactly one successor session, carried-over players, and shared exit. The temporary server used a separate database and was stopped after verification. The new session-transition and commander-switching screens still need a phone check.
 
 `MAGIC_RESTRICTED_BUILD=1` selects Next’s TypeScript compiler API and worker threads, runs Webpack in the main process, and uses two page workers. It keeps type checking enabled. The default build configuration remains unchanged for ordinary environments that allow child processes.
 
@@ -184,3 +184,9 @@ The read-only `/api/cards?q=...` and `/api/cards?name=...` endpoints validate na
 ## Lobby navigation (MAGIC-002)
 
 The main screen has five tabs: **Game Creation**, **Player Profile**, **Commander Profile**, **Leaderboard**, and **Card Search**. Create and Join remain together under Game Creation. Player and commander editors are separate, and switching sections preserves unsaved drafts and card-search results. The tab bar wraps on phones and supports Left/Right arrows, Home and End. Game scoreboard navigation is unchanged.
+
+## Reconnecting to a seat (MAGIC-003)
+
+On any phone, enter the existing game code under Game Creation, choose your occupied seat, then confirm **Take over seat**. The confirmation shows the current profile, commander visibility, life, poison and commander-damage totals. There are no profile or commander selectors in takeover. The same saved setup, scores, round, seat generation and log remain; reconnection sends no join/reset action and awards no wins. Existing commander-change controls remain available as a separate deliberate action after reconnection.
+
+An open seat still uses the normal join form. If a seat is kicked, vacated or reassigned while its takeover confirmation is open, the stale confirmation cannot open the replacement occupant’s controls. A saved direct player-view URL also continues to reopen that seat. Multiple trusted devices can control the same seat; takeover does not disconnect the previous phone or introduce authentication. Review builds remain uncommitted until approved, at which point the issue version increments.

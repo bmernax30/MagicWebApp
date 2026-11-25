@@ -74,7 +74,7 @@ export function Lobby() {
         finally {
             setBusy(false);
         } }}>Save setup as defaults</button>
-    </section><aside><section className="panel join-panel"><p className="eyebrow">THERE’S A SEAT FOR YOU</p><h2>Join a game</h2><p>Enter the code on the scoreboard, then choose a seat, your profile, and your commander.</p><form onSubmit={async (e) => { e.preventDefault(); setBusy(true); try {
+    </section><aside><section className="panel join-panel"><p className="eyebrow">THERE’S A SEAT FOR YOU</p><h2>Join a game</h2><p>Enter the scoreboard’s code. Join an open seat, or take over your existing seat to reconnect without changing your profile, commander, or scores.</p><form onSubmit={async (e) => { e.preventDefault(); setBusy(true); try {
             const g = await api<Game>(`/api/games/${code}`);
             router.push(`/game/${g.code}?view=select`);
         }

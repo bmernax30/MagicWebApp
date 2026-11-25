@@ -218,6 +218,38 @@ describe('HTTP route contracts with independent clients', () => {
         assert.equal((await read(next.code)).status, 'exited');
         assert.equal((await read(next.code)).nextGameCode, null);
     });
+    test('a fresh phone resumes an occupied seat with unchanged setup, scores and history', async () => {
+        let game = await create();
+        for (const action of [
+            { ...counter(), counter: 'poison', delta: 3 },
+            { ...counter(), counter: 'commander', source: 2, delta: 5 },
+            { id: randomUUID(), type: 'visibility', player: 1, round: 1, revision: 0 },
+        ]) {
+            const response = await changeGame(request(game.code, action), context(game.code));
+            assert.equal(response.status, 200); game = await response.json();
+        }
+        const logBefore = await (await readLog(new Request(`${origin}/api/games/${game.code}/log`), context(game.code))).json();
+        const catalogBefore = await (await readCatalog()).json();
+        // A new phone has no cookies or local state. Reconnection only reads the game.
+        const freshPhone = await readGame(new Request(`${origin}/api/games/${game.code.toLowerCase()}`), context(game.code.toLowerCase()));
+        assert.equal(freshPhone.status, 200);
+        const resumed = await freshPhone.json() as Game;
+        assert.deepEqual(resumed, game);
+        assert.deepEqual(await (await readLog(new Request(`${origin}/api/games/${game.code}/log`), context(game.code))).json(), logBefore);
+        assert.deepEqual(await (await readCatalog()).json(), catalogBefore);
+        const occupiedJoin = await changeGame(request(game.code, { id: randomUUID(), type: 'join', player: 1, name: game.players[1].name, commander: game.players[1].commander, round: 1, revision: game.revision }), context(game.code));
+        assert.equal(occupiedJoin.status, 409);
+        const changed = await changeGame(request(game.code, { ...counter(), delta: -2, revision: resumed.revision, seatVersion: resumed.players[0].seatVersion ?? 0 }), context(game.code));
+        assert.equal(changed.status, 200);
+        const after = await read(game.code);
+        assert.equal(after.players[0].life, game.players[0].life - 2);
+        assert.equal(after.players[0].name, game.players[0].name);
+        assert.equal(after.players[0].commander, game.players[0].commander);
+        assert.equal(after.players[0].poison, 3);
+        assert.equal(after.players[0].damage[1], 5);
+        assert.equal(after.players[0].hidden, true);
+        assert.deepEqual(after.players[1], game.players[1]);
+    });
     test('unknown game codes return a useful 404 response', async () => {
         const response = await readGame(new Request(`${origin}/api/games/ABC234`), context('ABC234'));
         assert.equal(response.status, 404);
