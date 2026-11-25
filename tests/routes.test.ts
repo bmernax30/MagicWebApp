@@ -1,7 +1,8 @@
+import { applyTestSchema } from './schema-fixture';
 import { after, before, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import Database from 'better-sqlite3';
@@ -33,8 +34,7 @@ describe('HTTP route contracts with independent clients', () => {
         const db = new Database(process.env.MAGIC_DATABASE_PATH);
         try {
             db.pragma('foreign_keys = ON');
-            db.exec(readFileSync('drizzle/0000_magic.sql', 'utf8'));
-        db.exec(readFileSync('drizzle/0002_game_log.sql', 'utf8'));
+            applyTestSchema(db);
             importMagic(db, path.resolve('seed-data/res'));
         } finally { db.close(); }
     });
@@ -54,7 +54,7 @@ describe('HTTP route contracts with independent clients', () => {
         for (let i = 0; i < 2; i++) {
             const profile = catalog.profiles[i];
             const joined = await changeGame(request(game.code, { id: randomUUID(), type: 'join', round: 1, revision: game.revision,
-                player: i + 1, name: profile.name, commander: profile.commanders[0] }), context(game.code));
+                player: i + 1, name: profile.name, commander: catalog.commanders[0].id }), context(game.code));
             assert.equal(joined.status, 200);
             game = await joined.json();
         }
@@ -116,7 +116,7 @@ describe('HTTP route contracts with independent clients', () => {
             const profile = catalog.profiles[0];
             const joined = await changeGame(new Request(`http://0.0.0.0:3000/api/games/${game.code}`, {
                 method: 'POST', headers, body: JSON.stringify({ id: randomUUID(), type: 'join', round: 1, revision: 0,
-                    player: 1, name: profile.name, commander: profile.commanders[0] }),
+                    player: 1, name: profile.name, commander: catalog.commanders[0].id }),
             }), context(game.code));
             assert.equal(joined.status, 200);
             const changed = await changeGame(new Request(`http://0.0.0.0:3000/api/games/${game.code}`, {
@@ -160,7 +160,7 @@ describe('HTTP route contracts with independent clients', () => {
         const game = await response.json() as Game;
         assert.ok(game.players.every(p => !p.joined));
         const catalog = await (await readCatalog()).json();
-        const attempts = catalog.profiles.slice(0, 2).map((p: { name: string; commanders: string[] }) => ({ id: randomUUID(), type: 'join', round: 1, revision: 0, player: 1, name: p.name, commander: p.commanders[0] }));
+        const attempts = catalog.profiles.slice(0, 2).map((p: { name: string; commanders: string[] }) => ({ id: randomUUID(), type: 'join', round: 1, revision: 0, player: 1, name: p.name, commander: catalog.commanders[0].id }));
         const responses = await Promise.all(attempts.map((action: unknown) => changeGame(request(game.code, action), context(game.code))));
         assert.deepEqual(responses.map(r => r.status).sort(), [200, 409]);
         const winner = responses.findIndex(r => r.status === 200);
@@ -207,8 +207,7 @@ describe('HTTP route contracts with independent clients', () => {
         const next = await read(ended.nextGameCode!);
         assert.deepEqual(next.players.map(p => p.name), game.players.map(p => p.name));
         const catalog = await (await readCatalog()).json();
-        const profile = catalog.profiles.find((p: { name: string }) => p.name === next.players[0].name);
-        const replacement = profile.commanders.find((name: string) => name !== next.players[0].commander);
+                const replacement = catalog.commanders.find((c:{id:string})=>c.id!==next.players[0].deckId).name;
         const changed = await changeGame(request(next.code, { id: randomUUID(), type: 'change-commander', round: 1, revision: next.revision, player: 1, commander: replacement }), context(next.code));
         assert.equal(changed.status, 200);
         const state = await changed.json() as Game;

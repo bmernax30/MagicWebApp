@@ -4,8 +4,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { api } from './client-api';
 import type { CardDetails } from '@/lib/card-search';
 
-export function CardSearch() {
+export function CardSearch({ onSelect, onClear, label = 'Card name' }: { onSelect?: (card: CardDetails) => void; onClear?:()=>void; label?: string } = {}) {
     const id = useId();
+    const onSelectRef=useRef(onSelect);
+    useEffect(()=>{onSelectRef.current=onSelect;},[onSelect]);
     const [query, setQuery] = useState(''), [suggestions, setSuggestions] = useState<string[]>([]);
     const [card, setCard] = useState<CardDetails | null>(null), [error, setError] = useState('');
     const [searching, setSearching] = useState(false), [loading, setLoading] = useState(false);
@@ -25,26 +27,27 @@ export function CardSearch() {
         return () => { clearTimeout(timer); controller.abort(); };
     }, [query]);
     async function choose(name: string) {
-        selection.current?.abort();
+        selection.current?.abort(); onClear?.();
         const controller = new AbortController(); selection.current = controller;
         setLoading(true); setError(''); setCard(null);
         try {
             const data = await api<{ card: CardDetails }>(`/api/cards?name=${encodeURIComponent(name)}`, undefined, controller.signal);
-            if (!controller.signal.aborted) { setCard(data.card); requestAnimationFrame(() => heading.current?.focus()); }
+            if (!controller.signal.aborted) { setCard(data.card); onSelectRef.current?.(data.card); requestAnimationFrame(() => heading.current?.focus()); }
         } catch (e) { if (!controller.signal.aborted) setError((e as Error).message); }
         finally { if (!controller.signal.aborted) setLoading(false); }
     }
     return <details open className="panel card-search"><summary>Search Magic cards</summary><div className="card-search-content">
-        <label htmlFor={id}>Card name</label><input id={id} type="search" maxLength={120} autoComplete="off" placeholder="Start typing a card name…" value={query} onChange={e => {
-            selection.current?.abort(); setLoading(false); setCard(null); setError(''); setSuggestions([]); setSearching(false); setQuery(e.target.value);
+        <label htmlFor={id}>{label}</label><input id={id} type="search" maxLength={120} autoComplete="off" placeholder="Start typing a card name…" value={query} onChange={e => {
+            selection.current?.abort(); onClear?.(); setLoading(false); setCard(null); setError(''); setSuggestions([]); setSearching(false); setQuery(e.target.value);
         }}/>
-        <p className="muted">Enter at least two characters, then select a suggestion. Card lookup does not change your game.</p>
+        <p className="muted">Enter at least two characters, then select a suggestion. {onSelect?'Your selected card is used when you join or save your commander.':'Card lookup does not change your game.'}</p>
         {searching && <p role="status">Searching Scryfall…</p>}
         {error && <p className="error" role="alert">{error}</p>}
         {suggestions.length > 0 && <ul className="card-suggestions" aria-label="Card suggestions">{suggestions.map(name => <li key={name}><button onClick={() => void choose(name)}>{name}</button></li>)}</ul>}
         {!searching && !error && query.trim().length >= 2 && suggestions.length === 0 && <p role="status">No suggestions yet. Try more of the card name.</p>}
         {loading && <p role="status">Loading card details…</p>}
         {card && <section className="card-details" aria-label="Selected card"><h2 ref={heading} tabIndex={-1}>{card.name}</h2>
+
             <p>Mana value: {card.manaValue} · {card.set} · #{card.number} · {card.rarity}{card.released && ` · Released ${card.released}`}</p>
             <div className="card-faces">{card.faces.map((face, i) => <article key={i}>
                 {face.image && <img src={face.image} alt={face.name} loading="lazy"/>}<div><h3>{face.name}</h3>

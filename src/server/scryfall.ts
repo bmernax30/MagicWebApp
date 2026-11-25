@@ -4,10 +4,10 @@ import type { CardDetails } from '../lib/card-search';
 import { GameError } from './game-service';
 import { APP_VERSION } from '../lib/version';
 const text = z.string().default('');
-const face = z.object({ name: z.string(), mana_cost: text, type_line: text, oracle_text: text,
+const face = z.object({ colors: z.array(z.string()).default([]), name: z.string(), mana_cost: text, type_line: text, oracle_text: text,
     power: text, toughness: text, loyalty: text, defense: text, flavor_text: text, artist: text,
     image_uris: z.object({ normal: z.string() }).optional() });
-const card = face.extend({ scryfall_uri: z.string(), cmc: z.number(), set_name: text,
+const card = face.extend({ oracle_id:z.uuid().optional(), scryfall_uri: z.string(), cmc: z.number(), set_name: text,
     collector_number: text, rarity: text, released_at: text,
     legalities: z.record(z.string(), z.string()).default({}), card_faces: z.array(face).optional() });
 export const cardQuery = z.union([
@@ -22,9 +22,9 @@ export function normalizeCard(input: unknown): CardDetails {
     const c = card.parse(input);
     // Split/adventure cards have one shared image; transform cards have face images.
     const faces = c.card_faces?.length ? c.card_faces : [c];
-    return { name: c.name, url: safeUrl(c.scryfall_uri, 'scryfall.com'), manaValue: c.cmc,
+    return { oracleId:c.oracle_id??'', name: c.name, url: safeUrl(c.scryfall_uri, 'scryfall.com'), manaValue: c.cmc,
         set: c.set_name, number: c.collector_number, rarity: c.rarity, released: c.released_at,
-        legalities: c.legalities, faces: faces.map((f, i) => ({ name: f.name,
+        legalities: c.legalities, faces: faces.map((f, i) => ({ colors: f.colors, name: f.name,
             image: safeUrl(f.image_uris?.normal ?? (i === 0 ? c.image_uris?.normal ?? '' : ''), 'cards.scryfall.io'),
             manaCost: f.mana_cost, type: f.type_line, text: f.oracle_text, power: f.power,
             toughness: f.toughness, loyalty: f.loyalty, defense: f.defense, flavor: f.flavor_text, artist: f.artist || c.artist })) };
@@ -47,11 +47,16 @@ export function createCardSearch(fetcher: typeof fetch = fetch) {
             if (wait) await new Promise(resolve => setTimeout(resolve, wait));
             const url = new URL('q' in query ? 'https://api.scryfall.com/cards/autocomplete' : 'https://api.scryfall.com/cards/named');
             url.searchParams.set('q' in query ? 'q' : 'exact', 'q' in query ? query.q : query.name);
+            if('q' in query)url.searchParams.set('include_extras','true');
             lastRequest = Date.now();
             if ('name' in query) lastNamedRequest = lastRequest;
             let response: Response;
             try { response = await fetcher(url, { headers: { 'User-Agent': `MagicWebApp/${APP_VERSION} (github.com/bmernax30/MagicWebApp)`, Accept: 'application/json' }, signal: AbortSignal.timeout(8000), cache: 'no-store', redirect: 'error' }); }
             catch { throw new GameError('Unable to reach Scryfall. Check the server internet connection and try again.', 502); }
+            // Pace from receipt of the previous response, not its send time: a
+            // faster following network hop must not compress Scryfall's 500ms gap.
+            lastRequest = Date.now();
+            if ('name' in query) lastNamedRequest = lastRequest;
             if (response.status === 429) {
                 const retry = Number(response.headers.get('Retry-After'));
                 backoffUntil = Date.now() + Math.min(300000, Math.max(30000, (Number.isFinite(retry) ? retry : 10) * 1000));
@@ -65,7 +70,7 @@ export function createCardSearch(fetcher: typeof fetch = fetch) {
                 value = 'q' in query ? { suggestions: z.object({ data: z.array(z.string().max(200)) }).parse(json).data.slice(0, 20) } : { card: normalizeCard(json) };
             } catch { throw new GameError('Scryfall returned unexpected card data. Please try again.', 502); }
             if (cache.size >= 100) cache.delete(cache.keys().next().value!);
-            cache.set(key, { until: Date.now() + 86400000, value });
+            cache.set(key, { until: Date.now() + 15 * 60 * 1000, value });
             return value;
         });
         queue = work.then(() => undefined, () => undefined);
@@ -75,4 +80,6 @@ export function createCardSearch(fetcher: typeof fetch = fetch) {
     }
     return { lookup };
 }
-export const scryfall = createCardSearch();
+// Share pacing/backoff across route bundles and development module reloads.
+const shared = globalThis as typeof globalThis & { magicScryfallClient?: ReturnType<typeof createCardSearch> };
+export const scryfall = shared.magicScryfallClient ??= createCardSearch();

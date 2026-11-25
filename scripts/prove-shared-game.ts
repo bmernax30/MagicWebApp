@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import type { Catalog, Game, GameLog } from '../src/lib/types';
-const base = process.env.MAGIC_TEST_URL ?? 'http://127.0.0.1:6001';
+const base = process.env.MAGIC_TEST_URL ?? '';
+if(!base)throw new Error('Set MAGIC_TEST_URL to an isolated test server. Finish records play history.');
 async function request<T>(url: string, body?: unknown): Promise<T> {
     const r = await fetch(base + url, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json', Origin: new URL(base).origin } : undefined, body: body ? JSON.stringify(body) : undefined });
     const value = await r.json();
@@ -18,7 +19,7 @@ async function main() {
     for (let i = 0; i < 2; i++) {
         const profile = catalog.profiles[i];
         game = await request<Game>(url, { id: randomUUID(), type: 'join', round: 1, revision: game.revision,
-            player: i + 1, name: profile.name, commander: profile.commanders[0] ?? '' });
+            player: i + 1, name: profile.name, commander: catalog.commanders[i].id });
     }
     const initialRevision = game.revision;
     const actions = Array.from({ length: 20 }, (_, i) => ({ id: randomUUID(), type: 'counter', round: 1, revision: 0, player: i % 2 + 1, counter: 'life', delta: -1 }));
@@ -41,8 +42,7 @@ async function main() {
     const undone = await request<Game>(url, { id: randomUUID(), type: 'undo', round: selfDamage.round, revision: selfDamage.revision, eventId: log.entries[0].id });
     assert.equal(undone.players[0].life, 30);
     assert.equal(undone.players[0].damage[0], 0);
-    const profile = catalog.profiles.find(p => p.name === undone.players[0].name)!;
-    const replacement = profile.commanders.find(name => name !== undone.players[0].commander);
+    const replacement = catalog.commanders.find(c=>c.id!==undone.players[0].deckId)?.name;
     assert.ok(replacement, 'The proof needs an alternate commander on the first profile.');
     const switched = await request<Game>(url, { id: randomUUID(), type: 'change-commander', round: undone.round, revision: undone.revision, player: 1, commander: replacement });
     assert.equal(switched.players[0].life, 30);

@@ -2,7 +2,7 @@ import { loadEnvConfig } from '@next/env';
 import fs from 'node:fs';
 import path from 'node:path';
 import { openDatabase, databasePath } from '../src/db/client';
-import { readSeed, syncSeed, missingCommanderImages } from '../src/db/seed-sync';
+import { readSeed, syncSeed } from '../src/db/seed-sync';
 loadEnvConfig(process.cwd());
 async function main() {
     const args = process.argv.slice(2);
@@ -17,10 +17,6 @@ async function main() {
         console.log('Backup:', backup);
         console.log('Database:', databasePath());
         console.log(JSON.stringify(syncSeed(sqlite, next, baseline), null, 2));
-        const missing = missingCommanderImages(sqlite, path.resolve('public'));
-        fs.mkdirSync('reports', { recursive: true });
-        fs.writeFileSync('reports/missing-commander-images.md', '# Commanders missing usable images\n\n' + missing.map(c => `- **${c.name}** — ${c.reason}${c.image ? `: ${c.image}` : ''}`).join('\n') + '\n');
-        console.log(`Missing commander images: ${missing.length}. See reports/missing-commander-images.md`);
     } finally { sqlite.close(); }
 }
 void main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -20,11 +20,11 @@ class SQLiteSmoke(unittest.TestCase):
 
     def test_schema_and_constraints(self):
         names = {row[0] for row in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        self.assertEqual(names, {'settings', 'profiles', 'commanders', 'profile_commanders', 'planes', 'games', 'actions'})
+        self.assertEqual(names, {'settings', 'profiles', 'legacy_commanders', 'commander_decks', 'commander_aliases', 'game_appearances', 'planes', 'games', 'actions'})
         with self.assertRaises(sqlite3.IntegrityError):
             self.db.execute('INSERT INTO profiles VALUES (?, ?)', ('Invalid', -1))
         with self.assertRaises(sqlite3.IntegrityError):
-            self.db.execute('INSERT INTO profile_commanders VALUES (?, ?)', ('Missing', 'Missing'))
+            self.db.execute('INSERT INTO commander_aliases VALUES (?, ?)', ('Missing', 'Missing'))
 
     def test_idempotency_key_is_unique_per_game(self):
         for code in ['ABC234', 'DEF567']:

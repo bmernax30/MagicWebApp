@@ -1,5 +1,7 @@
 import 'server-only';
+import { temporaryCommander,commanderPresentation } from './temporary-commanders';
 import { EMOTE_COOLDOWN_MS, EMOTE_DURATION_MS, EMOTES } from '../lib/emotes';
+import { isLegacyPlaceholder } from '../lib/legacy-commander-names';
 import { completeCommanderMetadata } from '../lib/commander-defaults';
 import { randomInt, randomUUID } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
@@ -17,13 +19,26 @@ export function gameService({ sqlite, orm }: Store) {
         const defaults = orm.select().from(tables.settings).where(eq(tables.settings.key, 'defaults')).get();
         if (!defaults)
             throw new GameError('Database is not initialized. Run npm run db:import.', 503);
-        const links = orm.select().from(tables.profileCommanders).all();
+        const commanders = sqlite.prepare(`SELECT d.*, d.baseline_wins+COALESCE(SUM(a.won),0) AS wins,
+            d.baseline_plays+COUNT(a.game) AS plays FROM commander_decks d LEFT JOIN game_appearances a ON a.deck_id=d.id GROUP BY d.id ORDER BY d.name`).all() as {id:string;name:string;cards:string;legacy_metadata:string;legacy_rules:string;wins:number;plays:number;baseline_wins:number}[];
+        const profileRows = orm.select().from(tables.profiles).orderBy(asc(tables.profiles.name)).all();
         return {
             settings: JSON.parse(defaults.value) as Settings,
-            profiles: orm.select().from(tables.profiles).orderBy(asc(tables.profiles.name)).all().map(p => ({ ...p, commanders: links.filter(l => l.profile === p.name).map(l => l.commander) })),
-            commanders: orm.select().from(tables.commanders).orderBy(asc(tables.commanders.name)).all().map(c => ({ ...c, metadata: completeCommanderMetadata(JSON.parse(c.metadata)) } as Commander)),
+            profiles: profileRows.map(p => {
+                const history = sqlite.prepare(`SELECT a.deck_id AS deckId,d.name,COUNT(*) AS plays,SUM(a.won) AS wins,MAX(a.finished_at) AS lastPlayed
+                    FROM game_appearances a JOIN commander_decks d ON d.id=a.deck_id WHERE a.profile=? GROUP BY a.deck_id ORDER BY wins DESC,plays DESC,d.name`).all(p.name) as Catalog['profiles'][number]['history'];
+                const totals=sqlite.prepare('SELECT COUNT(*) AS plays,COALESCE(SUM(won),0) AS wins FROM game_appearances WHERE profile=?').get(p.name) as {plays:number;wins:number};
+                return {...p,history,unattributedPlays:Math.max(0,p.wins-totals.wins)+totals.plays-history.reduce((sum,h)=>sum+h.plays,0),plays:Math.max(0,p.wins-totals.wins)+totals.plays,unattributedWins:Math.max(0,p.wins-history.reduce((sum,h)=>sum+h.wins,0))};
+            }),
+            commanders: commanders.map(c=>({id:c.id,name:c.name,...commanderPresentation([completeCommanderMetadata(JSON.parse(c.legacy_metadata)).primary_name,...(completeCommanderMetadata(JSON.parse(c.legacy_metadata)).second_commander.enabled?[completeCommanderMetadata(JSON.parse(c.legacy_metadata)).second_commander.name]:[])],temporaryCommander(c.id)),wins:c.wins,plays:c.plays,unattributedWins:c.baseline_wins} as Commander)),
             planes: orm.select().from(tables.planes).orderBy(asc(tables.planes.name)).all(),
         };
+    }
+    function selectedDeck(value:string, required:boolean) {
+        if(!value&&!required)return null;
+        const row=sqlite.prepare('SELECT id,name FROM commander_decks WHERE id=? OR name=? OR id=(SELECT deck_id FROM commander_aliases WHERE name=?)').get(value,value,value) as {id:string;name:string}|undefined;
+        if(!row)throw new GameError('Choose a commander setup from Scryfall or your recorded history.');
+        return row;
     }
     function get(code: string): Game {
         if (!/^[A-Z2-9]{6}$/.test(code))
@@ -33,7 +48,10 @@ export function gameService({ sqlite, orm }: Store) {
             throw new GameError('Game not found. Check the six-character code.', 404);
         const game = { ...JSON.parse(row.state), revision: row.revision } as Game;
         // Older saved games already had their players assigned at creation.
-        game.players = game.players.map(p => ({ ...p, joined: p.joined ?? true, seatVersion: p.seatVersion ?? 0 }));
+        game.players = game.players.map(p => {
+            const deck=sqlite.prepare('SELECT id,name FROM commander_decks WHERE id=? UNION ALL SELECT d.id,d.name FROM commander_aliases a JOIN commander_decks d ON d.id=a.deck_id WHERE a.name=? LIMIT 1').get(p.deckId??'',p.deckId??p.commander) as {id:string;name:string}|undefined;
+            return {...p,commander:isLegacyPlaceholder(p.commander)?'':deck?.name??p.commander,joined:p.joined??true,seatVersion:p.seatVersion??0,deckId:deck?.id??null};
+        });
         game.previousGameCode ??= null;
         game.nextGameCode ??= null;
         game.endedAt ??= null;
@@ -52,7 +70,7 @@ export function gameService({ sqlite, orm }: Store) {
         let code: string;
         do { code = Array.from({ length: 6 }, () => alphabet[randomInt(alphabet.length)]).join(''); }
         while (orm.select().from(tables.games).where(eq(tables.games.code, code)).get());
-        const seats = previous?.players ?? Array.from({ length: settings.number_of_players }, (_, i) => ({ number: i + 1, joined: false, seatVersion: 0, name: `Seat ${i + 1}`, commander: '', hidden: false }));
+        const seats = previous?.players ?? Array.from({ length: settings.number_of_players }, (_, i) => ({ number: i + 1, joined: false, seatVersion: 0, name: `Seat ${i + 1}`, commander: '', deckId: null, hidden: false }));
         const game: Game = {
             code, revision: 0, round: 1, status: 'active', emotes: [], settings: structuredClone(settings),
             previousGameCode: previous?.code ?? null, nextGameCode: null, endedAt: null,
@@ -143,11 +161,11 @@ export function gameService({ sqlite, orm }: Store) {
                 if (p.joined) throw new GameError('This seat has already been filled. Choose another seat or open its controls.', 409);
                 const profile = orm.select().from(tables.profiles).where(eq(tables.profiles.name, action.name)).get();
                 if (!profile) throw new GameError('Choose a saved player profile.');
-                const linked = orm.select().from(tables.profileCommanders).all().some(link => link.profile === action.name && link.commander === action.commander);
-                if ((game.settings.game_type === 'Commander' || action.commander) && !linked)
-                    throw new GameError('Choose a commander from this player’s profile.');
+                const deck=selectedDeck(action.commander,game.settings.game_type==='Commander');
                 p.name = action.name;
-                p.commander = action.commander;
+                p.commander = deck?.name ?? '';
+                p.deckId = deck?.id ?? null;
+                p.hidden = deck ? action.hidden ?? false : false;
                 p.joined = true;
                 game.winner = winnerOf(game.players);
                 event.message = `Player ${p.number} joined as ${p.name}.`;
@@ -157,7 +175,7 @@ export function gameService({ sqlite, orm }: Store) {
                 if (!p?.joined) throw new GameError('This seat is already open.', 409);
                 event.message = `${p.name} (player ${p.number}) ${action.type === 'kick' ? 'was kicked from' : 'left'} the game. Seat ${p.number} is open.`;
                 Object.assign(p, { joined: false, seatVersion: (p.seatVersion ?? 0) + 1,
-                    name: `Seat ${p.number}`, commander: '', hidden: false,
+                    name: `Seat ${p.number}`, commander: '', deckId: null, hidden: false,
                     life: game.settings.starting_life_total, poison: 0, damage: game.players.map(() => 0) });
                 for (const other of game.players) other.damage[p.number - 1] = 0;
                 game.emotes = game.emotes.filter(e => e.sender !== p.number && e.target !== p.number);
@@ -180,11 +198,11 @@ export function gameService({ sqlite, orm }: Store) {
             else if (action.type === 'change-commander') {
                 const p = game.players[action.player - 1];
                 if (!p?.joined) throw new GameError('Choose a joined player before changing commanders.');
-                const linked = orm.select().from(tables.profileCommanders).all().some(link => link.profile === p.name && link.commander === action.commander);
-                if ((game.settings.game_type === 'Commander' || action.commander) && !linked)
-                    throw new GameError('Choose a commander from this player’s profile.');
+                const deck=selectedDeck(action.commander,game.settings.game_type==='Commander');
                 const old = p.commander;
-                p.commander = action.commander;
+                p.commander = deck?.name ?? '';
+                p.deckId = deck?.id ?? null;
+                p.hidden = deck ? action.hidden ?? p.hidden : false;
                 event.message = p.hidden ? `Player ${p.number} changed their hidden commander.` : `Player ${p.number} changed commander from ${old || 'none'} to ${p.commander || 'none'}. Scores unchanged.`;
             }
             else if (action.type === 'exit') {
@@ -221,12 +239,12 @@ export function gameService({ sqlite, orm }: Store) {
                 event = { ...event, player: p.number, before, after: snapshot(p), message };
                 game.winner = winnerOf(game.players);
             }
-            else if (action.type === 'visibility') {
+            else if (action.type === 'visibility' || action.type === 'reveal') {
                 const p = game.players[action.player - 1];
                 if (!p)
                     throw new GameError('Player not in this game.');
                 if (!p.joined) throw new GameError('Join this seat before changing its display.', 409);
-                p.hidden = !p.hidden;
+                p.hidden = action.type === 'reveal' ? false : !p.hidden;
                 event.message = `Player ${p.number} ${p.hidden ? 'hid' : 'revealed'} their commander.`;
             }
             else if (action.type === 'finish') {
@@ -237,8 +255,9 @@ export function gameService({ sqlite, orm }: Store) {
                 if (game.winner !== null) {
                     const p = game.players[game.winner - 1];
                     sqlite.prepare('UPDATE profiles SET wins=wins+1 WHERE name=?').run(p.name);
-                    sqlite.prepare('UPDATE commanders SET wins=wins+1 WHERE name=?').run(p.commander);
+
                 }
+                for(const p of game.players.filter(p=>p.joined))sqlite.prepare('INSERT INTO game_appearances VALUES (?,?,?,?,?,?,?,?)').run(game.code,game.round,p.number,p.name,p.deckId??null,game.winner===p.number?1:0,event.at,'live');
                 const next = insertSession(game.settings, game);
                 game.nextGameCode = next.code;
                 event.message = `Game finished${game.winner ? `; player ${game.winner} won` : ' without a winner'}. Next session: ${next.code}.`;
@@ -280,30 +299,11 @@ export function gameService({ sqlite, orm }: Store) {
         return sqlite.transaction(() => {
             if (data.type === 'settings')
                 orm.insert(tables.settings).values({ key: 'defaults', value: JSON.stringify(data.settings) }).onConflictDoUpdate({ target: tables.settings.key, set: { value: JSON.stringify(data.settings) } }).run();
-            if (data.type === 'profile') {
-                for (const name of data.commanders)
-                    if (!orm.select().from(tables.commanders).where(eq(tables.commanders.name, name)).get())
-                        throw new GameError('Unknown commander.');
-                orm.insert(tables.profiles).values({ name: data.name, wins: 0 }).onConflictDoNothing().run();
-                orm.delete(tables.profileCommanders).where(eq(tables.profileCommanders.profile, data.name)).run();
-                for (const name of new Set(data.commanders))
-                    orm.insert(tables.profileCommanders).values({ profile: data.name, commander: name }).run();
-            }
-            if (data.type === 'commander')
-                orm.insert(tables.commanders).values({ name: data.name, wins: 0, metadata: JSON.stringify(data.metadata), rules: data.rules }).onConflictDoUpdate({ target: tables.commanders.name, set: { metadata: JSON.stringify(data.metadata), rules: data.rules } }).run();
-            if (data.type === 'deleteProfile' || data.type === 'deleteCommander') {
-                // Existing games retain their names and scores; prevent loss of win attribution.
-                const games = orm.select().from(tables.games).all();
-                if (games.some(row => (JSON.parse(row.state) as Game).players.some(p => data.type === 'deleteProfile' ? p.name === data.name : p.commander === data.name)))
-                    throw new GameError('This profile is referenced by a saved game and cannot be deleted.', 409);
-                if (data.type === 'deleteProfile') {
-                    orm.delete(tables.profileCommanders).where(eq(tables.profileCommanders.profile, data.name)).run();
-                    orm.delete(tables.profiles).where(eq(tables.profiles.name, data.name)).run();
-                }
-                else {
-                    orm.delete(tables.profileCommanders).where(eq(tables.profileCommanders.commander, data.name)).run();
-                    orm.delete(tables.commanders).where(eq(tables.commanders.name, data.name)).run();
-                }
+            if (data.type === 'profile') orm.insert(tables.profiles).values({name:data.name,wins:0}).onConflictDoNothing().run();
+            if (data.type === 'deleteProfile') {
+                if(sqlite.prepare('SELECT 1 FROM game_appearances WHERE profile=? LIMIT 1').get(data.name) || orm.select().from(tables.games).all().some(row=>(JSON.parse(row.state) as Game).players.some(p=>p.name===data.name)))
+                    throw new GameError('This profile is referenced by saved history and cannot be deleted.',409);
+                orm.delete(tables.profiles).where(eq(tables.profiles.name,data.name)).run();
             }
             return catalog();
         }).immediate();

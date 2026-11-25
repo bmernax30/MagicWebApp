@@ -1,3 +1,4 @@
+import { applyTestSchema } from './schema-fixture';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
@@ -14,8 +15,7 @@ import type { GameAction } from '../src/lib/validation';
 function fixture() {
     const directory = mkdtempSync(path.join(tmpdir(), 'magic-test-')), filename = path.join(directory, 'test.sqlite');
     const init = new Database(filename);
-    init.exec(readFileSync('drizzle/0000_magic.sql', 'utf8'));
-        init.exec(readFileSync('drizzle/0002_game_log.sql', 'utf8'));
+    applyTestSchema(init);
     init.close();
     const store = openDatabase(filename);
     importMagic(store.sqlite, path.resolve('seed-data/res'));
@@ -28,7 +28,7 @@ function create(s: ReturnType<typeof gameService>) {
     const profiles = s.catalog().profiles.slice(0, 2);
     for (let i = 0; i < profiles.length; i++) {
         game = s.act(game.code, { id: randomUUID(), type: 'join', round: game.round, revision: game.revision,
-            player: i + 1, name: profiles[i].name, commander: profiles[i].commanders[0] });
+            player: i + 1, name: profiles[i].name, commander: s.catalog().commanders[i].id });
     }
     return game;
 }
@@ -41,15 +41,21 @@ test('legacy import preserves every profile, partner metadata, rules, wins and p
         assert.equal(c.planes.length, 111);
         for (const p of c.profiles) {
             assert.equal(p.wins, source.player_profile_wins[p.name] ?? 0);
-            assert.deepEqual(new Set(p.commanders), new Set(source.player_profiles[p.name]));
+            assert.deepEqual(p.history, []);
+            assert.ok(!Object.hasOwn(p,'commanders'));
         }
         for (const [name, value] of Object.entries(source.commander_profiles)) {
             const { total_wins, ...metadata } = value as Record<string, unknown>;
-            const c1 = c.commanders.find(c => c.name === name)!;
-            assert.equal(c1.wins, total_wins);
-            assert.deepEqual(c1.metadata, completeCommanderMetadata(metadata));
+            const archived=f.store.sqlite.prepare('SELECT wins,metadata FROM legacy_commanders WHERE name=?').get(name) as {wins:number;metadata:string};
+            assert.equal(archived.wins,total_wins);
+            assert.deepEqual(JSON.parse(archived.metadata),completeCommanderMetadata(metadata));
+            const alias=f.store.sqlite.prepare('SELECT deck_id FROM commander_aliases WHERE name=?').get(name) as {deck_id:string}|undefined;
+            if(alias)assert.ok(c.commanders.some(c=>c.id===alias.deck_id));
         }
-        assert.ok(c.commanders.some(c => c.rules.length > 0));
+        assert.ok(f.store.sqlite.prepare("SELECT 1 FROM legacy_commanders WHERE rules<>''").get());
+        assert.ok(c.commanders.every(c=>c.rules===''&&c.cards.length===0));
+        assert.ok(c.commanders.every(c=>c.cards.length>0||(!c.metadata.image_path&&!c.metadata.second_commander.image_path)));
+        assert.ok(!c.commanders.some(c=>['Ben New Commander','New Commander','Strobel new commander.'].includes(c.name)));
         assert.equal(importMagic(f.store.sqlite, path.resolve('seed-data/res')), false);
     }
     finally {
@@ -197,24 +203,15 @@ test('games stay isolated and malformed input never changes scores', () => {
         f.close();
     }
 });
-test('catalog saves preserve wins, update relationships, and reject deletion of game references', () => {
-    const f = fixture();
-    try {
-        const before = f.service.catalog(), p = before.profiles[0];
-        create(f.service);
-        f.service.saveCatalog({ type: 'profile', name: p.name, commanders: [] });
-        assert.equal(f.service.catalog().profiles.find(v => v.name === p.name)!.wins, p.wins);
-        assert.equal(f.service.catalog().profiles.find(v => v.name === p.name)!.commanders.length, 0);
-        const c = before.commanders[0];
-        f.service.saveCatalog({ type: 'commander', name: c.name, metadata: c.metadata, rules: 'Updated' });
-        assert.equal(f.service.catalog().commanders.find(v => v.name === c.name)!.wins, c.wins);
-        assert.throws(() => f.service.saveCatalog({ type: 'deleteProfile', name: p.name }), /saved game/);
-        assert.throws(() => f.service.saveCatalog({ type: 'profile', name: 'New', commanders: ['missing'] }), /Unknown/);
-        assert.ok(!f.service.catalog().profiles.some(p => p.name === 'New'));
-    }
-    finally {
-        f.close();
-    }
+test('player saves preserve wins and reject old assignment and commander-edit APIs', () => {
+    const f=fixture();try{
+        const p=f.service.catalog().profiles[0];create(f.service);
+        f.service.saveCatalog({type:'profile',name:p.name});
+        assert.equal(f.service.catalog().profiles[0].wins,p.wins);
+        assert.throws(()=>f.service.saveCatalog({type:'profile',name:p.name,commanders:[]}));
+        assert.throws(()=>f.service.saveCatalog({type:'commander',name:'Old manual editor'}));
+        assert.throws(()=>f.service.saveCatalog({type:'deleteProfile',name:p.name}),/saved history/);
+    }finally{f.close();}
 });
 
 test('creation makes open seats; join validates profiles and commanders and never overwrites an occupied seat', () => {
@@ -225,20 +222,19 @@ test('creation makes open seats; join validates profiles and commanders and neve
         assert.ok(game.players.every(p => !p.joined && p.commander === '' && p.name === `Seat ${p.number}`));
         assert.throws(() => f.service.act(game.code, counter()), /Join this seat/);
         const [first, second] = f.service.catalog().profiles;
-        const join = { id: randomUUID(), type: 'join', round: 1, revision: 0, player: 1, name: first.name, commander: first.commanders[0] };
+        const join = { id: randomUUID(), type: 'join', round: 1, revision: 0, player: 1, name: first.name, commander: f.service.catalog().commanders[0].id };
         assert.throws(() => f.service.act(game.code, { ...join, name: 'Unknown profile' }), /saved player/);
-        assert.throws(() => f.service.act(game.code, { ...join, commander: '' }), /commander from/);
-        const unrelated = f.service.catalog().commanders.find(c => !first.commanders.includes(c.name))!;
-        assert.throws(() => f.service.act(game.code, { ...join, commander: unrelated.name }), /commander from/);
+        assert.throws(() => f.service.act(game.code, { ...join, commander: '' }), /Choose a commander setup/);
+        assert.throws(() => f.service.act(game.code, { ...join, commander: 'missing' }), /Choose a commander setup/);
         const joined = f.service.act(game.code, join);
         assert.equal(joined.players[0].name, first.name);
         assert.equal(joined.players[0].joined, true);
         assert.equal(joined.winner, null);
         assert.equal(f.service.act(game.code, join).revision, 1);
-        assert.throws(() => gameService(other).act(game.code, { ...join, id: randomUUID(), name: second.name, commander: second.commanders[0] }), /already been filled/);
+        assert.throws(() => gameService(other).act(game.code, { ...join, id: randomUUID(), name: second.name, commander: f.service.catalog().commanders[1].id }), /already been filled/);
         assert.equal(gameService(other).get(game.code).players[0].name, first.name);
         assert.throws(() => f.service.act(game.code, { ...counter(), counter: 'commander', source: 2 }), /joined player/);
-        const updated = f.service.act(game.code, { ...join, id: randomUUID(), player: 2, name: second.name, commander: second.commanders[0] });
+        const updated = f.service.act(game.code, { ...join, id: randomUUID(), player: 2, name: second.name, commander: f.service.catalog().commanders[1].id });
         assert.equal(updated.players[1].joined, true);
         assert.equal(updated.players[0].life, 40);
         const restarted = f.service.act(game.code, { id: randomUUID(), type: 'restart', round: 1, revision: updated.revision });
@@ -398,7 +394,7 @@ test('finish archives the scores and atomically creates exactly one linked sessi
     try {
         let game = f.service.create({ settings: { ...settings, number_of_players: 4, planechase_enabled: true } });
         const profiles = f.service.catalog().profiles.slice(0, 2);
-        for (let i = 0; i < 2; i++) game = f.service.act(game.code, { id: randomUUID(), type: 'join', round: 1, revision: game.revision, player: i + 1, name: profiles[i].name, commander: profiles[i].commanders[0] });
+        for (let i = 0; i < 2; i++) game = f.service.act(game.code, { id: randomUUID(), type: 'join', round: 1, revision: game.revision, player: i + 1, name: profiles[i].name, commander: f.service.catalog().commanders[i].id });
         game = f.service.act(game.code, { ...counter(), counter: 'poison', delta: 10 });
         const beforeWins = f.service.catalog();
         const finish = { id: randomUUID(), type: 'finish', round: 1, revision: game.revision };
@@ -451,7 +447,10 @@ test('finishing without a winner still records a session and carries players for
         const finished = f.service.act(game.code, { id: randomUUID(), type: 'finish', round: 1, revision: game.revision });
         assert.equal(finished.winner, null);
         assert.ok(finished.nextGameCode);
-        assert.deepEqual(f.service.catalog(), before);
+        const after=f.service.catalog();
+        assert.deepEqual(after.profiles.map(p=>p.wins),before.profiles.map(p=>p.wins));
+        assert.deepEqual(after.commanders.map(c=>c.wins),before.commanders.map(c=>c.wins));
+        for(const p of game.players)assert.equal(after.profiles.find(v=>v.name===p.name)!.history[0].plays,1);
         assert.equal(f.service.get(finished.nextGameCode!).players.filter(p => p.joined).length, 2);
         assert.throws(() => f.service.act(game.code, { id: randomUUID(), type: 'exit', round: 1, revision: finished.revision }), /finished/);
     } finally { f.close(); }
@@ -463,17 +462,16 @@ test('changing commanders is validated and logged without resetting any scores; 
         let game = create(f.service);
         game = f.service.act(game.code, { ...counter(), counter: 'commander', source: 1, delta: 5 });
         game = f.service.act(game.code, { ...counter(), counter: 'poison', delta: 2 });
-        const profile = f.service.catalog().profiles.find(p => p.name === game.players[0].name)!;
-        const replacement = profile.commanders.find(name => name !== game.players[0].commander)!;
+        const replacement = f.service.catalog().commanders.find(c=>c.id!==game.players[0].deckId)!.name;
         const oldCommander = game.players[0].commander;
         const before = f.service.catalog();
         const change = { id: randomUUID(), type: 'change-commander', round: 1, revision: game.revision, player: 1, commander: replacement };
-        assert.throws(() => f.service.act(game.code, { ...change, commander: 'unknown' }), /from this player/);
-        assert.throws(() => f.service.act(game.code, { ...change, commander: '' }), /from this player/);
+        assert.throws(() => f.service.act(game.code, { ...change, commander: 'unknown' }), /Choose a commander setup/);
+        assert.throws(() => f.service.act(game.code, { ...change, commander: '' }), /Choose a commander setup/);
         assert.throws(() => f.service.act(game.code, { ...change, player: 6 }), /joined player/);
         const changed = f.service.act(game.code, change);
         assert.equal(changed.players[0].commander, replacement);
-        assert.deepEqual({ ...changed.players[0], commander: oldCommander }, game.players[0]);
+        assert.deepEqual({ ...changed.players[0], commander: oldCommander, deckId:game.players[0].deckId }, game.players[0]);
         assert.deepEqual(changed.players[1], game.players[1]);
         assert.match(f.service.log(game.code).entries[0].message, /changed commander/);
         assert.deepEqual(f.service.act(game.code, change), changed);
@@ -630,7 +628,7 @@ test('all six seats have independent cooldowns that release at exactly five seco
     try {
         let g = f.service.create({ settings: { ...settings, number_of_players: 6 } });
         const profile = f.service.catalog().profiles[0];
-        for (let player = 1; player <= 6; player++) g = f.service.act(g.code, { id: randomUUID(), type: 'join', round: 1, revision: g.revision, player, name: profile.name, commander: profile.commanders[0] });
+        for (let player = 1; player <= 6; player++) g = f.service.act(g.code, { id: randomUUID(), type: 'join', round: 1, revision: g.revision, player, name: profile.name, commander: f.service.catalog().commanders[0].id });
         const send = (player: number) => f.service.act(g.code, { id: randomUUID(), type: 'emote', player, target: 1, emote: 'nice', round: 1, revision: 0 });
         for (let player = 1; player <= 6; player++) send(player);
         now += 4999;
