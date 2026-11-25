@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Catalog, Game, Settings } from '@/lib/types';
 import { api } from './client-api';
 import { APP_VERSION } from '@/lib/version';
+import { CardSearch } from './card-search';
 import { ProfileManager } from './profile-manager';
 const defaults: Settings = { number_of_players: 4, starting_life_total: 40, game_type: 'Commander', planechase_enabled: false };
 export function Lobby() {
@@ -77,6 +78,7 @@ export function Lobby() {
             name: string;
             wins: number;
         }[])].sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name)).map((p, i) => <div className="leader" key={p.name}><span>{i + 1}</span><strong>{p.name}</strong><span>{p.wins} wins</span></div>)}</section>)}</div>}
+    <CardSearch/>
     <footer>Magic Merna v{APP_VERSION} · Built for your playgroup <span>Scores saved in SQLite</span></footer>
   </main>;
 }
