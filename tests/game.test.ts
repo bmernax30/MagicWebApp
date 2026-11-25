@@ -40,7 +40,8 @@ test('legacy import preserves every profile, partner metadata, rules, wins and p
         assert.equal(c.profiles.length, Object.keys(source.player_profiles).length);
         assert.equal(c.planes.length, 111);
         for (const p of c.profiles) {
-            assert.equal(p.wins, source.player_profile_wins[p.name] ?? 0);
+            assert.equal(p.wins,0);
+            assert.equal(c.seasonResults[0].players.find(old=>old.name===p.name)!.wins,source.player_profile_wins[p.name]??0);
             assert.deepEqual(p.history, []);
             assert.ok(!Object.hasOwn(p,'commanders'));
         }

@@ -12,8 +12,7 @@ export function ProfileManager({catalog,onSaved,onError}:{catalog:Catalog;onSave
         <label>Player name<input disabled={busy} value={name} maxLength={120} onChange={e=>setName(e.target.value)}/></label>
         <div className="actions"><button className="primary" disabled={busy||!name.trim()} onClick={()=>void save({type:'profile',name})}>Save player</button><button disabled={busy||!profile} onClick={()=>{if(window.confirm(`Delete ${name}?`))void save({type:'deleteProfile',name});}}>Delete player</button></div>
         {message&&<p role="status">{message}</p>}
-        {profile&&<><h3>Commander history</h3><p>{profile.wins} total wins · {profile.unattributedWins?'At least ':''}{profile.plays} plays</p>
-            {profile.unattributedPlays>0&&<p className="muted">At least {profile.unattributedPlays} plays and {profile.unattributedWins} wins have no reliable commander attribution (legacy records or games without a commander). They remain in your totals without a guessed assignment.</p>}
+        {profile&&<><h3>Commander history</h3><p>{catalog.season.name}: {profile.wins} wins · {profile.plays} plays</p>
             {!profile.history.length&&<p>No completed commander games recorded yet. Choose cards from Scryfall when you join a game.</p>}
             {profile.history.map(h=>{const deck=catalog.commanders.find(c=>c.id===h.deckId);return <article className="commander-history-row" key={h.deckId}>{deck?<CommanderInfo commander={deck}/>:<h4>{h.name}</h4>}<p>{h.wins} wins · {h.plays} plays</p></article>;})}
         </>}

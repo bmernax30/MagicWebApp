@@ -20,7 +20,7 @@ class SQLiteSmoke(unittest.TestCase):
 
     def test_schema_and_constraints(self):
         names = {row[0] for row in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        self.assertEqual(names, {'settings', 'profiles', 'legacy_commanders', 'commander_decks', 'commander_aliases', 'game_appearances', 'planes', 'games', 'actions'})
+        self.assertEqual(names, {'settings', 'profiles', 'legacy_commanders', 'commander_decks', 'commander_aliases', 'game_appearances', 'planes', 'games', 'actions', 'seasons', 'season_player_results', 'season_commander_results'})
         with self.assertRaises(sqlite3.IntegrityError):
             self.db.execute('INSERT INTO profiles VALUES (?, ?)', ('Invalid', -1))
         with self.assertRaises(sqlite3.IntegrityError):

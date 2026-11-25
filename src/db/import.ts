@@ -1,4 +1,5 @@
 import 'server-only';
+import { initializeSeasons } from './seasons';
 import { migrateCommanderHistory } from './commander-history';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -56,6 +57,7 @@ export function importMagic(db: Database.Database, source: string) {
         db.prepare('INSERT INTO settings VALUES (?,?)').run('seed_sync_baseline', JSON.stringify(saved));
         db.prepare('INSERT INTO settings VALUES (?,?)').run('imported', JSON.stringify({ at: new Date().toISOString(), source: 'MagicApp' }));
         migrateCommanderHistory(db);
+        initializeSeasons(db);
         return true;
     }).immediate();
 }

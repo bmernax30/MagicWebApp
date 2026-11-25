@@ -52,7 +52,7 @@ export function migrateCommanderHistory(db: Database.Database) {
             for (const p of players.filter(p=>p.joined)) {
                 if (!p.name || !db.prepare('SELECT 1 FROM profiles WHERE name=?').get(p.name)) { incomplete++; continue; }
                 if (g.settings.game_type==='Commander'&&(!p.commander||isLegacyPlaceholder(p.commander))) incomplete++;
-                db.prepare('INSERT OR IGNORE INTO game_appearances VALUES (?,?,?,?,?,?,?,?)').run(g.code,round,p.number,p.name,find(p.commander),winner===p.number?1:0,at,'historical');
+                db.prepare('INSERT OR IGNORE INTO game_appearances(game,round,seat,profile,deck_id,won,finished_at,source) VALUES (?,?,?,?,?,?,?,?)').run(g.code,round,p.number,p.name,find(p.commander),winner===p.number?1:0,at,'historical');
             }
         };
         let hadFinal = false;

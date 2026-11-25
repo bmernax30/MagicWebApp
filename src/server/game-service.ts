@@ -19,18 +19,28 @@ export function gameService({ sqlite, orm }: Store) {
         const defaults = orm.select().from(tables.settings).where(eq(tables.settings.key, 'defaults')).get();
         if (!defaults)
             throw new GameError('Database is not initialized. Run npm run db:import.', 503);
-        const commanders = sqlite.prepare(`SELECT d.*, d.baseline_wins+COALESCE(SUM(a.won),0) AS wins,
-            d.baseline_plays+COUNT(a.game) AS plays FROM commander_decks d LEFT JOIN game_appearances a ON a.deck_id=d.id GROUP BY d.id ORDER BY d.name`).all() as {id:string;name:string;cards:string;legacy_metadata:string;legacy_rules:string;wins:number;plays:number;baseline_wins:number}[];
-        const profileRows = orm.select().from(tables.profiles).orderBy(asc(tables.profiles.name)).all();
+        const season=orm.select().from(tables.seasons).all().find(s=>s.endDate===null);
+        if(!season||!sqlite.prepare("SELECT 1 FROM settings WHERE key='seasons_initialized'").get())throw new GameError('Season data is not initialized. Run migrations and import.',503);
+        const commanders=sqlite.prepare(`SELECT d.*,COALESCE(SUM(a.won),0) AS wins,COUNT(a.game) AS plays
+            FROM commander_decks d LEFT JOIN game_appearances a ON a.deck_id=d.id AND a.season_id=? GROUP BY d.id ORDER BY d.name`).all(season.id) as {id:string;name:string;legacy_metadata:string;wins:number;plays:number}[];
+        const profileRows=orm.select().from(tables.profiles).orderBy(asc(tables.profiles.name)).all();
+        const seasonResults=orm.select().from(tables.seasons).all().filter(s=>s.endDate!==null).sort((a,b)=>b.id-a.id).map(s=>({...s,
+            players:sqlite.prepare('SELECT name,wins,plays FROM season_player_results WHERE season_id=? ORDER BY wins DESC,plays ASC,name').all(s.id),
+            commanders:sqlite.prepare('SELECT commander_id AS commanderId,name,wins,plays FROM season_commander_results WHERE season_id=? ORDER BY wins DESC,plays ASC,name').all(s.id),
+        })) as Catalog['seasonResults'];
         return {
-            settings: JSON.parse(defaults.value) as Settings,
-            profiles: profileRows.map(p => {
-                const history = sqlite.prepare(`SELECT a.deck_id AS deckId,d.name,COUNT(*) AS plays,SUM(a.won) AS wins,MAX(a.finished_at) AS lastPlayed
-                    FROM game_appearances a JOIN commander_decks d ON d.id=a.deck_id WHERE a.profile=? GROUP BY a.deck_id ORDER BY wins DESC,plays DESC,d.name`).all(p.name) as Catalog['profiles'][number]['history'];
-                const totals=sqlite.prepare('SELECT COUNT(*) AS plays,COALESCE(SUM(won),0) AS wins FROM game_appearances WHERE profile=?').get(p.name) as {plays:number;wins:number};
-                return {...p,history,unattributedPlays:Math.max(0,p.wins-totals.wins)+totals.plays-history.reduce((sum,h)=>sum+h.plays,0),plays:Math.max(0,p.wins-totals.wins)+totals.plays,unattributedWins:Math.max(0,p.wins-history.reduce((sum,h)=>sum+h.wins,0))};
+            season,seasonResults,
+            settings:JSON.parse(defaults.value) as Settings,
+            profiles:profileRows.map(p=>{
+                // Retain previous choices, showing only this season's counts.
+                const history=sqlite.prepare(`SELECT d.id AS deckId,d.name,
+                    SUM(CASE WHEN a.season_id=? THEN 1 ELSE 0 END) AS plays,
+                    SUM(CASE WHEN a.season_id=? THEN a.won ELSE 0 END) AS wins,MAX(a.finished_at) AS lastPlayed
+                    FROM game_appearances a JOIN commander_decks d ON d.id=a.deck_id WHERE a.profile=? GROUP BY d.id ORDER BY wins DESC,plays DESC,d.name`).all(season.id,season.id,p.name) as Catalog['profiles'][number]['history'];
+                const totals=sqlite.prepare('SELECT COUNT(*) AS plays,COALESCE(SUM(won),0) AS wins FROM game_appearances WHERE profile=? AND season_id=?').get(p.name,season.id) as {plays:number;wins:number};
+                return {...p,...totals,history};
             }),
-            commanders: commanders.map(c=>({id:c.id,name:c.name,...commanderPresentation([completeCommanderMetadata(JSON.parse(c.legacy_metadata)).primary_name,...(completeCommanderMetadata(JSON.parse(c.legacy_metadata)).second_commander.enabled?[completeCommanderMetadata(JSON.parse(c.legacy_metadata)).second_commander.name]:[])],temporaryCommander(c.id)),wins:c.wins,plays:c.plays,unattributedWins:c.baseline_wins} as Commander)),
+            commanders:commanders.map(c=>({id:c.id,name:c.name,...commanderPresentation([completeCommanderMetadata(JSON.parse(c.legacy_metadata)).primary_name,...(completeCommanderMetadata(JSON.parse(c.legacy_metadata)).second_commander.enabled?[completeCommanderMetadata(JSON.parse(c.legacy_metadata)).second_commander.name]:[])],temporaryCommander(c.id)),wins:c.wins,plays:c.plays} as Commander)),
             planes: orm.select().from(tables.planes).orderBy(asc(tables.planes.name)).all(),
         };
     }
@@ -257,7 +267,8 @@ export function gameService({ sqlite, orm }: Store) {
                     sqlite.prepare('UPDATE profiles SET wins=wins+1 WHERE name=?').run(p.name);
 
                 }
-                for(const p of game.players.filter(p=>p.joined))sqlite.prepare('INSERT INTO game_appearances VALUES (?,?,?,?,?,?,?,?)').run(game.code,game.round,p.number,p.name,p.deckId??null,game.winner===p.number?1:0,event.at,'live');
+                const season=sqlite.prepare('SELECT id FROM seasons WHERE end_date IS NULL').get() as {id:number};
+                for(const p of game.players.filter(p=>p.joined))sqlite.prepare('INSERT INTO game_appearances(game,round,seat,profile,deck_id,won,finished_at,source,season_id) VALUES (?,?,?,?,?,?,?,?,?)').run(game.code,game.round,p.number,p.name,p.deckId??null,game.winner===p.number?1:0,event.at,'live',season.id);
                 const next = insertSession(game.settings, game);
                 game.nextGameCode = next.code;
                 event.message = `Game finished${game.winner ? `; player ${game.winner} won` : ' without a winner'}. Next session: ${next.code}.`;
