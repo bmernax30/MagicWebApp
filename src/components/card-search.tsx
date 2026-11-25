@@ -40,7 +40,7 @@ export function CardSearch({ onSelect, onClear, label = 'Card name' }: { onSelec
         <label htmlFor={id}>{label}</label><input id={id} type="search" maxLength={120} autoComplete="off" placeholder="Start typing a card name…" value={query} onChange={e => {
             selection.current?.abort(); onClear?.(); setLoading(false); setCard(null); setError(''); setSuggestions([]); setSearching(false); setQuery(e.target.value);
         }}/>
-        <p className="muted">Enter at least two characters, then select a suggestion. {onSelect?'Your selected card is used when you join or save your commander.':'Card lookup does not change your game.'}</p>
+        <p className="muted">Enter at least two characters, then select a suggestion. {onSelect?'Your selected card is used when you join or select your commander.':'Card lookup does not change your game.'}</p>
         {searching && <p role="status">Searching Scryfall…</p>}
         {error && <p className="error" role="alert">{error}</p>}
         {suggestions.length > 0 && <ul className="card-suggestions" aria-label="Card suggestions">{suggestions.map(name => <li key={name}><button onClick={() => void choose(name)}>{name}</button></li>)}</ul>}

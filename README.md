@@ -1,6 +1,6 @@
 # MagicWebApp
 
-Current version: **1.0.5**.
+Current version: **1.0.6**.
 
 A shared Magic: The Gathering game table for a Linux server and your playgroup’s phones. Create a table, share its game code, and let each player choose a seat and keep score. The main scoreboard stays synchronized across devices.
 
@@ -198,7 +198,7 @@ The player summary and commander-info list use names without seat numbers. The c
 
 ## Scryfall commander setups and history (MAGIC-004)
 
-Player profiles contain names and recorded history, not assigned/allowed commander lists. History is ranked by wins, then plays, with names breaking ties. Tap a commander row to select it; a gold highlight and Selected label identify the current choice. Keyboard users can focus the row and press Enter or Space. Commander names are links that expand on-demand card information. When joining or changing commanders, select a previously completed setup or search Scryfall, select a search result, optionally add a partner/background, then press **Join seat** (or **Save commander** during play). Any card and pairing is allowed for house rules. SQLite stores only setup identity (names and Oracle IDs), aliases, and statistics. Full card data is fetched on demand for the active table or commander-info screen and retained only in bounded process/browser memory for up to 15 minutes. Restarting the server clears its cache. Images still require access to Scryfall’s image host. The same two cards in reverse order share one statistical setup; Scryfall Oracle IDs keep alternate printings/names from splitting their totals. Name-based legacy keys remain valid aliases after exact resolution. Two faces of a single card remain one selected card.
+Player profiles contain names and recorded history, not assigned/allowed commander lists. History is ranked by wins, then plays, with names breaking ties. Tap a commander row to select it; a gold highlight and Selected label identify the current choice. Keyboard users can focus the row and press Enter or Space. Commander names are links that expand on-demand card information. When joining or changing commanders, select a previously completed setup or search Scryfall, select a search result, optionally add a partner/background, then press **Join seat** (or **Select** during play). Any card and pairing is allowed for house rules. SQLite stores only setup identity (names and Oracle IDs), aliases, and statistics. Full card data is fetched on demand for the active table or commander-info screen and retained only in bounded process/browser memory for up to 15 minutes. Restarting the server clears its cache. Images still require access to Scryfall’s image host. The same two cards in reverse order share one statistical setup; Scryfall Oracle IDs keep alternate printings/names from splitting their totals. Name-based legacy keys remain valid aliases after exact resolution. Two faces of a single card remain one selected card.
 
 Check **Hide my commander** during selection to hide the entire setup on shared displays. Your own controls retain its name; **Reveal commander** makes it visible during play. Hidden setups count toward wins and plays even if never revealed. Hiding is a display feature in the existing trusted-group model, not per-device data secrecy.
 
