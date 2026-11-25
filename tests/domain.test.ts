@@ -37,3 +37,19 @@ test('all player views leave closed sessions and preserve their seat in a succes
     assert.equal(sessionDestination({ status: 'finished', nextGameCode: null }, '1', false), '/?notice=game-ended');
     assert.equal(sessionDestination({ status: 'finished', nextGameCode: 'ABC234' }, 'log', true), null);
 });
+
+test('emote countdown uses server time and stays within five seconds, including clock initialization and skew', async () => {
+    const { serverNow, emoteCooldownSeconds } = await import('../src/lib/emotes');
+    const sentAt = 1800000000000;
+    const clock = { serverTime: sentAt, receivedAt: 100 };
+    assert.equal(emoteCooldownSeconds(sentAt, null), 5);
+    assert.equal(emoteCooldownSeconds(sentAt, 0), 5); // formerly displayed billions of seconds
+    assert.equal(emoteCooldownSeconds(sentAt, sentAt - 86400000), 5);
+    assert.equal(emoteCooldownSeconds(undefined, null), 0);
+    for (let elapsed = 0; elapsed <= 6000; elapsed += 250) {
+        assert.equal(emoteCooldownSeconds(sentAt, serverNow(clock, 100 + elapsed)), Math.ceil(Math.max(0, 5000 - elapsed) / 1000));
+    }
+    assert.equal(serverNow(clock, 99), sentAt);
+    assert.equal(emoteCooldownSeconds(NaN, sentAt), 0);
+    assert.equal(emoteCooldownSeconds(sentAt, NaN), 5);
+});

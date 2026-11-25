@@ -1,5 +1,10 @@
-export async function api<T>(url: string, data?: unknown, signal?: AbortSignal): Promise<T> {
+import type { ServerClock } from '@/lib/emotes';
+
+export async function api<T>(url: string, data?: unknown, signal?: AbortSignal, onClock?: (clock: ServerClock) => void): Promise<T> {
     const response = await fetch(url, { method: data === undefined ? 'GET' : 'POST', headers: data === undefined ? undefined : { 'Content-Type': 'application/json' }, body: data === undefined ? undefined : JSON.stringify(data), cache: 'no-store', signal });
+    const time = response.headers.get('X-Server-Time');
+    const serverTime = time === null ? NaN : Number(time);
+    if (Number.isFinite(serverTime) && serverTime > 0) onClock?.({ serverTime, receivedAt: performance.now() });
     const value = await response.json();
     if (!response.ok)
         throw new Error(value.error ?? 'Request failed.');

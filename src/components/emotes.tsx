@@ -1,28 +1,28 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from 'react';
-import { EMOTES, EMOTE_COOLDOWN_MS } from '@/lib/emotes';
-import type { EmoteKind, GameEmote } from '@/lib/emotes';
+import { EMOTES, serverNow, emoteCooldownSeconds } from '@/lib/emotes';
+import type { EmoteKind, GameEmote, ServerClock } from '@/lib/emotes';
 import type { Player } from '@/lib/types';
 
-function useNow() {
-    const [now, setNow] = useState(0);
+function useNow(clock: ServerClock | null) {
+    const [now, setNow] = useState<number | null>(null);
     useEffect(() => {
-        const tick = () => setNow(Date.now());
+        const tick = () => setNow(clock ? serverNow(clock, performance.now()) : null);
         tick();
         const timer = setInterval(tick, 250);
         return () => clearInterval(timer);
-    }, []);
+    }, [clock]);
     return now;
 }
-export function PlayerEmotes({ players, sender, emotes, disabled, onSend }: {
-    players: Player[]; sender: Player; emotes: GameEmote[]; disabled: boolean;
+export function PlayerEmotes({ players, sender, emotes, clock, disabled, onSend }: {
+    players: Player[]; sender: Player; emotes: GameEmote[]; clock: ServerClock | null; disabled: boolean;
     onSend: (target: number, emote: EmoteKind) => Promise<boolean>;
 }) {
     const [target, setTarget] = useState<number | null>(null);
-    const now = useNow();
+    const now = useNow(clock);
     const latest = emotes.find(e => e.sender === sender.number);
-    const seconds = latest ? Math.max(0, Math.ceil((latest.sentAt + EMOTE_COOLDOWN_MS - now) / 1000)) : 0;
+    const seconds = emoteCooldownSeconds(latest?.sentAt, now);
     return <div className="mini-scores">{players.map(p => <div className="emote-player" key={p.number}
         onKeyDown={e => { if (e.key === 'Escape') setTarget(null); }}
         onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setTarget(null); }}>
@@ -37,9 +37,9 @@ export function PlayerEmotes({ players, sender, emotes, disabled, onSend }: {
         </section>}
     </div>)}</div>;
 }
-export function ScoreEmotes({ emotes, target }: { emotes: GameEmote[]; target: number }) {
-    const now = useNow();
-    const active = emotes.filter(e => e.target === target && e.expiresAt > now && now > 0);
+export function ScoreEmotes({ emotes, target, clock }: { emotes: GameEmote[]; target: number; clock: ServerClock | null }) {
+    const now = useNow(clock);
+    const active = emotes.filter(e => e.target === target && now !== null && e.expiresAt > now && now > 0);
     if (!active.length) return null;
     return <div className="score-emotes" aria-live="polite">{active.map(event => {
         const emote = EMOTES.find(e => e.id === event.kind);

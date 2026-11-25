@@ -43,7 +43,7 @@ export async function readJson(request: Request) {
 }
 export async function respond(work: () => unknown | Promise<unknown>) {
     try {
-        return Response.json(await work(), { headers: { 'Cache-Control': 'no-store' } });
+        return Response.json(await work(), { headers: { 'Cache-Control': 'no-store', 'X-Server-Time': String(Date.now()) } });
     }
     catch (error) {
         if (error instanceof ZodError)

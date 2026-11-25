@@ -622,3 +622,20 @@ test('seat-version migration preserves identities and totals, and removal reject
         assert.throws(() => f.service.act(g.code, { id: randomUUID(), type: 'leave', player: 1, round: 1, revision: finished.revision }), /finished/);
     } finally { f.close(); }
 });
+
+test('all six seats have independent cooldowns that release at exactly five seconds', t => {
+    const f = fixture();
+    let now = 1800000000000;
+    t.mock.method(Date, 'now', () => now);
+    try {
+        let g = f.service.create({ settings: { ...settings, number_of_players: 6 } });
+        const profile = f.service.catalog().profiles[0];
+        for (let player = 1; player <= 6; player++) g = f.service.act(g.code, { id: randomUUID(), type: 'join', round: 1, revision: g.revision, player, name: profile.name, commander: profile.commanders[0] });
+        const send = (player: number) => f.service.act(g.code, { id: randomUUID(), type: 'emote', player, target: 1, emote: 'nice', round: 1, revision: 0 });
+        for (let player = 1; player <= 6; player++) send(player);
+        now += 4999;
+        for (let player = 1; player <= 6; player++) assert.throws(() => send(player), /five seconds/);
+        now++;
+        for (let player = 1; player <= 6; player++) send(player);
+    } finally { f.close(); }
+});

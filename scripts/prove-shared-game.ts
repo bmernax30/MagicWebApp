@@ -6,6 +6,8 @@ async function request<T>(url: string, body?: unknown): Promise<T> {
     const r = await fetch(base + url, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json', Origin: new URL(base).origin } : undefined, body: body ? JSON.stringify(body) : undefined });
     const value = await r.json();
     assert.ok(r.ok, JSON.stringify(value));
+    const serverTime = Number(r.headers.get('X-Server-Time'));
+    assert.ok(Number.isFinite(serverTime) && serverTime > 0, 'Responses must supply the server clock for emote timers.');
     return value as T;
 }
 async function main() {

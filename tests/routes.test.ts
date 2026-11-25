@@ -64,6 +64,8 @@ describe('HTTP route contracts with independent clients', () => {
         const response = await readGame(new Request(`${origin}/api/games/${code}`), context(code));
         assert.equal(response.status, 200);
         assert.equal(response.headers.get('Cache-Control'), 'no-store');
+        const serverTime = Number(response.headers.get('X-Server-Time'));
+        assert.ok(Number.isFinite(serverTime) && serverTime > 0 && serverTime <= Date.now());
         return response.json();
     }
     test('20 concurrent requests preserve both clients’ deltas and duplicate IDs apply once', async () => {
