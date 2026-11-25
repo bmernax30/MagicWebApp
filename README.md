@@ -1,6 +1,6 @@
 # MagicWebApp
 
-Current version: **1.0.0**.
+Current version: **1.0.1**.
 
 A shared Magic: The Gathering game table for a Linux server and your playgroup’s phones. Create a table, share its game code, and let each player choose a seat and keep score. The main scoreboard stays synchronized across devices.
 
@@ -180,3 +180,7 @@ Migration `0005_seat_versions.sql` backfills occupant generations without changi
 The lobby and scoreboard include **Search Magic cards**. Type at least two characters and select a suggested English card name to inspect its full image, mana cost/value, type, Oracle text, stats, face details, flavor text, set, artist, format legality and Scryfall link. Lookup is local to your browser and never changes profiles or game scores. The server needs internet access; full card images load from Scryfall’s image host. Errors leave the game controls usable.
 
 The read-only `/api/cards?q=...` and `/api/cards?name=...` endpoints validate names and use Scryfall’s [autocomplete](https://scryfall.com/docs/api/cards/autocomplete) and [exact-name](https://scryfall.com/docs/api/cards/named) APIs. Requests include application headers, an eight-second timeout, bounded/coalesced queues and a 100-entry in-memory cache with 24-hour expiry. Outbound calls are serialized with at least 100 ms between requests and 500 ms between exact-name requests, following the current [rate limits](https://scryfall.com/docs/api/rate-limits). A 429 pauses outbound traffic for at least 30 seconds. No API key or database migration is needed. Cached results clear when the server restarts.
+
+## Lobby navigation (MAGIC-002)
+
+The main screen has five tabs: **Game Creation**, **Player Profile**, **Commander Profile**, **Leaderboard**, and **Card Search**. Create and Join remain together under Game Creation. Player and commander editors are separate, and switching sections preserves unsaved drafts and card-search results. The tab bar wraps on phones and supports Left/Right arrows, Home and End. Game scoreboard navigation is unchanged.
