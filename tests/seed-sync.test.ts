@@ -6,7 +6,7 @@ import { applyTestSchema } from './schema-fixture';
 import { importMagic } from '../src/db/import';
 import { readSeed,syncSeed } from '../src/db/seed-sync';
 function fixture(){const db=new Database(':memory:');db.pragma('foreign_keys=ON');applyTestSchema(db);importMagic(db,path.resolve('seed-data/res'));return db;}
-test('seed sync preserves web decks and games, reconciles legacy deltas once, and never recreates assignments',()=>{
+test('seed sync preserves web decks and games, does not import legacy wins into current seasons, and never recreates assignments',()=>{
  const db=fixture();try{
   const baseline=readSeed('seed-data/res/settings.json'),next=structuredClone(baseline);
   const player=Object.keys(baseline.player_profiles)[0],name=Object.keys(baseline.commander_profiles)[0];
@@ -16,8 +16,9 @@ test('seed sync preserves web decks and games, reconciles legacy deltas once, an
   next.commander_profiles[name].attack_power=77;next.commander_profiles.New={...next.commander_profiles[name],primary_name:'New',total_wins:0};next.player_profiles[player]=['New'];
   db.prepare('INSERT INTO commander_decks(id,name,cards,legacy_metadata,baseline_wins,baseline_plays) VALUES (?,?,?,?,?,?)').run('web','Web only','[]','{}',7,7);
   db.prepare('INSERT INTO games VALUES (?,?,?,?)').run('ABC234','{"unchanged":true}',25,'before');
-  const report=syncSeed(db,next);assert.ok(report.addedCommanders.includes('New'));assert.equal(report.addedLinks,0);assert.equal(report.removedLinks,0);
-  assert.equal((db.prepare('SELECT baseline_wins FROM commander_decks WHERE id=?').get(alias.deck_id) as {baseline_wins:number}).baseline_wins,before.baseline_wins+2);
+  const archive=db.prepare('SELECT * FROM season_commander_results').all();
+  const report=syncSeed(db,next);assert.equal(report.winDelta,0);assert.deepEqual(db.prepare('SELECT * FROM season_commander_results').all(),archive);assert.ok(report.addedCommanders.includes('New'));assert.equal(report.addedLinks,0);assert.equal(report.removedLinks,0);
+  assert.equal((db.prepare('SELECT baseline_wins FROM commander_decks WHERE id=?').get(alias.deck_id) as {baseline_wins:number}).baseline_wins,before.baseline_wins);
   assert.ok(db.prepare("SELECT 1 FROM commander_decks WHERE id='web'").get());
   assert.equal((db.prepare('SELECT state FROM games').get() as {state:string}).state,'{"unchanged":true}');
   assert.ok(!db.prepare("SELECT 1 FROM sqlite_master WHERE name='profile_commanders'").get());

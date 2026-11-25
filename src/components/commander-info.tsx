@@ -8,7 +8,7 @@ function CommanderDetails({ commander }: { commander: Commander }) {
     return <div className="commander-info-content">
         {commander.cards.map(card=><section key={card.name}><h4>{card.name}</h4><p>Mana value: {card.manaValue} · {card.set} · {card.rarity}</p>
             <div className="commander-info-cards">{card.faces.map((face,i)=><figure key={i}>{face.image&&<img loading="lazy" src={face.image} alt={face.name}/>}<figcaption><h4>{face.name}</h4><p>Mana cost: {face.manaCost||'No mana cost'}</p><p>{face.type}</p><p>Colors: {face.colors.join(', ')||'Colorless'}</p><p className="rules">{face.text||'No rules text.'}</p>{(face.power||face.toughness)&&<p>Power / toughness: {face.power} / {face.toughness}</p>}{face.loyalty&&<p>Loyalty: {face.loyalty}</p>}{face.defense&&<p>Defense: {face.defense}</p>}{face.artist&&<p>Artist: {face.artist}</p>}</figcaption></figure>)}</div><a href={card.url} target="_blank" rel="noreferrer">Card details on Scryfall ↗</a></section>)}
-        <p>{commander.wins} wins · {commander.unattributedWins?'At least ':''}{commander.plays} plays for this setup</p><p className="muted">Card data and images from Scryfall. Magic: The Gathering © Wizards of the Coast.</p>
+        <p>{commander.wins} wins · {commander.plays} plays this season for this setup</p><p className="muted">Card data and images from Scryfall. Magic: The Gathering © Wizards of the Coast.</p>
     </div>;
 }
 

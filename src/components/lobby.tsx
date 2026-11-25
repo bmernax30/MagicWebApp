@@ -6,6 +6,7 @@ import type { Catalog, Game, Settings } from '@/lib/types';
 import { api } from './client-api';
 import { APP_VERSION } from '@/lib/version';
 import { CardSearch } from './card-search';
+import { Leaderboards } from './leaderboards';
 import { ProfileManager } from './profile-manager';
 const sections = [['play', 'Game Creation'], ['players', 'Player Profile'], ['leaders', 'Leaderboard'], ['cards', 'Card Search']] as const;
 type LobbyTab = typeof sections[number][0];
@@ -84,10 +85,7 @@ export function Lobby() {
         } }}><label>Game code<input className="code-input" maxLength={6} minLength={6} required autoCapitalize="characters" autoComplete="off" spellCheck={false} value={code} placeholder="ABC234" onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, ''))}/></label><button className="wide" disabled={busy || code.length !== 6}>Join the table →</button></form></section><section className="how-it-works"><span>01</span><p><strong>Create & share</strong>One code brings the whole table together.</p><span>02</span><p><strong>Choose your seat</strong>Every phone gets its own player controls.</p><span>03</span><p><strong>Keep the game moving</strong>Life, poison, and commander damage stay in sync.</p></section></aside></div></section>
     <section className="lobby-section" id="lobby-panel-players" role="tabpanel" aria-labelledby="lobby-tab-players" hidden={tab !== 'players'}>{catalog && <ProfileManager catalog={catalog} onSaved={setCatalog} onError={setError}/>}</section>
 
-    <section className="lobby-section" id="lobby-panel-leaders" role="tabpanel" aria-labelledby="lobby-tab-leaders" hidden={tab !== 'leaders'}>{catalog && <div className="lobby-grid">{[['Players', catalog.profiles], ['Commanders', catalog.commanders]].map(([title, entries]) => <section className="panel" key={title as string}><p className="eyebrow">THE HALL OF FAME</p><h2>{title as string}</h2>{[...(entries as {
-            name: string;
-            wins: number; plays:number; unattributedWins:number;
-        }[])].sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name)).map((p, i) => <div className="leader" key={p.name}><span>{i + 1}</span><strong>{p.name}</strong><span>{p.wins} wins · {p.unattributedWins?'≥ ':''}{p.plays} plays</span></div>)}</section>)}</div>}</section>
+    <section className="lobby-section" id="lobby-panel-leaders" role="tabpanel" aria-labelledby="lobby-tab-leaders" hidden={tab !== 'leaders'}>{catalog && <Leaderboards catalog={catalog}/>}</section>
     <section className="lobby-section" id="lobby-panel-cards" role="tabpanel" aria-labelledby="lobby-tab-cards" hidden={tab !== 'cards'}><CardSearch/></section>
     <footer>Magic Merna v{APP_VERSION} · Built for your playgroup <span>Scores saved in SQLite</span></footer>
   </main>;

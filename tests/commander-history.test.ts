@@ -91,7 +91,8 @@ test('exact-name alias reconciliation merges floors and appearances while old ac
   mergeResolvedCommander(f.store.sqlite,old.id,canonical.id);
   assert.deepEqual(f.store.sqlite.prepare('SELECT state FROM games WHERE code=?').get(g.code),raw);
   g=f.service.get(g.code);assert.ok(g.players.every(p=>p.deckId===canonical.id));act(f,g,{type:'finish'});
-  const stats=f.service.catalog().commanders.find(c=>c.id===canonical.id)!;assert.equal(stats.wins,4);assert.equal(stats.plays,6);
+  const stats=f.service.catalog().commanders.find(c=>c.id===canonical.id)!;assert.equal(stats.wins,0);assert.equal(stats.plays,2);
+  assert.equal((f.store.sqlite.prepare('SELECT baseline_wins FROM commander_decks WHERE id=?').get(canonical.id) as {baseline_wins:number}).baseline_wins,4);
   assert.ok(!f.service.catalog().commanders.some(c=>c.id===old.id));
  }finally{f.close();}
 });
@@ -134,7 +135,7 @@ test('verified Scryfall Oracle IDs upgrade name-based legacy setups atomically w
  const f=fixture();try{
   const legacy=await register(f,['Oracle upgrade']);let g=joined(f,legacy.id);f.store.sqlite.prepare('UPDATE commander_decks SET baseline_wins=3,baseline_plays=3 WHERE id=?').run(legacy.id);
   const resolved=(await registerCommander({names:['Oracle upgrade']},{store:f.store,lookup:async()=>({card:{...card('Oracle upgrade'),oracleId:'22222222-2222-4222-8222-222222222222'}})})).commander;
-  assert.notEqual(resolved.id,legacy.id);assert.equal(resolved.wins,3);assert.equal(resolved.plays,3);g=f.service.get(g.code);assert.ok(g.players.every(p=>p.deckId===resolved.id));act(f,g,{type:'finish'});assert.equal(f.service.catalog().commanders.find(c=>c.id===resolved.id)!.plays,5);
+  assert.notEqual(resolved.id,legacy.id);assert.equal(resolved.wins,0);assert.equal(resolved.plays,0);g=f.service.get(g.code);assert.ok(g.players.every(p=>p.deckId===resolved.id));act(f,g,{type:'finish'});assert.equal(f.service.catalog().commanders.find(c=>c.id===resolved.id)!.plays,2);
  }finally{f.close();}
 });
 

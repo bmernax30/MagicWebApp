@@ -60,7 +60,7 @@ export function syncSeed(db: Database.Database, next: Seed, initialBaseline?: Se
             const row = db.prepare('SELECT metadata,wins FROM legacy_commanders WHERE name=?').get(name) as { metadata: string; wins: number } | undefined;
             if (!row) {
                 db.prepare('INSERT INTO legacy_commanders(name,wins,metadata,rules) VALUES (?,?,?,?)').run(name, total_wins, JSON.stringify(metadata), '');
-                importLegacyCommander(db,{name,wins:Number(total_wins),metadata:JSON.stringify(metadata),rules:''});
+                importLegacyCommander(db,{name,wins:0,metadata:JSON.stringify(metadata),rules:''});
                 report.addedCommanders.push(name);
             } else {
                 const merged = merge(JSON.parse(row.metadata), oldMetadata, metadata, name);
@@ -70,23 +70,13 @@ export function syncSeed(db: Database.Database, next: Seed, initialBaseline?: Se
                 if (!isDeepStrictEqual(merged, JSON.parse(row.metadata))) report.metadataUpdates++;
                 db.prepare('UPDATE legacy_commanders SET metadata=?, wins=? WHERE name=?').run(JSON.stringify(merged), wins, name);
                 const alias=db.prepare('SELECT deck_id FROM commander_aliases WHERE name=?').get(name) as {deck_id:string};
-                const deck=db.prepare('SELECT baseline_wins,cards FROM commander_decks WHERE id=?').get(alias.deck_id) as {baseline_wins:number;cards:string};
-                if(deck.baseline_wins+delta<0)throw new Error(`Unsafe win adjustment for ${name}; recorded history cannot be erased.`);
-                db.prepare('UPDATE commander_decks SET baseline_wins=baseline_wins+?,baseline_plays=baseline_plays+? WHERE id=?').run(delta,delta,alias.deck_id);
-                if(JSON.parse(deck.cards).length===0)db.prepare('UPDATE commander_decks SET legacy_metadata=? WHERE id=?').run(JSON.stringify(legacyDisplayMetadata(merged as Partial<CommanderMetadata>)),alias.deck_id);
-                report.winDelta += delta;
+                db.prepare('UPDATE commander_decks SET legacy_metadata=? WHERE id=?').run(JSON.stringify(legacyDisplayMetadata(merged as Partial<CommanderMetadata>)),alias.deck_id);
+                // Seed counters belong to the legacy source, never the current season or frozen results.
             }
         }
         for (const [name, list] of Object.entries(next.player_profiles)) {
             const row = db.prepare('SELECT wins FROM profiles WHERE name=?').get(name) as { wins: number } | undefined;
-            const wins = next.player_profile_wins[name] ?? 0, oldWins = baseline.player_profile_wins[name] ?? 0;
-            if (!row) { db.prepare('INSERT INTO profiles VALUES (?,?)').run(name, wins); report.addedProfiles.push(name); }
-            else {
-                const updated = row.wins + wins - oldWins;
-                if (!Number.isSafeInteger(updated) || updated < Number((db.prepare('SELECT COALESCE(SUM(won),0) AS n FROM game_appearances WHERE profile=?').get(name) as {n:number}).n)) throw new Error(`Unsafe win adjustment for ${name}; no data changed.`);
-                db.prepare('UPDATE profiles SET wins=? WHERE name=?').run(updated, name);
-                report.winDelta += wins - oldWins;
-            }
+            if (!row) { db.prepare('INSERT INTO profiles VALUES (?,?)').run(name,0); report.addedProfiles.push(name); }
             // Legacy assignment lists are no longer permissions or history.
             void list;
         }

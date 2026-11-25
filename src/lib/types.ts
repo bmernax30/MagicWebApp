@@ -18,7 +18,7 @@ export type CommanderMetadata = {
     };
 };
 export type Commander = {
-    id: string; plays: number; unattributedWins: number; cards: import('./card-search').CardDetails[];
+    id: string; plays: number; cards: import('./card-search').CardDetails[];
     name: string;
     wins: number;
     metadata: CommanderMetadata;
@@ -27,7 +27,7 @@ export type Commander = {
 export type Profile = {
     name: string;
     wins: number;
-    plays: number; unattributedWins: number; unattributedPlays: number;
+    plays: number;
     history: { deckId: string; name: string; plays: number; wins: number; lastPlayed: string | null }[];
 };
 export type Settings = {
@@ -41,7 +41,10 @@ export type Plane = {
     image: string;
     rules: string;
 };
+export type Season = {id:number;name:string;startDate:string|null;endDate:string|null};
+export type SeasonResults = Season & {players:{name:string;wins:number;plays:number}[];commanders:{commanderId:string;name:string;wins:number;plays:number}[]};
 export type Catalog = {
+    season:Season; seasonResults:SeasonResults[];
     profiles: Profile[];
     commanders: Commander[];
     planes: Plane[];
