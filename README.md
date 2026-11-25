@@ -1,6 +1,6 @@
 # MagicWebApp
 
-Current version: **1.0.2**.
+Current version: **1.0.3**.
 
 A shared Magic: The Gathering game table for a Linux server and your playgroup’s phones. Create a table, share its game code, and let each player choose a seat and keep score. The main scoreboard stays synchronized across devices.
 
@@ -190,3 +190,9 @@ The main screen has five tabs: **Game Creation**, **Player Profile**, **Commande
 On any phone, enter the existing game code under Game Creation, choose your occupied seat, then confirm **Take over seat**. The confirmation shows the current profile, commander visibility, life, poison and commander-damage totals. There are no profile or commander selectors in takeover. The same saved setup, scores, round, seat generation and log remain; reconnection sends no join/reset action and awards no wins. Existing commander-change controls remain available as a separate deliberate action after reconnection.
 
 An open seat still uses the normal join form. If a seat is kicked, vacated or reassigned while its takeover confirmation is open, the stale confirmation cannot open the replacement occupant’s controls. A saved direct player-view URL also continues to reopen that seat. Multiple trusted devices can control the same seat; takeover does not disconnect the previous phone or introduce authentication. Review builds remain uncommitted until approved, at which point the issue version increments.
+
+## Scoring controls (MAGIC-005)
+
+The player controller has Life and Poison tabs. In Commander games, choose **Commander** beside a player’s **Emote** button to receive damage from that player’s commander, including your own. The view moves to the counter and names the source commander; use the existing +/- buttons and the compact **Apply / Cancel** panel. Applying commander damage still adjusts life and creates the usual undoable game-log entry. Emote cooldowns do not block commander selection. Apply or cancel a draft before selecting another counter or commander. A vacated or reassigned source seat must be selected again instead of silently changing the damage source.
+
+The player summary and commander-info list use names without seat numbers. The controller no longer includes a hide-commander link or damage-source dropdown. **Leave game** is a full-width red button at the bottom of the player view, with the existing confirmation. Standard games show no Commander buttons. Saved commander-visibility flags remain unchanged.

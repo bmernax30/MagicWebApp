@@ -12,7 +12,6 @@ export function TableCommanders({ players, selectedNumber, catalog }: {
             const commander = catalog?.commanders.find(card => card.name === player.commander);
             return <article className="opponent-commander" key={player.number}>
                 <div className="opponent-heading">
-                    <span className="player-number">{player.number}</span>
                     <div><strong>{player.name}</strong><p>{player.hidden ? 'Commander hidden' : player.commander || 'No commander selected'}</p></div>
                     <span className="opponent-life">{player.life}<small>life</small></span>
                 </div>

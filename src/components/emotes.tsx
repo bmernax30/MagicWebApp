@@ -15,20 +15,23 @@ function useNow(clock: ServerClock | null) {
     }, [clock]);
     return now;
 }
-export function PlayerEmotes({ players, sender, emotes, clock, disabled, onSend }: {
+export function PlayerEmotes({ players, sender, emotes, clock, disabled, onSend, commanderEnabled, commanderDisabled, activeCommander, onCommander }: {
     players: Player[]; sender: Player; emotes: GameEmote[]; clock: ServerClock | null; disabled: boolean;
+    commanderEnabled: boolean; commanderDisabled: boolean; activeCommander: number | null;
+    onCommander: (player: Player) => void;
     onSend: (target: number, emote: EmoteKind) => Promise<boolean>;
 }) {
     const [target, setTarget] = useState<number | null>(null);
     const now = useNow(clock);
     const latest = emotes.find(e => e.sender === sender.number);
     const seconds = emoteCooldownSeconds(latest?.sentAt, now);
-    return <div className="mini-scores">{players.map(p => <div className="emote-player" key={p.number}
+    return <div className="mini-scores">{players.filter(p => p.joined).map(p => <div className="emote-player" key={p.number}
         onKeyDown={e => { if (e.key === 'Escape') setTarget(null); }}
         onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setTarget(null); }}>
-        <small>P{p.number} · {p.name}</small><strong>{p.joined ? p.life : '—'}</strong>
-        {p.joined && <button className="emote-trigger" aria-expanded={target === p.number} aria-controls={`emote-picker-${p.number}`}
-            disabled={disabled || seconds > 0} onClick={() => setTarget(target === p.number ? null : p.number)}>{seconds > 0 ? `Emote (${seconds}s)` : 'Emote'}</button>}
+        <small>{p.name}{p.number === sender.number ? ' (you)' : ''}</small><strong>{p.life}</strong>
+        <div className={`player-actions ${commanderEnabled ? 'with-commander' : ''}`}><button className="emote-trigger" aria-expanded={target === p.number} aria-controls={`emote-picker-${p.number}`}
+            disabled={disabled || seconds > 0} onClick={() => setTarget(target === p.number ? null : p.number)}>{seconds > 0 ? `Emote (${seconds}s)` : 'Emote'}</button>
+        {commanderEnabled && <button className="commander-trigger" aria-label={`Take commander damage from ${p.name}`} aria-pressed={activeCommander === p.number} disabled={commanderDisabled} onClick={() => { setTarget(null); onCommander(p); }}>Commander</button>}</div>
         {target === p.number && <section id={`emote-picker-${p.number}`} className="emote-picker" aria-label={`Send an emote to ${p.name}`}>
             <div className="emote-picker-heading"><small>To {p.name}</small><button aria-label="Close emotes" onClick={() => setTarget(null)}>×</button></div>
             <div className="emote-options">{EMOTES.map(emote => <button key={emote.id} disabled={disabled || seconds > 0} onClick={async () => {
